@@ -1,0 +1,8 @@
+# blank format (use .env to populate)
+
+App:
+  SecretKey: ""
+
+Google:
+  CLIENT_ID: ""
+  CLIENT_SECRET: ""
