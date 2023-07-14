@@ -569,6 +569,16 @@ signals = ["blinker (>=1.4.0)"]
 signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
+name = "peewee"
+version = "3.16.2"
+description = "a little orm"
+optional = false
+python-versions = "*"
+files = [
+    {file = "peewee-3.16.2.tar.gz", hash = "sha256:10769981198c7311f84a0ca8db892fa213303a8eb1305deb795a71e7bd606a91"},
+]
+
+[[package]]
 name = "protobuf"
 version = "4.23.4"
 description = ""
@@ -826,4 +836,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "b31793bdaa7c8fb48320a2b52586e7a75904595650a4470f4290f1616bd4c1f7"
+content-hash = "4c189f1755ab84c6d74750ff5fc1d183e8ed29c530ea350b4e692e3ff66e86ad"

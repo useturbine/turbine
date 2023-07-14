@@ -16,6 +16,7 @@ google-api-python-client = "^2.93.0"
 google-auth-httplib2 = "^0.1.0"
 google-auth-oauthlib = "^1.0.0"
 python-dotenv = "^1.0.0"
+peewee = "^3.16.2"
 
 [tool.poetry.group.dev.dependencies]
 google-api-python-client-stubs = "^1.17.0"
