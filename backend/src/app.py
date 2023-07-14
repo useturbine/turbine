@@ -4,7 +4,7 @@ from config import config
 from pprint import pprint
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-
+from src.core import get_past_threads
 
 app = Flask(__name__)
 app.secret_key = config.app.secret_key
@@ -30,25 +30,10 @@ def google():
 @app.route("/google/auth/")
 def google_auth():
     token = oauth.google.authorize_access_token()
-    pprint(token)
-
     service = build(
         "gmail",
         "v1",
         credentials=Credentials(token=token["access_token"], scopes=token["scope"]),
     )
-    results = service.users().labels().list(userId="me").execute()
-    labels = results.get("labels", [])
-
-    if not labels:
-        print("No labels found.")
-        return
-    print("Labels:")
-    for label in labels:
-        print(label["name"])
-
+    get_past_threads(service)
     return redirect("/")
-
-
-if __name__ == "__main__":
-    app.run()
