@@ -1,0 +1,5 @@
+app:
+  secret_key: "placeholder"
+google:
+  client_id: "placeholder"
+  client_secret: "placeholder"

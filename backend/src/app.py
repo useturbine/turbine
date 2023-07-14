@@ -1,12 +1,10 @@
 from flask import Flask, url_for, redirect, session
 from authlib.integrations.flask_client import OAuth
-
-from utils import read_yaml_file
-
-cfg = read_yaml_file("config.yaml")
+from config import config
+from pprint import pprint
 
 app = Flask(__name__)
-app.secret_key = cfg.App.SecretKey
+app.secret_key = config.app.secret_key
 
 oauth = OAuth(app)
 
@@ -15,21 +13,21 @@ oauth = OAuth(app)
 def google():
     oauth.register(
         name="google",
-        client_id=cfg.Google.CLIENT_ID,
-        client_secret=cfg.Google.CLIENT_SECRET,
+        client_id=config.google.client_id,
+        client_secret=config.google.client_secret,
         server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
         client_kwargs={"scope": "openid email profile"},
     )
-    redirect_uri = url_for("app.google_auth", _external=True)
+    redirect_uri = url_for("google_auth", _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
 
 
 @app.route("/google/auth/")
 def google_auth():
     token = oauth.google.authorize_access_token()
-    user_dict = oauth.google.parse_id_token(token, None)
-
-    # save in DB here if needed
-    # info in user_dict
-
+    pprint(token)
     return redirect("/")
+
+
+if __name__ == "__main__":
+    app.run()
