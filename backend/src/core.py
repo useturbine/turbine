@@ -1,9 +1,9 @@
-from pprint import pprint
-from src.models import User
 from google.oauth2.credentials import Credentials
 from oauth2client.client import OAuth2Credentials
 from googleapiclient.discovery import build
-from config import config
+
+from backend.src.models import User
+from backend.config import config
 
 
 def get_past_threads(user_email: str):

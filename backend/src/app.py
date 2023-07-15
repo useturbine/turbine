@@ -1,8 +1,9 @@
 from flask import Flask, url_for, redirect, session
 from authlib.integrations.flask_client import OAuth
-from config import config
-from src.models import User
-from src.core import get_past_threads
+
+from backend.config import config
+from backend.src.models import User
+from backend.src.core import get_past_threads
 
 app = Flask(__name__)
 app.secret_key = config.app.secret_key
@@ -28,6 +29,7 @@ def home():
 
     user = User.get(User.email == user_email)
     get_past_threads(user.email)
+
     return f"Hello {user.name}!"
 
 
@@ -41,7 +43,7 @@ def login_google():
 def auth_google():
     token = oauth.google.authorize_access_token()
 
-    # upsert user to database
+    # insert user to database
     User.replace(
         name=token["userinfo"]["name"],
         email=token["userinfo"]["email"],
