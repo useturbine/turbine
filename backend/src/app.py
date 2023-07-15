@@ -1,9 +1,9 @@
 from flask import Flask, url_for, redirect, session
 from authlib.integrations.flask_client import OAuth
 
-from backend.config import config
-from backend.src.models import User
-from backend.src.core import get_past_threads
+from config import config
+from src.models import User
+from src.core import get_past_threads
 
 app = Flask(__name__)
 app.secret_key = config.app.secret_key
