@@ -26,7 +26,7 @@ def home():
     if not session.get("user_email"):
         return redirect(url_for("login_google"))
 
-    user = User.get_or_none(User.email == user_email)
+    user = User.get(User.email == user_email)
     get_past_threads(user.email)
     return f"Hello {user.name}!"
 
