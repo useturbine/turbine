@@ -1,45 +1,76 @@
 from google.oauth2.credentials import Credentials
-from oauth2client.client import OAuth2Credentials
 from googleapiclient.discovery import build
 
 from src.models import User
 from config import config
 
+import base64
 
-def get_past_threads(user_email: str):
-    user = User.get(User.email == user_email)
-    service = build(
-        "gmail",
-        "v1",
-        credentials=Credentials(
-            token=user.access_token,
-            refresh_token=user.refresh_token,
-            scopes=["https://www.googleapis.com/auth/gmail.readonly"],
-            client_id=config.google.client_id,
-            client_secret=config.google.client_secret,
-            token_uri="https://oauth2.googleapis.com/token",
-        ),
-    )
+class PastThreads:
+    def __init__(self):
+        self.service = None
 
-    thread_ids = [
-        thread["id"]
-        for thread in service.users()
-        .threads()
-        .list(userId="me", includeSpamTrash=False, q="from:sumit.ghosh32@gmail.com")
-        .execute()["threads"]
-    ]
-    print(thread_ids)
+    def get_by_email(self, user_email: str):
+        user = User.get(User.email == user_email)
+        self.service = build(
+            "gmail",
+            "v1",
+            credentials=Credentials(
+                token=user.access_token,
+                refresh_token=user.refresh_token,
+                scopes=["https://www.googleapis.com/auth/gmail.readonly"],
+                client_id=config.google.client_id,
+                client_secret=config.google.client_secret,
+                token_uri="https://oauth2.googleapis.com/token",
+            ),
+        )
 
-    message = (
-        service.users()
-        .threads()
-        .get(userId="me", id=thread_ids[0])
-        .execute()["messages"][0]
-    )
-    print(message)
+        thread_ids = [
+            thread["id"]
+            for thread in self.service.users().threads().list(userId="me", includeSpamTrash=False,
+                                                              q="from:sumit.ghosh32@gmail.com is:read").execute()[
+                "threads"]
+        ]
 
-    # thread_details = [
-    #     service.users().threads().get(userId="me", id=thread["id"]).execute()
-    #     for thread in threads["threads"]
-    # ]
-    # pprint(thread_details)
+        msg_list = []
+
+        for thread_id in thread_ids:
+            msg = self.parse_email_content(thread_id)
+            msg_list.extend(msg)
+
+        return msg_list
+
+    @staticmethod
+    def get_header_value(headers, name):
+        for header in headers:
+            if header["name"] == name:
+                return header["value"]
+        return None
+
+    def parse_email_content(self, thread_id):
+        thread = self.service.users().threads().get(userId="me", id=thread_id).execute()
+        messages = thread["messages"]
+
+        plain_messages = []
+        for message in messages:
+            payload = message["payload"]
+            headers = payload["headers"]
+
+            subject = PastThreads.get_header_value(headers, "Subject")
+            parts = payload.get("parts", [])
+
+            for part in parts:
+                if part["mimeType"] != "text/plain":
+                    continue
+
+                data = part.get("body", {}).get("data", "")
+                if not data:
+                    # if "data" is not present, try getting the plaintext from "body" directly
+                    text = part.get("body", "").get("text", "")
+                    plain_messages.append({"subject": subject, "text": text})
+                    continue
+
+                text = base64.urlsafe_b64decode(data).decode("utf-8")
+                plain_messages.append({"subject": subject, "text": text})
+
+        return plain_messages

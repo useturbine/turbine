@@ -1,3 +1,3 @@
-from src.core import get_past_threads
+from src.core import PastThreads
 
-get_past_threads("ankit03june@gmail.com")
+PastThreads().get_by_email("ankit03june@gmail.com")
