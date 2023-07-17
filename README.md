@@ -1,3 +1,3 @@
 # InfraBro
 
-### Bro provides non-dev dashboard for cloud infra.
+Bro provides non-dev dashboard for cloud infra.
