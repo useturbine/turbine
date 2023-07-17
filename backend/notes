@@ -1,5 +1,0 @@
-"""
-# thinking out loud: we should train on read threads
-# and predict on all unread threads first (when initially app starts)
-# and then by webhook for next incoming threads
-"""
