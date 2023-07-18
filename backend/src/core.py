@@ -11,9 +11,9 @@ def terraform_aws(user_email: str):
 
     subprocess.run(
         f"""
-            terracognita aws --aws-access-key {user.aws_access_key}
-                --aws-secret-access-key {user.aws_secret_key}
-                --aws-default-region ap-south-1
+            terracognita aws --aws-access-key {user.aws_access_key} \
+                --aws-secret-access-key {user.aws_secret_key} \
+                --aws-default-region ap-south-1 \
                 --tfstate {output_file}""",
         shell=True,
     )
@@ -49,7 +49,3 @@ def get_aws_cost(user_email: str):
         ],
     )
     return response["ResultsByTime"]
-
-
-results = get_aws_cost("sumit.ghosh32@gmail.com")
-print(results)
