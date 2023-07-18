@@ -1,8 +1,32 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
+
+from src.models import User
 
 app = FastAPI()
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+class RegisterArgs(BaseModel):
+    email: str
+    name: str | None = None
+
+
+@app.post("/register")
+async def register(args: RegisterArgs):
+    user = User.create(email=args.email, name=args.name)
+    return {"id": user.id}
+
+
+class AWSUpdateCredentialsArgs(BaseModel):
+    user_email: str
+    access_key: str
+    secret_key: str
+
+
+@app.post("/aws/update-credentials")
+async def aws_update_credentials(args: AWSUpdateCredentialsArgs):
+    user = User.get(User.email == args.user_email)
+    user.aws_access_key = args.access_key
+    user.aws_secret_key = args.secret_key
+    user.save()
+    return
