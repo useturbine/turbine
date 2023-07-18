@@ -1,5 +1,8 @@
 import subprocess
-from src.models import User
+import boto3
+from datetime import datetime, timedelta
+
+from models import User
 
 
 def terraform_aws(user_email: str):
@@ -21,4 +24,32 @@ def terraform_aws(user_email: str):
     subprocess.run(f"rm {output_file}", shell=True)
 
 
-terraform_aws("sumit.ghosh32@gmail.com")
+def get_aws_cost(user_email: str):
+    user = User.get(User.email == user_email)
+    cost_explorer = boto3.client(
+        "ce",
+        region_name="ap-south-1",
+        aws_access_key_id=user.aws_access_key,
+        aws_secret_access_key=user.aws_secret_key,
+    )
+
+    current_date = datetime.now()
+    one_month_ago = current_date - timedelta(days=30)
+
+    response = cost_explorer.get_cost_and_usage(
+        TimePeriod={
+            "Start": one_month_ago.strftime("%Y-%m-%d"),
+            "End": current_date.strftime("%Y-%m-%d"),
+        },
+        Granularity="DAILY",
+        Metrics=["BlendedCost"],
+        GroupBy=[
+            {"Type": "DIMENSION", "Key": "SERVICE"},
+            {"Type": "DIMENSION", "Key": "OPERATION"},
+        ],
+    )
+    return response["ResultsByTime"]
+
+
+results = get_aws_cost("sumit.ghosh32@gmail.com")
+print(results)
