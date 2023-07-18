@@ -1,6 +1,5 @@
 from langchain.llms import OpenAI
 from langchain.docstore.document import Document
-import requests
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import CharacterTextSplitter
@@ -8,19 +7,27 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
-import pathlib
-import subprocess
-import tempfile
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 
 class DocsData:
     @staticmethod
     def get_terraform_files():
-        return []
+        with open("./sample-terraform", "r") as f:
+            d = f.read()
+        return [d]
 
     @staticmethod
     def get_cost_files():
-        return []
+        with open("./sample-cost", "r") as f:
+            d = f.read()
+        return [d]
 
     @staticmethod
     def get_files():
@@ -42,8 +49,8 @@ class ChromaDocs(DocsData):
         chunks = []
         splitter = CharacterTextSplitter(separator=" ", chunk_size=1024, chunk_overlap=0)
         for source in sources:
-            for chunk in splitter.split_text(source.page_content):
-                chunks.append(Document(page_content=chunk, metadata=source.metadata))
+            for chunk in splitter.split_text(source):
+                chunks.append(Document(page_content=chunk))
 
         self.context = Chroma.from_documents(chunks, OpenAIEmbeddings())
 
