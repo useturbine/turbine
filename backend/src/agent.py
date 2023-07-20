@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 class DocsData:
@@ -47,7 +47,9 @@ class ChromaDocs(DocsData):
         sources = DocsData.get_files()
 
         chunks = []
-        splitter = CharacterTextSplitter(separator=" ", chunk_size=1024, chunk_overlap=0)
+        splitter = CharacterTextSplitter(
+            separator=" ", chunk_size=1024, chunk_overlap=0
+        )
         for source in sources:
             for chunk in splitter.split_text(source):
                 chunks.append(Document(page_content=chunk))
@@ -72,22 +74,18 @@ class PromptSystem:
 
     def set(self):
         prompt_template = """
-        Use the context below to advise how to improve AWS based services by cost reduction and resource optimization:
+        You are a cloud architect. You are asked to reduce the cost of a cloud infrastructure. Given the following context which contains the terraform plan and the cost of the last month, what would you advise?
         Context: {context}
-        Topic: {topic}
         """
 
-        prompt = PromptTemplate(template=prompt_template, input_variables=["context", "topic"])
+        prompt = PromptTemplate(template=prompt_template, input_variables=["context"])
 
         llm = OpenAI(temperature=0)
         self.chain = LLMChain(llm=llm, prompt=prompt)
 
     def ask(self, topic):
-        return self.chain.run({
-            'context': self.context,
-            topic: topic
-        })
+        return self.chain.run({"context": self.context, "topic": topic})
 
 
-resp = PromptSystem().ask("aws cost reduction")
+resp = PromptSystem().ask()
 print(resp)
