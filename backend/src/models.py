@@ -14,4 +14,24 @@ class User(Model):
         database = db
 
 
-db.create_tables([User])
+class AWSCost(Model):
+    user = ForeignKeyField(User, backref="aws_costs")
+    region = CharField()
+    start_time = DateTimeField()
+    end_time = DateTimeField()
+    service = CharField()
+    operation = CharField()
+    cost = FloatField()
+
+    class Meta:
+        database = db
+        indexes = (
+            # Create a unique constraint on the following columns
+            (
+                ("user", "region", "start_time", "end_time", "service", "operation"),
+                True,
+            ),
+        )
+
+
+db.create_tables([User, AWSCost])
