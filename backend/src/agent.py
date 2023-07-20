@@ -22,7 +22,7 @@ from langchain.llms.openai import OpenAI
 from langchain.agents import AgentExecutor
 from langchain.agents.agent_types import AgentType
 from langchain.chat_models import ChatOpenAI
-
+from models import User
 
 db = SQLDatabase.from_uri("sqlite:///./database.db")
 toolkit = SQLDatabaseToolkit(db=db, llm=OpenAI(temperature=0))
@@ -44,6 +44,28 @@ answer = agent.run(
     input="My name is Sumit. Give me my total AWS cost in the past week."
 )
 print(answer)
+
+
+class Agent:
+    def __init__(self, user_email: str) -> None:
+        self.context = self.prepare_context(user_email)
+
+    def prepare_context(self, user_email: str) -> None:
+        user = User.get(User.email == user_email)
+        splitter = CharacterTextSplitter(
+            separator=" ", chunk_size=1024, chunk_overlap=0
+        )
+        embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+
+        docs = []
+        for chunk in splitter.split_text(user.aws_terraform):
+            docs.append(Document(page_content=chunk))
+
+        chrome_store = Chroma.from_documents(self.docs, embeddings)
+        return chrome_store
+
+    def run(self, input: str):
+        pass
 
 
 class DocsData:
