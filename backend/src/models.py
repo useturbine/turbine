@@ -34,4 +34,14 @@ class AWSCost(Model):
         )
 
 
-db.create_tables([User, AWSCost])
+class Message(Model):
+    user = ForeignKeyField(User, backref="messages")
+    content = CharField()
+    is_human = BooleanField()
+    latest = BooleanField(default=True)
+
+    class Meta:
+        database = db
+
+
+db.create_tables([User, AWSCost, Message])

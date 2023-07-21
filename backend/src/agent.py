@@ -3,20 +3,81 @@ from langchain.prompts import (
     MessagesPlaceholder,
     HumanMessagePromptTemplate,
 )
-from langchain.schema.messages import SystemMessage
+from langchain.schema.messages import (
+    SystemMessage,
+    HumanMessage,
+    AIMessage,
+    messages_from_dict,
+)
 from langchain.memory import ConversationBufferMemory
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 
-from models import User
+from models import User, Message
 from config import openai_api_key
+from typing import List
+from langchain.schema import (
+    BaseChatMessageHistory,
+)
+from langchain.schema.messages import BaseMessage
+
+
+class DatabaseChatMessageHistory(BaseChatMessageHistory):
+    def __init__(self, user_email: str) -> None:
+        self.user = User.get(User.email == user_email)
+
+    def add_message(self, message: BaseMessage) -> None:
+        if isinstance(message, HumanMessage):
+            Message.create(
+                content=message.content,
+                user=self.user,
+                is_human=True,
+            )
+
+        elif isinstance(message, AIMessage):
+            Message.create(
+                content=message.content,
+                user=self.user,
+                is_human=False,
+            )
+
+    def clear(self) -> None:
+        Message.update(latest=False).where(Message.user == self.user).execute()
+
+    @property
+    def messages(self) -> List[BaseMessage]:
+        messages = Message.select().where(
+            Message.user == self.user, Message.latest == True
+        )
+        print(
+            [
+                {
+                    "type": "human" if message.is_human else "ai",
+                    "data": message.content,
+                }
+                for message in messages
+            ]
+        )
+        messages = messages_from_dict(
+            [
+                {
+                    "type": "human" if message.is_human else "ai",
+                    "data": {"content": message.content},
+                }
+                for message in messages
+            ]
+        )
+        return messages
 
 
 class Chain:
     def __init__(self, user_email: str) -> None:
         user = User.get(User.email == user_email)
-        memory = ConversationBufferMemory(return_messages=True)
+        memory = ConversationBufferMemory(
+            chat_memory=DatabaseChatMessageHistory(user_email=user_email),
+            return_messages=True,
+        )
         llm = ChatOpenAI(
             temperature=0, openai_api_key=openai_api_key, model="gpt-3.5-turbo-16k"
         )
@@ -48,6 +109,8 @@ class Chain:
 
 
 chain = Chain(user_email="sumit.ghosh32@gmail.com")
+chain.conversation.memory.chat_memory.clear()
+
 response = chain.talk(input="Hi! I'm Sumit.")
 print(response)
 response = chain.talk(input="Do I have any EC2 instances?")
