@@ -39,15 +39,6 @@ class DatabaseChatMessageHistory(BaseChatMessageHistory):
         messages = Message.select().where(
             Message.user == self.user, Message.latest == True
         )
-        print(
-            [
-                {
-                    "type": "human" if message.is_human else "ai",
-                    "data": message.content,
-                }
-                for message in messages
-            ]
-        )
         messages = messages_from_dict(
             [
                 {
