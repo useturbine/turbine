@@ -9,13 +9,18 @@ load_dotenv()
 
 # If database is empty, create a user
 if User.select().count() == 0:
-    User.create(
+    user = User.create(
         email="sumit.ghosh32@gmail.com",
         name="Sumit Ghosh",
         aws_access_key=os.getenv("AWS_ACCESS_KEY"),
         aws_secret_key=os.getenv("AWS_SECRET_KEY"),
     )
-    aws = AWS(user_email="sumit.ghosh32@gmail.com")
+else:
+    user = User.get(User.email == "sumit.ghosh32@gmail.com")
+
+# If Terraform file is not present, get it from AWS
+if user.aws_terraform is None:
+    aws = AWS(user_email="sumit.ghosh32@gmail.com", region="ap-south-1")
     aws.update_terraform()
 
 
