@@ -3,7 +3,7 @@ import boto3
 import tempfile
 from datetime import datetime
 
-from models import User, AWSCost
+from src.models import User, AWSCost
 from peewee import IntegrityError
 
 
