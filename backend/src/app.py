@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.models import User
 from src.config import webapp_url
+from src.llm.chain import Chain
 
 app = FastAPI()
 
@@ -40,3 +41,14 @@ async def aws_update_credentials(args: AWSUpdateCredentialsArgs):
     user.aws_secret_key = args.secret_key
     user.save()
     return
+
+
+class ChatArgs(BaseModel):
+    user_email: str
+    message: str
+
+
+@app.post("/chat")
+async def chat(args: ChatArgs):
+    chain = Chain(args.user_email)
+    return {"response": chain.talk(args.message)}

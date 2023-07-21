@@ -8,10 +8,6 @@ from peewee import IntegrityError
 
 
 class AWS:
-    """
-    AWS class to interact with AWS.
-    """
-
     def __init__(self, user_email: str, region: str):
         self.region = region
         self.user = User.get(User.email == user_email)
@@ -23,9 +19,6 @@ class AWS:
         )
 
     def update_terraform(self):
-        """
-        Fetch Terraform files from AWS and store them in the database.
-        """
         # create temporary file for storing Terraform file
         with tempfile.NamedTemporaryFile() as output_file:
             subprocess.run(
@@ -41,9 +34,6 @@ class AWS:
             self.user.save()
 
     def update_costs(self, start_time: datetime, end_time: datetime):
-        """
-        Fetch AWS costs of the user and store them in the database.
-        """
         # fetch costs from AWS
         response = self.cost_explorer.get_cost_and_usage(
             TimePeriod={
