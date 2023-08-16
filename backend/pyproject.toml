@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 psycopg2 = "^2.9.7"
+pymilvus = "^2.2.15"
 
 
 [build-system]
