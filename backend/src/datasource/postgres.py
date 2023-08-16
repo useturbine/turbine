@@ -1,8 +1,9 @@
 import psycopg2
 from typing import Optional
+from src.datasource.interface import DataSource
 
 
-class Postgres:
+class PostgresDataSource(DataSource):
     @staticmethod
     def read_table(
         host: str,
