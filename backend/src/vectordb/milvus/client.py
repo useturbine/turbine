@@ -1,34 +1,57 @@
 from pymilvus import Collection, MilvusClient
+from pymilvus import (
+    connections,
+    FieldSchema,
+    CollectionSchema,
+    DataType,
+    Collection,
+    utility,
+)
 from typing import Dict, Literal, List
 
 
 class Client:
     def __init__(self, host: str, port: int, user: str, password: str):
-        self.client = MilvusClient(
-            user=user,
-            password=password,
-            host=host,
-            port=port,
+        connections.connect(
+            "default", host=host, port=port, user=user, password=password
         )
 
-    def create_collection(
-        self, name: str, id_type: Literal["int", "str"], dimension: int
-    ):
-        self.client.create_collection(
-            collection_name=name, id_type=id_type, dimension=dimension
-        )
+    @staticmethod
+    def create_collection(name: str, id_type: Literal["int", "str"], dimension: int):
+        fields = [
+            FieldSchema(
+                name="id",
+                dtype=DataType.INT64 if id_type == "int" else DataType.STRING,
+                is_primary=True,
+                auto_id=False,
+            ),
+            FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=dimension),
+        ]
+        schema = CollectionSchema(fields)
+        return Collection(name, schema)
 
     @staticmethod
     def create_index(collection_name: str, params: Dict):
         Collection(collection_name).create_index(
-            field_name="vector", index_params=params
+            field_name="embedding", index_params=params
         )
 
-    def insert(self, collection_name: str, data: List[Dict]):
-        return self.client.insert(collection_name=collection_name, data=data)
+    @staticmethod
+    def insert(collection_name: str, data: List[List]):
+        collection = Collection(collection_name)
+        collection.insert(data=data)
+        collection.flush()
 
-    def search(self, collection_name: str, data, top_k, params):
-        results = Collection(collection_name).search(
-            data=data, anns_field=field, limit=top_k, param=params
+    @staticmethod
+    def search(collection_name: str, data: List, limit: int, params: Dict):
+        collection = Collection(collection_name)
+        collection.load()
+        results = collection.search(
+            data=data, anns_field="embedding", limit=limit, param=params
         )
-        return [h for h in results[0]]
+        collection.release()
+        return results
+
+    @staticmethod
+    def drop_collection(collection_name: str):
+        utility.drop_collection(collection_name)
