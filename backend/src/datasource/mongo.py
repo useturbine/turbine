@@ -17,9 +17,8 @@ class MongoDataSource(DataSource):
         self.updated_at_field = updated_at_field
 
     @staticmethod
-    def format_document(doc) -> str:
-        """Format a Mongo doc to a string where each key-value pair is on a new line."""
-        return "\n".join(f"{k}: {v}" for k, v in doc.items())
+    def format_document(doc) -> Tuple[str, str]:
+        return (str(doc["_id"]), "\n".join(f"{k}: {v}" for k, v in doc.items()))
 
     def get_documents(
         self, updated_since: Optional[datetime] = None
@@ -36,4 +35,13 @@ class MongoDataSource(DataSource):
             results = self.collection.find()
 
         for doc in results:
-            yield (str(doc["_id"]), self.format_document(doc))
+            yield self.format_document(doc)
+
+    def listen_for_updates(self) -> Iterator[Tuple[str, Optional[str]]]:
+        change_stream = self.collection.watch(full_document="updateLookup")
+
+        for change in change_stream:
+            if change["operationType"] == "delete":
+                yield (str(change["documentKey"]["_id"]), None)
+            else:
+                yield self.format_document(change["fullDocument"])

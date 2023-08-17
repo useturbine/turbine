@@ -49,9 +49,14 @@
 from datasource.mongo import MongoDataSource
 
 mongo_datasource = MongoDataSource(
-    uri="mongodb://user:pass@localhost:27017/",
+    # uri="mongodb://user:pass@localhost:27017/",
+    uri="mongodb+srv://sumitg:<pass>@cluster0.m1jbpl5.mongodb.net/",
     database="test",
     collection="users",
 )
-docs = mongo_datasource.get_documents()
-print(list(docs))
+# docs = mongo_datasource.get_documents()
+# print(list(docs))
+
+changes = mongo_datasource.listen_for_updates()
+for change in changes:
+    print(change)
