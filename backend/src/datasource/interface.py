@@ -1,14 +1,12 @@
 from abc import abstractmethod
-from typing import Iterator, Tuple
+from typing import Iterator, Tuple, Optional
+from datetime import datetime
 
 
 class DataSource:
     @abstractmethod
-    def get_all_documents(self) -> Iterator[Tuple[str, str]]:
-        """Retrieve all documents from the data source."""
-        pass
-
-    @abstractmethod
-    def get_new_documents(self) -> Iterator[Tuple[str, str]]:
-        """Retrieve documents that were added/updated after the last fetched time."""
+    def get_documents(
+        self, updated_since: Optional[datetime] = None
+    ) -> Iterator[Tuple[str, str]]:
+        """Retrieve documents from the data source."""
         pass

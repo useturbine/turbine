@@ -38,8 +38,11 @@
 #     user="postgres",
 #     password="example",
 #     table="users",
+#     port=5432,
+#     pk_column="id",
+#     updated_at_column="updated_at",
 # )
-# docs = pg_datasource.get_all_documents()
+# docs = pg_datasource.get_documents()
 # print(list(docs))
 
 
@@ -50,5 +53,5 @@ mongo_datasource = MongoDataSource(
     database="test",
     collection="users",
 )
-docs = mongo_datasource.get_all_documents()
+docs = mongo_datasource.get_documents()
 print(list(docs))

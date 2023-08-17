@@ -1,4 +1,4 @@
-from pymilvus import Collection, MilvusClient
+from pymilvus import Collection
 from pymilvus import (
     connections,
     FieldSchema,
