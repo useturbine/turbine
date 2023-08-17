@@ -30,14 +30,25 @@
 # print(results)
 
 
-from datasource.postgres import PostgresDataSource
+# from datasource.postgres import PostgresDataSource
 
-pg_datasource = PostgresDataSource(
-    host="localhost",
-    database="postgres",
-    user="postgres",
-    password="example",
-    table="users",
+# pg_datasource = PostgresDataSource(
+#     host="localhost",
+#     database="postgres",
+#     user="postgres",
+#     password="example",
+#     table="users",
+# )
+# docs = pg_datasource.get_all_documents()
+# print(list(docs))
+
+
+from datasource.mongo import MongoDataSource
+
+mongo_datasource = MongoDataSource(
+    uri="mongodb://user:pass@localhost:27017/",
+    database="test",
+    collection="users",
 )
-docs = pg_datasource.get_all_documents()
-print(docs)
+docs = mongo_datasource.get_all_documents()
+print(list(docs))

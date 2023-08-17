@@ -1,18 +1,22 @@
 from pymongo import MongoClient
-from datetime import datetime
-from src.datasource.interface import DataSource
+from datasource.interface import DataSource
+from typing import Iterator, Tuple
 
 
 class MongoDataSource(DataSource):
-    def __init__(self, url):
-        self.client = MongoClient(url)
+    def __init__(self, uri: str, database: str, collection: str) -> None:
+        self.client = MongoClient(uri)
+        self.collection = self.client[database][collection]
         self.last_fetched_time = None
 
-    def get_all_documents(self, db_name, collection):
-        """Retrieve all documents from a given collection."""
-        db = self.client[db_name]
-        collection = db[collection]
-        return list(collection.find())
+    @staticmethod
+    def format_document(doc) -> str:
+        """Format a Mongo doc to a string where each key-value pair is on a new line."""
+        return "\n".join(f"{k}: {v}" for k, v in doc.items())
+
+    def get_all_documents(self) -> Iterator[Tuple[str, str]]:
+        for doc in self.collection.find():
+            yield (str(doc["_id"]), self.format_document(doc))
 
     def get_new_documents(self, db_name, collection):
         """Retrieve documents that were added/updated after the last fetched time."""
@@ -29,11 +33,3 @@ class MongoDataSource(DataSource):
             self.last_fetched_time = max(doc["timestamp"] for doc in new_documents)
 
         return new_documents
-
-
-mongo_client = MongoDataSource("mongodb://localhost:27017/")
-all_docs = mongo_client.get_all_documents("", "")
-print(all_docs)
-
-new_docs = mongo_client.get_new_documents("", "")
-print(new_docs)
