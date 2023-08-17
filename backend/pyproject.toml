@@ -10,6 +10,7 @@ python = "^3.10"
 psycopg2 = "^2.9.7"
 pymilvus = "^2.2.15"
 pymongo = "^4.4.1"
+openai = "^0.27.8"
 
 
 [build-system]

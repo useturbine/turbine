@@ -46,17 +46,22 @@
 # print(list(docs))
 
 
-from datasource.mongo import MongoDataSource
+# from datasource.mongo import MongoDataSource
 
-mongo_datasource = MongoDataSource(
-    # uri="mongodb://user:pass@localhost:27017/",
-    uri="mongodb+srv://sumitg:<pass>@cluster0.m1jbpl5.mongodb.net/",
-    database="test",
-    collection="users",
-)
-# docs = mongo_datasource.get_documents()
-# print(list(docs))
+# mongo_datasource = MongoDataSource(
+#     # uri="mongodb://user:pass@localhost:27017/",
+#     uri="mongodb+srv://sumitg:<pass>@cluster0.m1jbpl5.mongodb.net/",
+#     database="test",
+#     collection="users",
+# )
+# # docs = mongo_datasource.get_documents()
+# # print(list(docs))
 
-changes = mongo_datasource.listen_for_updates()
-for change in changes:
-    print(change)
+# changes = mongo_datasource.listen_for_updates()
+# for change in changes:
+#     print(change)
+
+from model.openai import OpenAIModel
+
+openai_model = OpenAIModel(api_key="sk-<key>")
+openai_model.get_embedding("Hello, my dog is cute")
