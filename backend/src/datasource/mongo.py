@@ -19,7 +19,6 @@ class MongoDataSource(DataSource):
             yield (str(doc["_id"]), self.format_document(doc))
 
     def get_new_documents(self, db_name, collection):
-        """Retrieve documents that were added/updated after the last fetched time."""
         db = self.client[db_name]
         collection = db[collection]
 
