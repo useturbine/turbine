@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3"
 
 services:
   postgres:
@@ -11,6 +11,27 @@ services:
       POSTGRES_PASSWORD: example
     volumes:
       - ./local/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./local/mongo-seed.js:/docker-entrypoint-initdb.d/seed.js:ro
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
 
   etcd:
     container_name: milvus-etcd
@@ -23,6 +44,11 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/etcd:/etcd
     command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2379/health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
 
   minio:
     container_name: milvus-minio
@@ -54,7 +80,8 @@ services:
     depends_on:
       - "etcd"
       - "minio"
-
-networks:
-  default:
-    name: milvus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19530/health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
