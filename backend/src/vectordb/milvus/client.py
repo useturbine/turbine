@@ -17,13 +17,14 @@ class Client:
         )
 
     @staticmethod
-    def create_collection(name: str, id_type: Literal["int", "str"], dimension: int):
+    def create_collection(name: str, dimension: int):
         fields = [
             FieldSchema(
                 name="id",
-                dtype=DataType.INT64 if id_type == "int" else DataType.STRING,
+                dtype=DataType.VARCHAR,
                 is_primary=True,
                 auto_id=False,
+                max_length=128,
             ),
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=dimension),
         ]

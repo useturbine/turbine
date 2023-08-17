@@ -1,85 +1,44 @@
-from src.datasource.postgres import Postgres
-from src.vectordb.milvus.client import Client
+from vectordb.milvus.client import Client
+from model.interface import Model
 from pymilvus import DataType
+from datasource.interface import DataSource
 
 
-class InquestClient:
-    def __init__(self, uri, user, password):
-        self.client = Client(uri=uri, user=user, password=password)
+class Inquest:
+    def __init__(
+        self,
+        datasource: DataSource,
+        model: Model,
+        vector_db: Client,
+    ) -> None:
+        self.datasource = datasource
+        self.model = model
+        self.vector_db = vector_db
 
-    def create_collection(self, name, dimension):
-        self.client.create_collection(
-            name,
-            params={
-                "fields": [
-                    {
-                        "name": "vector",
-                        "type": DataType.FLOAT_VECTOR,
-                        "params": {
-                            "dim": dimension,
-                        },
-                        "indexes": [{"metric_type": "L2"}],
-                    }
-                ],
-                "segment_row_count": 4096,
-                "auto_id": True,
-            },
+        self.vector_db.drop_collection("test_collection")
+        self.vector_db.create_collection(
+            name="test_collection", dimension=model.embedding_dimension
         )
-
-    def insert_data(self, collection_name, data):
-        self.client.insert(
-            collection=collection_name,
-            params={
-                "fields": [
-                    {"name": "vector", "type": DataType.FLOAT_VECTOR, "values": data}
-                ]
-            },
-        )
-
-    def create_index(self, collection_name):
-        self.client.create_index(
-            collection=collection_name,
-            field="vector",
+        self.vector_db.create_index(
+            collection_name="test_collection",
             params={
                 "index_type": "IVF_SQ8",
                 "metric_type": "L2",
                 "params": {"nlist": 2048},
             },
-            index_name="index1",
         )
 
-    def search(self, collection_name, query_embedding, top_k=10):
-        return self.client.search(
-            collection=collection_name,
-            field="vector",
-            data=query_embedding,
-            top_k=top_k,
+    def run(self) -> None:
+        for pk, doc in self.datasource.get_documents():
+            embedding = self.model.get_embedding(doc)
+            self.vector_db.insert("test_collection", [[pk], [embedding]])
+
+    def search(self, query: str):
+        embedding = self.model.get_embedding(query)
+        results = self.vector_db.search(
+            "test_collection",
+            [embedding],
+            10,
             params={"metric_type": "L2", "params": {"nprobe": 10}},
         )
-
-
-def get_data_from_postgres(host, database, user, password, table):
-    return Postgres.read_table(
-        host=host,
-        database=database,
-        user=user,
-        password=password,
-        table=table,
-    )
-
-
-def main():
-    # Get data from PostgreSQL
-    data = get_data_from_postgres(
-        "localhost", "postgres", "postgres", "example", "test"
-    )
-
-    # Set up Milvus client and perform operations
-    client = InquestClient(uri="tcp://localhost:19530", user="root", password="example")
-    client.create_collection("collection1", 128)
-    client.insert_data("collection1", data)
-    client.create_index("collection1")
-
-    query_embedding = []  # Your query embedding here
-    results = client.search("collection1", query_embedding)
-    print(results)
+        return results

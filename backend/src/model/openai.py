@@ -5,6 +5,9 @@ from typing import List
 
 
 class OpenAIModel(Model):
+    name = "openai"
+    embedding_dimension = 1536
+
     def __init__(self, api_key: str) -> None:
         openai.api_key = api_key
 

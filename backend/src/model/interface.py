@@ -3,6 +3,9 @@ from typing import List
 
 
 class Model:
+    name: str
+    embedding_dimension: int
+
     @abstractmethod
     def get_embedding(self, text: str) -> List[float]:
         """Get embedding for a given text."""
