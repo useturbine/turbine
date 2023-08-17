@@ -30,10 +30,11 @@ class PostgresDataSource(DataSource):
         self.pk_column = pk_column
         self.updated_at_column = updated_at_column
 
-    @staticmethod
-    def format_row(row: RealDictRow) -> str:
-        """Format a RealDictRow to a string where each key-value pair is on a new line."""
-        return "\n".join(f"{k}: {v}" for k, v in row.items())
+    def format_row(self, row: RealDictRow) -> Tuple[str, str]:
+        return (
+            str(row[self.pk_column]),
+            "\n".join(f"{k}: {v}" for k, v in row.items()),
+        )
 
     def get_documents(
         self, updated_since: Optional[datetime] = None
@@ -53,4 +54,9 @@ class PostgresDataSource(DataSource):
 
             row: RealDictRow
             for row in cursor:  # type: ignore
-                yield (row[self.pk_column], self.format_row(row))
+                yield self.format_row(row)
+
+    def listen_for_updates(self) -> Iterator[Tuple[str, str]]:
+        raise NotImplementedError(
+            "PostgresDataSource.listen_for_updates is not implemented"
+        )
