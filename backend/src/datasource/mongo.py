@@ -4,6 +4,22 @@ from typing import Iterator, Tuple, Optional
 from datetime import datetime
 
 
+def flatten_dict(
+    nested_dict: dict, parent_key: Optional[str] = None, separator: str = "."
+) -> dict:
+    """
+    Flatten a nested dictionary into a single level.
+    """
+    items = []
+    for key, value in nested_dict.items():
+        new_key = f"{parent_key}{separator}{key}" if parent_key else key
+        if isinstance(value, dict):
+            items.extend(flatten_dict(value, new_key, separator).items())
+        else:
+            items.append((new_key, value))
+    return dict(items)
+
+
 class MongoDataSource(DataSource):
     def __init__(
         self,
@@ -18,7 +34,11 @@ class MongoDataSource(DataSource):
 
     @staticmethod
     def format_document(doc) -> Tuple[str, str]:
-        return (str(doc["_id"]), "\n".join(f"{k}: {v}" for k, v in doc.items()))
+        flattened_doc = flatten_dict(doc)
+        return (
+            str(doc["_id"]),
+            "\n".join(f"{k}: {v}" for k, v in flattened_doc.items()),
+        )
 
     def get_documents(
         self, updated_since: Optional[datetime] = None
