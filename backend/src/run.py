@@ -67,26 +67,31 @@
 # openai_model.get_embedding("Hello, my dog is cute")
 
 
-from src.model.openai import OpenAIModel
-from src.inquest.script import Inquest
-from src.datasource.mongo import MongoDataSource
-from src.vectordb.milvus.client import Client
+# from model.openai import OpenAIModel
+# from inquest.script import Inquest
+# from datasource.mongo import MongoDataSource
+# from vectordb.milvus.client import Client
 
-mongo_datasource = MongoDataSource(
-    uri="mongodb+srv://sumitg:pass11@cluster0.m1jbpl5.mongodb.net/",
-    database="test",
-    collection="users",
-)
-openai_model = OpenAIModel(
-    api_key="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"
-)
-vector_db = Client(host="localhost", port=19530, user="root", password="Milvus")
+# mongo_datasource = MongoDataSource(
+#     uri="mongodb+srv://sumitg:pass11@cluster0.m1jbpl5.mongodb.net/",
+#     database="test",
+#     collection="users",
+# )
+# openai_model = OpenAIModel(
+#     api_key="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"
+# )
+# vector_db = Client(host="localhost", port=19530, user="root", password="Milvus")
 
-inquest = Inquest(
-    datasource=mongo_datasource,
-    model=openai_model,
-    vector_db=vector_db,
-)
-inquest.run()
-results = inquest.search("Hello, my dog is cute")
-print(results)
+# inquest = Inquest(
+#     datasource=mongo_datasource,
+#     model=openai_model,
+#     vector_db=vector_db,
+# )
+# inquest.run()
+# results = inquest.search("Hello, my dog is cute")
+# print(results)
+from typing import Optional
+
+
+output = flatten_dict({"a": 1, "b": {"c": 2, "d": {"e": 3, "f": 4}}})
+print(output)

@@ -1,7 +1,6 @@
-from src.vectordb.milvus.client import Client
-from src.model.interface import Model
-from pymilvus import DataType
-from src.datasource.interface import DataSource
+from vectordb.milvus.client import Client
+from model.interface import Model
+from datasource.interface import DataSource
 
 
 class Inquest:
@@ -17,7 +16,9 @@ class Inquest:
 
         self.vector_db.drop_collection("test_collection")
         self.vector_db.create_collection(
-            name="test_collection", dimension=model.embedding_dimension
+            name="test_collection",
+            dimension=model.embedding_dimension,
+            id_max_length=128,
         )
         self.vector_db.create_index(
             collection_name="test_collection",

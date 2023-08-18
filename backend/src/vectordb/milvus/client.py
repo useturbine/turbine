@@ -7,7 +7,7 @@ from pymilvus import (
     Collection,
     utility,
 )
-from typing import Dict, Literal, List
+from typing import Dict, List
 
 
 class Client:
@@ -17,14 +17,14 @@ class Client:
         )
 
     @staticmethod
-    def create_collection(name: str, dimension: int):
+    def create_collection(name: str, id_max_length: int, dimension: int):
         fields = [
             FieldSchema(
                 name="id",
                 dtype=DataType.VARCHAR,
                 is_primary=True,
                 auto_id=False,
-                max_length=128,
+                max_length=id_max_length,
             ),
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=dimension),
         ]
@@ -38,13 +38,13 @@ class Client:
         )
 
     @staticmethod
-    def insert(collection_name: str, data: List[List]):
+    def insert(collection_name: str, data: List):
         collection = Collection(collection_name)
         collection.insert(data=data)
         collection.flush()
 
     @staticmethod
-    def search(collection_name: str, data: List, limit: int, params: Dict):
+    def search(collection_name: str, data: List[List[float]], limit: int, params: Dict):
         collection = Collection(collection_name)
         collection.load()
         results = collection.search(
