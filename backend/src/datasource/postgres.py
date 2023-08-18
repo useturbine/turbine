@@ -101,6 +101,22 @@ FOR EACH ROW EXECUTE FUNCTION notify_insert();
                         yield self.format_row(row)
 
     def listen_for_updates_with_WAL(self, db, user, password, host, port) -> Iterator[Tuple[str, str]]:
+        """
+Configure your PostgreSQL for Logical Replication:
+
+1. configure in `postgresql.conf`:
+```
+wal_level = logical
+max_replication_slots = 4
+max_wal_senders = 4
+```
+
+2. Restart PostgreSQL after making these changes.
+
+3.
+Set up a Publication on the master database:
+`CREATE PUBLICATION my_publication FOR TABLE your_table_name;`
+"""
         # replication connection
         repl_conn = psycopg2.connect(
             dbname=db,
@@ -129,5 +145,20 @@ FOR EACH ROW EXECUTE FUNCTION notify_insert();
                 for change in changes:
                     if isinstance(change, Message.Insert):
                         data = change.data
-                        # new inserted data
+                        # dict of new data
                         yield self.format_row(data)
+
+                    elif isinstance(change, Message.Delete):
+                        data = change.data
+                        # need to remove index for this in vectorDB
+                        yield self.format_row(data)
+
+                    elif isinstance(change, Message.Update):
+                        data = change.data
+                        old_data = change.old_data
+
+                        # remove index of old_data
+                        # add index for data
+
+                        yield self.format_row(data)
+
