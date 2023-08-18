@@ -67,10 +67,10 @@
 # openai_model.get_embedding("Hello, my dog is cute")
 
 
-from model.openai import OpenAIModel
-from inquest.script import Inquest
-from datasource.mongo import MongoDataSource
-from vectordb.milvus.client import Client
+from src.model.openai import OpenAIModel
+from src.inquest.script import Inquest
+from src.datasource.mongo import MongoDataSource
+from src.vectordb.milvus.client import Client
 
 mongo_datasource = MongoDataSource(
     uri="mongodb+srv://sumitg:pass11@cluster0.m1jbpl5.mongodb.net/",

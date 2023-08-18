@@ -1,45 +1,54 @@
 from flask import Flask, request, jsonify
+from flask_restful import Resource, Api, reqparse
 from datetime import datetime
 
 app = Flask(__name__)
+api = Api(app)
 
 # in-memory database for data source configurations
 # replace this with DB
 data_sources = {}
 
 
-@app.route('/status', methods=['GET'])
-def status():
-    # check status here
-    return jsonify({'status': 'ok'})
-
-@app.route('/source/add', methods=['POST'])
-def add_data_source():
-    data = request.json()
-
-    source_type = data.get('type')
-    config = data.get('config')
-
-    if source_type not in ['mongo', 'postgres']:
-        return jsonify({'error': 'Invalid data source type'}), 400
-
-    data_sources[source_type] = config
-    return jsonify({'message': 'Data source configuration added successfully'}), 201
+class Status(Resource):
+    def get(self):
+        return {'status': 'ok'}, 200
 
 
-@app.route('/index/start', methods=['POST'])
-def start_indexing():
-    # spawn a background process or a task in a job queue
-    # This background process would handle the time-consuming task of indexing.
+class DataSourceAdd(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('type', type=str, required=True, help="Data source type cannot be blank!")
+        self.parser.add_argument('config', type=dict, required=True, help="Configuration cannot be blank!")
 
-    # process not alive start
-    # if alive, return 202
-    return jsonify({'message': 'Indexing started'}), 202
+    def post(self):
+        args = self.parser.parse_args()
 
-@app.route('/source/tokens', methods=['POST', 'GET'])
-def source_count_tokens():
-    pass
+        source_type = args['type']
+        config = args['config']
 
+        if source_type not in ['mongo', 'postgres']:
+            return {'error': 'Invalid data source type'}, 400
+
+        data_sources[source_type] = config
+        return {'message': 'Data source configuration added successfully'}, 201
+
+
+class StartIndexing(Resource):
+    def post(self):
+        # spawn a background process or a task in a job queue
+        # This background process would handle the time-consuming task of indexing.
+
+        # process not alive start
+        # if alive, return 202
+        return {'message': 'Indexing started'}, 202
+
+
+# Add other resources as needed...
+
+api.add_resource(Status, '/status')
+api.add_resource(DataSourceAdd, '/source/add')
+api.add_resource(StartIndexing, '/index/start')
 
 if __name__ == '__main__':
     app.run(debug=True)

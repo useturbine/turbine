@@ -1,4 +1,4 @@
-from model.interface import Model
+from src.model.interface import Model
 import tiktoken
 import openai
 from typing import List

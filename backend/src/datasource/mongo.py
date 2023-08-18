@@ -1,5 +1,6 @@
+from src.datasource.interface import DataSource
+
 from pymongo import MongoClient
-from datasource.interface import DataSource
 from typing import Iterator, Tuple, Optional
 from datetime import datetime
 

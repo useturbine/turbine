@@ -1,7 +1,7 @@
-from vectordb.milvus.client import Client
-from model.interface import Model
+from src.vectordb.milvus.client import Client
+from src.model.interface import Model
 from pymilvus import DataType
-from datasource.interface import DataSource
+from src.datasource.interface import DataSource
 
 
 class Inquest:
