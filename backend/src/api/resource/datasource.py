@@ -1,27 +1,31 @@
-from flask import request
 from flask_restful import Resource, reqparse
 from src.api.auth import requires_auth, get_user
 from src.api.models import DataSource as DataSourceModel
 from typing import Optional
+from src.datasource.debezium import Debezium
+import os
+import json
+
+parser = reqparse.RequestParser()
+parser.add_argument(
+    "type",
+    type=str,
+    required=True,
+    choices=["mongo", "postgres"],
+    help="Data source type must be either mongo or postgres",
+)
+parser.add_argument(
+    "config",
+    type=dict,
+    required=True,
+    help="Configuration details for the data source cannot be blank",
+)
+
+
+debezium = Debezium(url=os.getenv("DEBEZIUM_URL", "http://localhost:8083"))
 
 
 class DataSource(Resource):
-    def __init__(self):
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument(
-            "type",
-            type=str,
-            required=True,
-            choices=["mongo", "postgres"],
-            help="Data source type must be either mongo or postgres",
-        )
-        self.parser.add_argument(
-            "config",
-            type=dict,
-            required=True,
-            help="Configuration details for the data source cannot be blank",
-        )
-
     @requires_auth
     def get(self, source_id: Optional[str] = None):
         user = get_user()
@@ -43,10 +47,22 @@ class DataSource(Resource):
 
     @requires_auth
     def post(self):
-        args = self.parser.parse_args()
+        args = parser.parse_args()
         data_source = DataSourceModel.create(
-            type=args["type"], config=args["config"], user=get_user()
+            type=args["type"], config=json.dumps(args["config"]), user=get_user()
         )
+
+        config = json.loads(str(data_source.config))
+        debezium.add_postgres_connector(
+            id=data_source.id,
+            host=config["host"],
+            port=config["port"],
+            user=config["user"],
+            password=config["password"],
+            database=config["database"],
+            table=config["table"],
+        )
+
         return {"message": f"Data source {data_source.id} created successfully"}, 201
 
     @requires_auth

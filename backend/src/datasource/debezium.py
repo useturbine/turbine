@@ -1,6 +1,4 @@
 import requests
-from kafka import KafkaConsumer
-import json
 
 
 class Debezium:
@@ -40,27 +38,3 @@ class Debezium:
             },
         )
         response.raise_for_status()
-
-
-class Kafka:
-    def __init__(
-        self,
-        server: str,
-        consumer_id: str,
-    ) -> None:
-        self.server = server
-        # self.consumer_id = consumer_id
-
-    def get_postgres_updates(self, connector: str, table: str):
-        print(f"debezium.postgres.{connector}.{table}")
-        consumer = KafkaConsumer(
-            f"debezium.postgres.{connector}.{table}",
-            bootstrap_servers=[self.server],
-            # group_id=self.consumer_id,
-            auto_offset_reset="earliest",
-            # enable_auto_commit=True,
-            key_deserializer=lambda x: json.loads(x.decode("utf-8")),
-            value_deserializer=lambda x: json.loads(x.decode("utf-8")),
-        )
-        for message in consumer:
-            print(message.value["payload"])
