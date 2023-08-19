@@ -90,8 +90,28 @@
 # inquest.run()
 # results = inquest.search("Hello, my dog is cute")
 # print(results)
-from typing import Optional
+# from typing import Optional
 
 
-output = flatten_dict({"a": 1, "b": {"c": 2, "d": {"e": 3, "f": 4}}})
-print(output)
+# output = flatten_dict({"a": 1, "b": {"c": 2, "d": {"e": 3, "f": 4}}})
+# print(output)
+
+
+# from src.debezium_kafka import Debezium
+
+# debezium = Debezium(url="http://localhost:8083")
+# response = debezium.add_postgres_connector(
+#     name="my-connect-postgres-3",
+#     host="db.afihywbgjjjvpqvjosog.supabase.co",
+#     port=5432,
+#     user="postgres",
+#     password="9KSiivip@iRZiqT",
+#     database="postgres",
+#     table="public.users",
+# )
+# print(response)
+
+from src.debezium_kafka import Kafka
+
+kafka = Kafka(server="192.168.1.8:9092", consumer_id="my-consumer")
+kafka.get_postgres_updates(connector="my-connect-postgres-3", table="public.users")

@@ -12,6 +12,11 @@ pymilvus = "^2.2.15"
 pymongo = "^4.4.1"
 openai = "^0.27.8"
 flask = "^2.3.2"
+psycopg2-binary = "^2.9.7"
+flask-restful = "^0.3.10"
+kafka-python = "^2.0.2"
+requests = "^2.31.0"
+peewee = "^3.16.3"
 
 
 [build-system]

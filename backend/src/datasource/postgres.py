@@ -3,7 +3,7 @@ from src.datasource.interface import DataSource
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extras import RealDictCursor, RealDictRow
-from typing import (Optional, Iterator, Tuple)
+from typing import Optional, Iterator, Tuple
 from datetime import datetime
 from pgoutput import get_changes, Message
 
@@ -60,19 +60,19 @@ class PostgresDataSource(DataSource):
 
     def listen_for_updates_with_trigger(self) -> Iterator[Tuple[str, str]]:
         """
-        by NOTIFY/LISTEN trigger
+                by NOTIFY/LISTEN trigger
 
-// write something like this
-CREATE OR REPLACE FUNCTION notify_insert() RETURNS trigger AS $$
-BEGIN
-    NOTIFY new_inserts;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+        // write something like this
+        CREATE OR REPLACE FUNCTION notify_insert() RETURNS trigger AS $$
+        BEGIN
+            NOTIFY new_inserts;
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trigger_notify_insert
-AFTER INSERT ON your_table_name
-FOR EACH ROW EXECUTE FUNCTION notify_insert();
+        CREATE TRIGGER trigger_notify_insert
+        AFTER INSERT ON your_table_name
+        FOR EACH ROW EXECUTE FUNCTION notify_insert();
 
 
         """
@@ -93,30 +93,30 @@ FOR EACH ROW EXECUTE FUNCTION notify_insert();
                 if self.updated_at_column:
                     now = datetime.now()
                     query = sql.SQL("SELECT * FROM {} WHERE {} > %s").format(
-                        self.table,
-                        sql.Identifier(self.updated_at_column)
+                        self.table, sql.Identifier(self.updated_at_column)
                     )
                     cursor.execute(query, (now,))
                     for row in cursor:
                         yield self.format_row(row)
 
-    def listen_for_updates_with_WAL(self, db, user, password, host, port) -> Iterator[Tuple[str, str]]:
+    def listen_for_updates_with_WAL(
+        self, db, user, password, host, port
+    ) -> Iterator[Tuple[str, str]]:
         """
-Configure your PostgreSQL for Logical Replication:
+        Configure your PostgreSQL for Logical Replication:
 
-1. configure in `postgresql.conf`:
-```
-wal_level = logical
-max_replication_slots = 4
-max_wal_senders = 4
-```
+        1. configure in `postgresql.conf`:
+        ```
+        wal_level = logical
+        max_replication_slots = 4
+        max_wal_senders = 4
+        ```
 
-2. Restart PostgreSQL after making these changes.
+        2. Restart PostgreSQL after making these changes.
 
-3.
-Set up a Publication on the master database:
-`CREATE PUBLICATION my_publication FOR TABLE your_table_name;`
-"""
+        3.
+        Set up a Publication on the master database:
+        `CREATE PUBLICATION my_publication FOR TABLE your_table_name;`"""
         # replication connection
         repl_conn = psycopg2.connect(
             dbname=db,
@@ -124,21 +124,25 @@ Set up a Publication on the master database:
             password=password,
             host=host,
             port=port,
-            connection_factory=psycopg2.extras.LogicalReplicationConnection
+            connection_factory=psycopg2.extras.LogicalReplicationConnection,
         )
 
         # create a replication slot if not exists
         try:
             with repl_conn.cursor() as cur:
-                cur.create_replication_slot(slot_name="my_slot", output_plugin="pgoutput")
+                cur.create_replication_slot(
+                    slot_name="my_slot", output_plugin="pgoutput"
+                )
         except Exception as e:
             # slot already exists
             pass
 
         # Start replicating using the slot
         with repl_conn.cursor() as cur:
-            cur.start_replication(slot_name="my_slot",
-                                  options={'proto_version': 1, 'publication_names': 'my_publication'})
+            cur.start_replication(
+                slot_name="my_slot",
+                options={"proto_version": 1, "publication_names": "my_publication"},
+            )
 
             for msg in cur:
                 changes = get_changes(msg.payload)
@@ -161,4 +165,3 @@ Set up a Publication on the master database:
                         # add index for data
 
                         yield self.format_row(data)
-
