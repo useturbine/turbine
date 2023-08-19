@@ -1,6 +1,6 @@
 from functools import wraps
 from flask import request, jsonify, make_response, g
-from src.api.models import User
+from src.db.models import User
 
 
 def get_user():
@@ -18,7 +18,7 @@ def requires_auth(func):
 
         user = User.get_or_none(User.api_key == api_key)
         if not user:
-            return jsonify({"error": "Invalid API key"}), 401
+            return make_response(jsonify({"error": "Invalid API key"}), 401)
 
         g.user = user
         return func(*args, **kwargs)

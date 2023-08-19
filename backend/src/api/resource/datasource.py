@@ -1,9 +1,9 @@
 from flask_restful import Resource, reqparse
 from src.api.auth import requires_auth, get_user
-from src.api.models import DataSource as DataSourceModel
+from src.db.models import DataSource as DataSourceModel
 from typing import Optional
 from src.datasource.debezium import Debezium
-import os
+from config import Config
 import json
 
 parser = reqparse.RequestParser()
@@ -22,7 +22,7 @@ parser.add_argument(
 )
 
 
-debezium = Debezium(url=os.getenv("DEBEZIUM_URL", "http://localhost:8083"))
+debezium = Debezium(url=Config.debezium_url)
 
 
 class DataSource(Resource):
