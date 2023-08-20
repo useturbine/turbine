@@ -25,9 +25,10 @@ class Daemon:
                     collection_name,
                     [[update["document_id"]], [embedding]],
                 )
-            else:
-                print(f"Deleting {update['document_id']} from {collection_name}")
-                self.vector_db.delete(
-                    collection_name,
-                    update["document_id"],
-                )
+                continue
+
+            print(f"Deleting {update['document_id']} from {collection_name}")
+            self.vector_db.delete(
+                collection_name,
+                update["document_id"],
+            )

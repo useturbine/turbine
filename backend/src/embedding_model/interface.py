@@ -3,7 +3,8 @@ from typing import List
 
 
 class EmbeddingModel:
-    name: str
+    encoding_base: str
+    encoding_model: str
     embedding_dimension: int
 
     @abstractmethod
