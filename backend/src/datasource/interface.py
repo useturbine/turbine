@@ -18,6 +18,6 @@ class DataSource:
         pass
 
     @abstractmethod
-    def listen_for_updates(self) -> DataSourceUpdate:
+    def listen_for_updates(self) -> Iterator[DataSourceUpdate]:
         """Listen for updates to the data source and yield documents as they come in."""
         pass

@@ -8,7 +8,7 @@ from src.db.models import DataSource
 from src.datasource.interface import DataSource as DataSourceInterface, DataSourceUpdate
 
 
-class Debezium(DataSourceInterface):
+class DebeziumDataSource(DataSourceInterface):
     def __init__(
         self,
         debezium_url: str,

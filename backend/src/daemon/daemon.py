@@ -1,21 +1,21 @@
 from src.embedding_model.interface import EmbeddingModel
 from src.vectordb.milvus import MilvusVectorDB
-from src.datasource.debezium import Debezium
+from src.datasource.interface import DataSource
 
 
 class Daemon:
     def __init__(
         self,
-        debezium: Debezium,
+        data_source: DataSource,
         embedding_model: EmbeddingModel,
         vector_db: MilvusVectorDB,
     ) -> None:
-        self.debezium = debezium
+        self.data_source = data_source
         self.model = embedding_model
         self.vector_db = vector_db
 
     def run(self):
-        for update in self.debezium.listen_for_updates():
+        for update in self.data_source.listen_for_updates():
             collection_name = f"inquest_{update['data_source']}"
 
             if update["document"]:

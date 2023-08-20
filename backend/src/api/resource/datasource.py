@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 from src.api.auth import requires_auth, get_user
 from src.db.models import DataSource as DataSourceModel
 from typing import Optional
-from src.datasource.debezium import Debezium
+from src.datasource.debezium import DebeziumDataSource
 from src.vectordb.milvus import MilvusVectorDB
 from src.embedding_model.openai import OpenAIModel
 from config import Config
@@ -24,7 +24,9 @@ parser.add_argument(
 )
 
 
-debezium = Debezium(debezium_url=Config.debezium_url, kafka_url=Config.kafka_url)
+debezium = DebeziumDataSource(
+    debezium_url=Config.debezium_url, kafka_url=Config.kafka_url
+)
 vector_db = MilvusVectorDB(url=Config.milvus_url)
 
 
