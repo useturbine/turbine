@@ -8,9 +8,10 @@ from pymilvus import (
     utility,
 )
 from typing import List
+from src.vectordb.interface import VectorDBInterface
 
 
-class MilvusVectorDB:
+class MilvusVectorDB(VectorDBInterface):
     def __init__(self, url: str) -> None:
         connections.connect("default", uri=url)
 
