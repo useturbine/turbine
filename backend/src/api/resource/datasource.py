@@ -24,7 +24,7 @@ parser.add_argument(
 )
 
 
-debezium = Debezium(url=Config.debezium_url)
+debezium = Debezium(debezium_url=Config.debezium_url, kafka_url=Config.kafka_url)
 vector_db = MilvusVectorDB(url=Config.milvus_url)
 
 
@@ -54,17 +54,25 @@ class DataSource(Resource):
         data_source = DataSourceModel.create(
             type=args["type"], config=json.dumps(args["config"]), user=get_user()
         )
-
         config = json.loads(str(data_source.config))
-        debezium.add_postgres_connector(
-            id=data_source.id,
-            host=config["host"],
-            port=config["port"],
-            user=config["user"],
-            password=config["password"],
-            database=config["database"],
-            table=config["table"],
-        )
+
+        if data_source.type == "mongo":
+            debezium.add_mongo_connector(
+                id=data_source.id,
+                url=config["url"],
+                collection=config["collection"],
+            )
+        elif data_source.type == "postgres":
+            debezium.add_postgres_connector(
+                id=data_source.id,
+                host=config["host"],
+                port=config["port"],
+                user=config["user"],
+                password=config["password"],
+                database=config["database"],
+                table=config["table"],
+            )
+
         vector_db.create_collection(
             f"inquest_{data_source.id}", 512, OpenAIModel.embedding_dimension
         )

@@ -3,7 +3,6 @@ from flask import request
 from src.api.auth import requires_auth, get_user
 from src.db.models import DataSource
 from src.vectordb.milvus import MilvusVectorDB
-from pymilvus import SearchResult
 from src.embedding_model.openai import OpenAIModel
 from config import Config
 
@@ -38,6 +37,6 @@ class Search(Resource):
                 "id": result.id,
                 "distance": result.distance,
             }
-            for result in list(hits)[0]
+            for result in list(hits)[0]  # type: ignore
         ]
         return results, 200

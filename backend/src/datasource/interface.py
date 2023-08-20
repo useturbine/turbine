@@ -1,6 +1,12 @@
 from abc import abstractmethod
-from typing import Iterator, Tuple, Optional
+from typing import Iterator, Tuple, Optional, TypedDict
 from datetime import datetime
+
+
+class DataSourceUpdate(TypedDict):
+    data_source: str
+    document_id: str
+    document: Optional[str]
 
 
 class DataSource:
@@ -12,6 +18,6 @@ class DataSource:
         pass
 
     @abstractmethod
-    def listen_for_updates(self) -> Iterator[Tuple[str, str]]:
+    def listen_for_updates(self) -> DataSourceUpdate:
         """Listen for updates to the data source and yield documents as they come in."""
         pass
