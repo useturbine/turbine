@@ -2,7 +2,13 @@ from kafka import KafkaConsumer
 from kafka.consumer.fetcher import ConsumerRecord
 import json
 from src.db.models import DataSource
-from typing import Iterator, List
+from typing import Iterator, List, TypedDict, Optional
+
+
+class ParsedMessage(TypedDict):
+    data_source: str
+    document_id: str
+    document: Optional[str]
 
 
 class Daemon:
@@ -21,6 +27,20 @@ class Daemon:
             topics.append(f"inquest.debezium.{source.id}.{config['table']}")
         return topics
 
+    def parse_postgres_message(self, message: ConsumerRecord) -> ParsedMessage:
+        data_source = message.topic.split(".")[2]
+        document_id = message.key["payload"]["id"]
+        if message.value["payload"]["op"] == "d":
+            document = None
+        else:
+            row_dict = message.value["payload"]["after"]
+            document = "\n".join(f"{k}: {v}" for k, v in row_dict.items())
+        return {
+            "data_source": data_source,
+            "document_id": document_id,
+            "document": document,
+        }
+
     @staticmethod
     def get_mongo_topics() -> List[str]:
         ...
@@ -31,10 +51,13 @@ class Daemon:
             *topics,
             bootstrap_servers=[self.kafka_url],
             auto_offset_reset="earliest",
+            key_deserializer=lambda x: json.loads(x.decode("utf-8")) if x else None,
+            value_deserializer=lambda x: json.loads(x.decode("utf-8")) if x else None,
         )
         for message in consumer:
-            yield message
+            if message.value:
+                yield message
 
     def run(self):
         for message in self.get_debezium_messages():
-            print(message)
+            print(self.parse_postgres_message(message))
