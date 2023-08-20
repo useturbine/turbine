@@ -39,3 +39,8 @@ class DataSource(Model):
 
 
 db.create_tables([User, DataSource])
+
+try:
+    User.create(name="Test User", email="test@example.com", api_key="test")
+except IntegrityError:
+    pass

@@ -2,6 +2,8 @@ from kafka import KafkaConsumer
 from kafka.consumer.fetcher import ConsumerRecord
 import json
 from src.db.models import DataSource
+from src.embedding_model.interface import EmbeddingModel
+from src.vectordb.milvus import MilvusVectorDB
 from typing import Iterator, List, TypedDict, Optional
 
 
@@ -13,10 +15,11 @@ class ParsedMessage(TypedDict):
 
 class Daemon:
     def __init__(
-        self,
-        kafka_url: str,
+        self, kafka_url: str, embedding_model: EmbeddingModel, vector_db: MilvusVectorDB
     ) -> None:
         self.kafka_url = kafka_url
+        self.model = embedding_model
+        self.vector_db = vector_db
 
     @staticmethod
     def get_postgres_topics() -> List[str]:
@@ -37,7 +40,7 @@ class Daemon:
             document = "\n".join(f"{k}: {v}" for k, v in row_dict.items())
         return {
             "data_source": data_source,
-            "document_id": document_id,
+            "document_id": str(document_id),
             "document": document,
         }
 
@@ -60,4 +63,17 @@ class Daemon:
 
     def run(self):
         for message in self.get_debezium_messages():
-            print(self.parse_postgres_message(message))
+            parsed_message = self.parse_postgres_message(message)
+            collection_name = f"inquest_{parsed_message['data_source']}"
+
+            if parsed_message["document"]:
+                embedding = self.model.get_embedding(parsed_message["document"])
+                self.vector_db.insert(
+                    collection_name,
+                    [[parsed_message["document_id"]], [embedding]],
+                )
+            else:
+                self.vector_db.delete(
+                    collection_name,
+                    parsed_message["document_id"],
+                )

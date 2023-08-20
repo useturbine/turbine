@@ -1,10 +1,10 @@
-from src.model.interface import Model
+from src.embedding_model.interface import EmbeddingModel
 import tiktoken
 import openai
 from typing import List
 
 
-class OpenAIModel(Model):
+class OpenAIModel(EmbeddingModel):
     name = "openai"
     embedding_dimension = 1536
 

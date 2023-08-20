@@ -1,4 +1,4 @@
-from vectordb.milvus.client import Client
+from vectordb.milvus.client import MilvusVectorDB
 from model.interface import Model
 from datasource.interface import DataSource
 
@@ -8,7 +8,7 @@ class Inquest:
         self,
         datasource: DataSource,
         model: Model,
-        vector_db: Client,
+        vector_db: MilvusVectorDB,
     ) -> None:
         self.datasource = datasource
         self.model = model

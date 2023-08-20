@@ -3,6 +3,8 @@ from src.api.auth import requires_auth, get_user
 from src.db.models import DataSource as DataSourceModel
 from typing import Optional
 from src.datasource.debezium import Debezium
+from src.vectordb.milvus import MilvusVectorDB
+from src.embedding_model.openai import OpenAIModel
 from config import Config
 import json
 
@@ -23,6 +25,7 @@ parser.add_argument(
 
 
 debezium = Debezium(url=Config.debezium_url)
+vector_db = MilvusVectorDB(url=Config.milvus_url)
 
 
 class DataSource(Resource):
@@ -61,6 +64,9 @@ class DataSource(Resource):
             password=config["password"],
             database=config["database"],
             table=config["table"],
+        )
+        vector_db.create_collection(
+            f"inquest_{data_source.id}", 512, OpenAIModel.embedding_dimension
         )
 
         return {"message": f"Data source {data_source.id} created successfully"}, 201

@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import List
 
 
-class Model:
+class EmbeddingModel:
     name: str
     embedding_dimension: int
 
