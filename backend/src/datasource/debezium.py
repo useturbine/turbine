@@ -81,7 +81,8 @@ class DebeziumDataSource(DataSourceInterface):
             topics.append(f"inquest.debezium.mongo.{source.id}.{config['collection']}")
         return topics
 
-    def parse_postgres_message(self, message: ConsumerRecord) -> DataSourceUpdate:
+    @staticmethod
+    def parse_postgres_message(message: ConsumerRecord) -> DataSourceUpdate:
         data_source = message.topic.split(".")[3]
         document_id = str(message.key["payload"]["id"])
 
@@ -98,7 +99,8 @@ class DebeziumDataSource(DataSourceInterface):
             "document": document,
         }
 
-    def parse_mongo_message(self, message: ConsumerRecord) -> DataSourceUpdate:
+    @staticmethod
+    def parse_mongo_message(message: ConsumerRecord) -> DataSourceUpdate:
         data_source = message.topic.split(".")[3]
         document_id = json.loads(message.key["payload"]["id"])["$oid"]
 

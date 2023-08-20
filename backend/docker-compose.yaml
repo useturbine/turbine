@@ -1,6 +1,20 @@
 version: "3"
 
 services:
+  inquest-api:
+    container_name: inquest-api
+    image: inquest/api
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - milvus
+      - redpanda
+      - debezium
+    env_file: prod.env
+
   redpanda:
     container_name: redpanda
     image: vectorized/redpanda
@@ -50,11 +64,6 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/etcd:/etcd
     command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:2379/health"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
 
   minio:
     container_name: milvus-minio
@@ -86,8 +95,3 @@ services:
     depends_on:
       - "etcd"
       - "minio"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:19530/health"]
-      interval: 30s
-      timeout: 20s
-      retries: 3

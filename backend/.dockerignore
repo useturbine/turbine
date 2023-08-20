@@ -1,6 +1,7 @@
 .idea
 __pycache__
-.env
 database.db
 volumes
+database.db
+.env
 prod.env
