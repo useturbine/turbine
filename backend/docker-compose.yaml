@@ -15,6 +15,18 @@ services:
       - debezium
     env_file: prod.env
 
+  inquest-daemon:
+    container_name: inquest-daemon
+    image: inquest/daemon
+    build:
+      context: .
+      dockerfile: daemon.Dockerfile
+    depends_on:
+      - milvus
+      - redpanda
+      - debezium
+    env_file: prod.env
+
   redpanda:
     container_name: redpanda
     image: vectorized/redpanda
