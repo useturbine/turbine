@@ -83,6 +83,7 @@ class DataSource(Resource):
 
     @requires_auth
     def delete(self, source_id: str):
+        # TODO: Delete debezium connector and milvus collection
         data_source = DataSourceModel.get_or_none(
             DataSourceModel.id == source_id, DataSourceModel.user == get_user()
         )

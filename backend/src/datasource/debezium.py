@@ -93,9 +93,8 @@ class DebeziumDataSource(DataSourceInterface):
         data_source = message.topic.split(".")[3]
         document_id = str(message.key["payload"]["id"])
 
-        if message.value["payload"]["op"] == "d":
-            document = None
-        else:
+        document = None
+        if message.value["payload"]["op"] != "d":
             document = "\n".join(
                 f"{k}: {v}" for k, v in message.value["payload"]["after"].items()
             )
@@ -133,6 +132,7 @@ class DebeziumDataSource(DataSourceInterface):
         while True:
             topics = self.get_topics()
             if topics and topics != past_topics:
+                print(f"Subscribing to {topics}")
                 self.consumer.subscribe(topics)
                 past_topics = topics
 
