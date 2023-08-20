@@ -13,9 +13,16 @@ class DebeziumDataSource(DataSourceInterface):
         self,
         debezium_url: str,
         kafka_url: str,
+        refresh_topics_ms: int = 1000,
     ) -> None:
+        self.consumer = KafkaConsumer(
+            bootstrap_servers=[kafka_url],
+            auto_offset_reset="earliest",
+            key_deserializer=lambda x: json.loads(x.decode("utf-8")) if x else None,
+            value_deserializer=lambda x: json.loads(x.decode("utf-8")) if x else None,
+            consumer_timeout_ms=refresh_topics_ms,
+        )
         self.debezium_url = debezium_url
-        self.kafka_url = kafka_url
 
     def add_postgres_connector(
         self,
@@ -117,23 +124,26 @@ class DebeziumDataSource(DataSourceInterface):
             "document": document,
         }
 
+    def get_topics(self) -> List[str]:
+        return [*self.get_postgres_topics(), *self.get_mongo_topics()]
+
     def listen_for_updates(self) -> Iterator[DataSourceUpdate]:
-        topics = [*self.get_postgres_topics(), *self.get_mongo_topics()]
-        consumer = KafkaConsumer(
-            *topics,
-            bootstrap_servers=[self.kafka_url],
-            auto_offset_reset="earliest",
-            key_deserializer=lambda x: json.loads(x.decode("utf-8")) if x else None,
-            value_deserializer=lambda x: json.loads(x.decode("utf-8")) if x else None,
-        )
-        for message in consumer:
-            if message.value:
-                if message.topic.startswith("inquest.debezium.postgres"):
-                    yield self.parse_postgres_message(message)
-                elif message.topic.startswith("inquest.debezium.mongo"):
-                    yield self.parse_mongo_message(message)
-                else:
-                    raise Exception("Unknown topic")
+        past_topics = []
+
+        while True:
+            topics = self.get_topics()
+            if topics and topics != past_topics:
+                self.consumer.subscribe(topics)
+                past_topics = topics
+
+            for message in self.consumer:
+                if message.value:
+                    if message.topic.startswith("inquest.debezium.postgres"):
+                        yield self.parse_postgres_message(message)
+                    elif message.topic.startswith("inquest.debezium.mongo"):
+                        yield self.parse_mongo_message(message)
+                    else:
+                        raise Exception("Unknown topic")
 
     def get_documents(
         self, updated_since: Optional[datetime] = None
