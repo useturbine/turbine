@@ -50,44 +50,72 @@ class DataSource(Resource):
             return {"error": "Data source not found"}, 404
         return data_source.to_dict(), 200
 
+    @staticmethod
+    def validate_config(type: str, config: dict) -> bool:
+        if type == "mongo":
+            return "url" in config and "collection" in config
+        elif type == "postgres":
+            return (
+                "host" in config
+                and "port" in config
+                and "user" in config
+                and "password" in config
+                and "database" in config
+                and "table" in config
+            )
+        return False
+
     @requires_auth
     def post(self):
         args = parser.parse_args()
+        if not self.validate_config(args["type"], args["config"]):
+            return {"error": "Invalid configuration for data source"}, 400
+
         data_source = DataSourceModel.create(
             type=args["type"], config=json.dumps(args["config"]), user=get_user()
         )
         config = json.loads(str(data_source.config))
 
-        if data_source.type == "mongo":
-            debezium.add_mongo_connector(
-                id=data_source.id,
-                url=config["url"],
-                collection=config["collection"],
-            )
-        elif data_source.type == "postgres":
-            debezium.add_postgres_connector(
-                id=data_source.id,
-                host=config["host"],
-                port=config["port"],
-                user=config["user"],
-                password=config["password"],
-                database=config["database"],
-                table=config["table"],
-            )
+        try:
+            if data_source.type == "mongo":
+                debezium.add_mongo_connector(
+                    id=data_source.id,
+                    url=config["url"],
+                    collection=config["collection"],
+                )
+            elif data_source.type == "postgres":
+                debezium.add_postgres_connector(
+                    id=data_source.id,
+                    host=config["host"],
+                    port=config["port"],
+                    user=config["user"],
+                    password=config["password"],
+                    database=config["database"],
+                    table=config["table"],
+                )
+        except Exception as e:
+            data_source.delete_instance()
+            return {"error": str(e)}, 400
 
-        vector_db.create_collection(
-            f"inquest_{data_source.id}", 512, OpenAIModel.embedding_dimension
-        )
+        try:
+            vector_db.create_collection(
+                f"inquest_{data_source.id}", 512, OpenAIModel.embedding_dimension
+            )
+        except Exception as e:
+            data_source.delete_instance()
+            debezium.delete_connector(data_source.id)
+            return {"error": str(e)}, 400
 
         return {"message": f"Data source {data_source.id} created successfully"}, 201
 
     @requires_auth
     def delete(self, source_id: str):
-        # TODO: Delete debezium connector and milvus collection
         data_source = DataSourceModel.get_or_none(
             DataSourceModel.id == source_id, DataSourceModel.user == get_user()
         )
         if data_source:
             data_source.delete_instance()
+            debezium.delete_connector(data_source.id)
+            vector_db.drop_collection(f"inquest_{data_source.id}")
             return {"message": f"Data source {source_id} removed successfully"}, 200
         return {"error": "Data source not found"}, 404

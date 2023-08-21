@@ -7,6 +7,7 @@ import json
 from src.db.models import DataSource
 from src.datasource.interface import DataSource as DataSourceInterface, DataSourceUpdate
 import logging
+import psycopg2
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,40 @@ class DebeziumDataSource(DataSourceInterface):
         logger.debug(
             f"Initialized Debezium data source with {debezium_url} and {kafka_url}"
         )
+
+    @staticmethod
+    def validate_postgres_config(
+        host: str,
+        port: int,
+        user: str,
+        password: str,
+        database: str,
+        table: str,
+    ) -> bool:
+        try:
+            connection = psycopg2.connect(
+                host=host,
+                port=port,
+                user=user,
+                password=password,
+                dbname=database,
+            )
+        except psycopg2.OperationalError:
+            return False
+
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)",
+            [table],
+        )
+        table_exists = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+
+        if table_exists is not None and table_exists[0]:
+            return True
+        return False
 
     def add_postgres_connector(
         self,
@@ -77,7 +112,12 @@ class DebeziumDataSource(DataSourceInterface):
         )
         response.raise_for_status()
         logger.info(f"Added Mongo connector to Debezium for data source {id}")
-        logger.debug(f"Debezium response: {response.json()}")
+
+    def delete_connector(self, id: str) -> None:
+        connector_name = f"inquest-{id}"
+        response = requests.delete(f"{self.debezium_url}/connectors/{connector_name}")
+        response.raise_for_status()
+        logger.info(f"Removed connector {connector_name} from Debezium")
 
     @staticmethod
     def get_postgres_topics() -> List[str]:
