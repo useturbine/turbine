@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 from src.api.auth import requires_auth, get_user
 from src.db.models import DataSource as DataSourceModel
 from typing import Optional
-from src.datasource.debezium import DebeziumDataSource
+from src.datasource.debezium.debezium import DebeziumDataSource
 from src.vectordb.milvus import MilvusVectorDB
 from src.embedding_model.openai import OpenAIModel
 from config import Config
@@ -50,26 +50,15 @@ class DataSource(Resource):
             return {"error": "Data source not found"}, 404
         return data_source.to_dict(), 200
 
-    @staticmethod
-    def validate_config(type: str, config: dict) -> bool:
-        if type == "mongo":
-            return "url" in config and "collection" in config
-        elif type == "postgres":
-            return (
-                "host" in config
-                and "port" in config
-                and "user" in config
-                and "password" in config
-                and "database" in config
-                and "table" in config
-            )
-        return False
-
     @requires_auth
     def post(self):
         args = parser.parse_args()
-        if not self.validate_config(args["type"], args["config"]):
-            return {"error": "Invalid configuration for data source"}, 400
+
+        if args["type"] in ["mongo", "postgres"]:
+            if not debezium.validate_config(args["type"], args["config"]):
+                return {"error": "Invalid configuration"}, 400
+        else:
+            ...
 
         data_source = DataSourceModel.create(
             type=args["type"], config=json.dumps(args["config"]), user=get_user()
@@ -77,22 +66,14 @@ class DataSource(Resource):
         config = json.loads(str(data_source.config))
 
         try:
-            if data_source.type == "mongo":
-                debezium.add_mongo_connector(
+            if data_source.type in ["mongo", "postgres"]:
+                debezium.add_connector(
                     id=data_source.id,
-                    url=config["url"],
-                    collection=config["collection"],
+                    type=data_source.type,
+                    config=config,
                 )
-            elif data_source.type == "postgres":
-                debezium.add_postgres_connector(
-                    id=data_source.id,
-                    host=config["host"],
-                    port=config["port"],
-                    user=config["user"],
-                    password=config["password"],
-                    database=config["database"],
-                    table=config["table"],
-                )
+            else:
+                ...
         except Exception as e:
             data_source.delete_instance()
             return {"error": str(e)}, 400
