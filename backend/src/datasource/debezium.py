@@ -6,6 +6,9 @@ from kafka.consumer.fetcher import ConsumerRecord
 import json
 from src.db.models import DataSource
 from src.datasource.interface import DataSource as DataSourceInterface, DataSourceUpdate
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DebeziumDataSource(DataSourceInterface):
@@ -23,6 +26,9 @@ class DebeziumDataSource(DataSourceInterface):
             consumer_timeout_ms=refresh_topics_ms,
         )
         self.debezium_url = debezium_url
+        logger.debug(
+            f"Initialized Debezium data source with {debezium_url} and {kafka_url}"
+        )
 
     def add_postgres_connector(
         self,
@@ -54,6 +60,7 @@ class DebeziumDataSource(DataSourceInterface):
             },
         )
         response.raise_for_status()
+        logger.info(f"Added Postgres connector to Debezium for data source {id}")
 
     def add_mongo_connector(self, id: str, url: str, collection: str) -> None:
         response = requests.post(
@@ -69,6 +76,8 @@ class DebeziumDataSource(DataSourceInterface):
             },
         )
         response.raise_for_status()
+        logger.info(f"Added Mongo connector to Debezium for data source {id}")
+        logger.debug(f"Debezium response: {response.json()}")
 
     @staticmethod
     def get_postgres_topics() -> List[str]:
@@ -77,6 +86,7 @@ class DebeziumDataSource(DataSourceInterface):
         for source in data_sources:
             config = json.loads(source.config)
             topics.append(f"inquest.debezium.postgres.{source.id}.{config['table']}")
+        logger.debug(f"Fetched Postgres topics: {topics}")
         return topics
 
     @staticmethod
@@ -86,6 +96,7 @@ class DebeziumDataSource(DataSourceInterface):
         for source in data_sources:
             config = json.loads(source.config)
             topics.append(f"inquest.debezium.mongo.{source.id}.{config['collection']}")
+        logger.debug(f"Fetched Mongo topics: {topics}")
         return topics
 
     @staticmethod
@@ -132,7 +143,7 @@ class DebeziumDataSource(DataSourceInterface):
         while True:
             topics = self.get_topics()
             if topics and topics != past_topics:
-                print(f"Subscribing to {topics}")
+                logger.info(f"Subscribing to {topics}")
                 self.consumer.subscribe(topics)
                 past_topics = topics
 

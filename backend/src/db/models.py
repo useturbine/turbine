@@ -1,8 +1,32 @@
 from peewee import *
 from datetime import datetime
 import json
+import os
 
-db = SqliteDatabase("database.db")
+
+def create_postgres_connection(connection_string: str):
+    """
+    Create a Postgres database connection from a connection string.
+
+    Args:
+        connection_string (str): A connection string in the format postgres://username:password@host:port/database_name
+    """
+    parts = connection_string.split("//")[1].split("@")
+    credentials, db_info = parts[0], parts[1].split("/")
+    username, password = credentials.split(":")
+    host, port = db_info[0].split(":")
+    database_name = db_info[1]
+
+    return PostgresqlDatabase(
+        database=database_name, user=username, password=password, host=host, port=port
+    )
+
+
+postgres_url = os.environ.get("POSTGRES_URL", "")
+if postgres_url:
+    db = create_postgres_connection(postgres_url)
+else:
+    db = SqliteDatabase("database.db")
 
 
 class User(Model):
@@ -38,9 +62,8 @@ class DataSource(Model):
         }
 
 
-db.create_tables([User, DataSource])
-
 try:
+    db.create_tables([User, DataSource])
     User.create(name="Test User", email="test@example.com", api_key="test")
 except IntegrityError:
     pass

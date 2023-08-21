@@ -3,6 +3,12 @@ from src.embedding_model.openai import OpenAIModel
 from src.vectordb.milvus import MilvusVectorDB
 from src.datasource.debezium import DebeziumDataSource
 from config import Config
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] [%(name)s]: %(message)s",
+)
 
 openai_model = OpenAIModel(api_key=Config.openai_api_key)
 vector_db = MilvusVectorDB(url=Config.milvus_url)
