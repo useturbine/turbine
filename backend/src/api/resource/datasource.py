@@ -94,9 +94,10 @@ class DataSource(Resource):
         data_source = DataSourceModel.get_or_none(
             DataSourceModel.id == source_id, DataSourceModel.user == get_user()
         )
-        if data_source:
-            data_source.delete_instance()
-            debezium.delete_connector(data_source.id)
-            vector_db.drop_collection(f"inquest_{data_source.id}")
-            return {"message": f"Data source {source_id} removed successfully"}, 200
-        return {"error": "Data source not found"}, 404
+        if not data_source:
+            return {"error": "Data source not found"}, 404
+
+        data_source.delete_instance()
+        debezium.delete_connector(data_source.id)
+        vector_db.drop_collection(f"inquest_{data_source.id}")
+        return {"message": f"Data source {source_id} removed successfully"}, 200
