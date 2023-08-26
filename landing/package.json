@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "publish": "yarn wrangler pages deploy dist"
+  },
+  "name": "turbine-landing",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.6.0"
+  }
+}
