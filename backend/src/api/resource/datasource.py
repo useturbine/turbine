@@ -80,7 +80,7 @@ class DataSource(Resource):
 
         try:
             vector_db.create_collection(
-                f"inquest_{data_source.id}", 512, OpenAIModel.embedding_dimension
+                f"turbine_{data_source.id}", 512, OpenAIModel.embedding_dimension
             )
         except Exception as e:
             data_source.delete_instance()
@@ -99,5 +99,5 @@ class DataSource(Resource):
 
         data_source.delete_instance()
         debezium.delete_connector(data_source.id)
-        vector_db.drop_collection(f"inquest_{data_source.id}")
+        vector_db.drop_collection(f"turbine_{data_source.id}")
         return {"message": f"Data source {source_id} removed successfully"}, 200

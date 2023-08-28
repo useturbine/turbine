@@ -6,7 +6,7 @@ from datetime import datetime
 class DataSourceUpdate(TypedDict):
     data_source: str
     document_id: str
-    document: Optional[str] 
+    document: Optional[str]
 
 
 class DataSource:

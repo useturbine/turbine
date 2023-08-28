@@ -19,7 +19,7 @@ class PostgresConnector(DebeziumConnector):
         response = requests.post(
             f"{self.debezium_url}/connectors",
             json={
-                "name": f"inquest-{id}",
+                "name": f"turbine-{id}",
                 "config": {
                     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
                     "plugin.name": "pgoutput",
@@ -31,7 +31,7 @@ class PostgresConnector(DebeziumConnector):
                     "database.password": config["password"],
                     "database.dbname": config["database"],
                     "table.include.list": config["table"],
-                    "topic.prefix": f"inquest.debezium.postgres.{id}",
+                    "topic.prefix": f"turbine.debezium.postgres.{id}",
                 },
             },
         )
@@ -61,7 +61,7 @@ class PostgresConnector(DebeziumConnector):
         topics = []
         for source in data_sources:
             config = json.loads(source.config)
-            topics.append(f"inquest.debezium.postgres.{source.id}.{config['table']}")
+            topics.append(f"turbine.debezium.postgres.{source.id}.{config['table']}")
         logger.debug(f"Fetched Postgres topics: {topics}")
         return topics
 

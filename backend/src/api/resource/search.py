@@ -28,7 +28,7 @@ class Search(Resource):
 
         query_embedding = embedding_model.get_embedding(query)
         hits = vector_db.search(
-            collection_name=f"inquest_{data_source.id}",
+            collection_name=f"turbine_{data_source.id}",
             data=query_embedding,
             limit=limit,
         )

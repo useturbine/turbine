@@ -20,7 +20,7 @@ class Daemon:
     def run(self):
         for update in self.data_source.listen_for_updates():
             logger.info(f"Received update: {update}")
-            collection_name = f"inquest_{update['data_source']}"
+            collection_name = f"turbine_{update['data_source']}"
 
             if update["document"]:
                 logger.info(f"Inserting {update['document_id']} into {collection_name}")

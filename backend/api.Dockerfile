@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-WORKDIR /inquest-api
+WORKDIR /turbine-api
 
 COPY pyproject.toml .
 COPY poetry.lock .

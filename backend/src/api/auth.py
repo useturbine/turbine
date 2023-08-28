@@ -12,7 +12,7 @@ def get_user():
 def requires_auth(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
-        api_key = request.headers.get("X-Inquest-Key")
+        api_key = request.headers.get("X-Turbine-Key")
         if not api_key:
             return make_response(jsonify({"error": "API key missing"}), 401)
 

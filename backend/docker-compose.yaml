@@ -1,9 +1,9 @@
 version: "3"
 
 services:
-  inquest-api:
-    container_name: inquest-api
-    image: inquest/api
+  turbine-api:
+    container_name: turbine-api
+    image: turbine/api
     build:
       context: .
       dockerfile: api.Dockerfile
@@ -15,9 +15,9 @@ services:
       - debezium
     env_file: prod.env
 
-  inquest-daemon:
-    container_name: inquest-daemon
-    image: inquest/daemon
+  turbine-daemon:
+    container_name: turbine-daemon
+    image: turbine/daemon
     build:
       context: .
       dockerfile: daemon.Dockerfile

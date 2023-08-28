@@ -53,7 +53,7 @@ class DebeziumDataSource(DataSourceInterface):
             raise Exception("Unknown connector type")
 
     def delete_connector(self, id: str) -> None:
-        connector_name = f"inquest-{id}"
+        connector_name = f"turbine-{id}"
         response = requests.delete(f"{self.debezium_url}/connectors/{connector_name}")
         response.raise_for_status()
         logger.info(f"Removed connector {connector_name} from Debezium")
@@ -76,9 +76,9 @@ class DebeziumDataSource(DataSourceInterface):
 
             for message in self.consumer:
                 if message.value:
-                    if message.topic.startswith("inquest.debezium.postgres"):
+                    if message.topic.startswith("turbine.debezium.postgres"):
                         yield self.postgres_connector.parse_message(message)
-                    elif message.topic.startswith("inquest.debezium.mongo"):
+                    elif message.topic.startswith("turbine.debezium.mongo"):
                         yield self.mongo_connector.parse_message(message)
                     else:
                         raise Exception("Unknown topic")
