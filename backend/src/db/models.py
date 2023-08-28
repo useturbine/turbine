@@ -62,8 +62,18 @@ class DataSource(Model):
         }
 
 
+class Log(Model):
+    id = AutoField()
+    user = ForeignKeyField(User, backref="logs")
+    info = TextField()
+    created_at = DateTimeField(default=datetime.now())
+
+    class Meta:
+        database = db
+
+
 try:
-    db.create_tables([User, DataSource])
+    db.create_tables([User, DataSource, Log])
     User.create(name="Test User", email="test@example.com", api_key="test")
 except IntegrityError:
     pass

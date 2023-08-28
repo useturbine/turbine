@@ -1,4 +1,5 @@
 from src.embedding_model.interface import EmbeddingModel
+from src.db.models import Log, DataSource as DataSourceModel
 from src.vectordb.milvus import MilvusVectorDB
 from src.datasource.interface import DataSource
 import logging
@@ -21,18 +22,38 @@ class Daemon:
         for update in self.data_source.listen_for_updates():
             logger.info(f"Received update: {update}")
             collection_name = f"turbine_{update['data_source']}"
+            user = DataSourceModel.get_by_id(update["data_source"]).user
 
             if update["document"]:
-                logger.info(f"Inserting {update['document_id']} into {collection_name}")
                 embedding = self.model.get_embedding(update["document"])
                 self.vector_db.insert(
                     collection_name,
                     [[update["document_id"]], [embedding]],
                 )
+
+                Log.create(
+                    user_id=user.id,
+                    info={
+                        "action": "insert_document",
+                        "user": user.id,
+                        "data_source": update["data_source"],
+                        "document_id": update["document_id"],
+                    },
+                )
+                logger.info(f"Inserted {update['document_id']} into {collection_name}")
                 continue
 
-            logger.info(f"Deleting {update['document_id']} from {collection_name}")
             self.vector_db.delete(
                 collection_name,
                 update["document_id"],
             )
+            Log.create(
+                user_id=user.id,
+                info={
+                    "action": "delete_document",
+                    "user": user.id,
+                    "data_source": update["data_source"],
+                    "document_id": update["document_id"],
+                },
+            )
+            logger.info(f"Deleting {update['document_id']} from {collection_name}")

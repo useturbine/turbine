@@ -1,12 +1,16 @@
 from flask_restful import Resource, reqparse
 from src.api.auth import requires_auth, get_user
-from src.db.models import DataSource as DataSourceModel
+from src.db.models import DataSource as DataSourceModel, Log
 from typing import Optional
 from src.datasource.debezium.debezium import DebeziumDataSource
 from src.vectordb.milvus import MilvusVectorDB
 from src.embedding_model.openai import OpenAIModel
 from config import Config
 import json
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 parser = reqparse.RequestParser()
 parser.add_argument(
@@ -48,11 +52,24 @@ class DataSource(Resource):
         )
         if not data_source:
             return {"error": "Data source not found"}, 404
+
+        Log.create(
+            user=user,
+            info=json.dumps(
+                {
+                    "action": "get_data_source",
+                    "user": user.id,
+                    "data_source": data_source.id,
+                }
+            ),
+        )
+        logger.info(f"Retrieved data source {data_source.id} for user {user.id}")
         return data_source.to_dict(), 200
 
     @requires_auth
     def post(self):
         args = parser.parse_args()
+        user = get_user()
 
         if args["type"] in ["mongo", "postgres"]:
             if not debezium.validate_config(args["type"], args["config"]):
@@ -61,7 +78,7 @@ class DataSource(Resource):
             ...
 
         data_source = DataSourceModel.create(
-            type=args["type"], config=json.dumps(args["config"]), user=get_user()
+            type=args["type"], config=json.dumps(args["config"]), user=user
         )
         config = json.loads(str(data_source.config))
 
@@ -87,7 +104,18 @@ class DataSource(Resource):
             debezium.delete_connector(data_source.id)
             return {"error": str(e)}, 400
 
-        return {"message": f"Data source {data_source.id} created successfully"}, 201
+        Log.create(
+            user=user,
+            info=json.dumps(
+                {
+                    "action": "add_data_source",
+                    "user": user.id,
+                    "data_source": data_source.id,
+                }
+            ),
+        )
+        logger.info(f"Added data source {data_source.id} for user {user.id}")
+        return {"message": f"Data source {data_source.id} added successfully"}, 201
 
     @requires_auth
     def delete(self, source_id: str):
@@ -100,4 +128,16 @@ class DataSource(Resource):
         data_source.delete_instance()
         debezium.delete_connector(data_source.id)
         vector_db.drop_collection(f"turbine_{data_source.id}")
+
+        Log.create(
+            user=get_user(),
+            info=json.dumps(
+                {
+                    "action": "remove_data_source",
+                    "user": get_user().id,
+                    "data_source": data_source.id,
+                }
+            ),
+        )
+        logger.info(f"Removed data source {data_source.id} for user {get_user().id}")
         return {"message": f"Data source {source_id} removed successfully"}, 200

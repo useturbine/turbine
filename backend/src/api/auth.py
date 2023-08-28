@@ -3,9 +3,9 @@ from flask import request, jsonify, make_response, g
 from src.db.models import User
 
 
-def get_user():
+def get_user() -> User:
     if "user" not in g:
-        return None
+        raise Exception("User not found in request context")
     return g.user
 
 

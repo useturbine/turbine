@@ -1,11 +1,15 @@
 from flask_restful import Resource
 from flask import request
 from src.api.auth import requires_auth, get_user
-from src.db.models import DataSource
+from src.db.models import DataSource, Log
 from src.vectordb.milvus import MilvusVectorDB
 from src.embedding_model.openai import OpenAIModel
 from config import Config
+import json
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 vector_db = MilvusVectorDB(url=Config.milvus_url)
 embedding_model = OpenAIModel(api_key=Config.openai_api_key)
@@ -39,4 +43,21 @@ class Search(Resource):
             }
             for result in list(hits)[0]  # type: ignore
         ]
+
+        Log.create(
+            user=user,
+            info=json.dumps(
+                {
+                    "action": "search",
+                    "user": user.id,
+                    "data_source": data_source.id,
+                    "query": query,
+                    "limit": limit,
+                    "num_results": len(results),
+                }
+            ),
+        )
+        logger.info(
+            f"User {user.id} searched for {query} in data source {data_source.id} and got {len(results)} results"
+        )
         return results, 200
