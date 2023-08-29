@@ -97,7 +97,7 @@ class DataSource(Resource):
 
         try:
             vector_db.create_collection(
-                f"turbine_{data_source.id}", 512, OpenAIModel.embedding_dimension
+                f"turbine_{data_source.id}", OpenAIModel.embedding_dimension
             )
         except Exception as e:
             data_source.delete_instance()

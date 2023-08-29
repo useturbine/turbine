@@ -31,18 +31,11 @@ class Search(Resource):
             return {"error": "Data source not found"}, 404
 
         query_embedding = embedding_model.get_embedding(query)
-        hits = vector_db.search(
+        results = vector_db.search(
             collection_name=f"turbine_{data_source.id}",
             data=query_embedding,
             limit=limit,
         )
-        results = [
-            {
-                "id": result.id,
-                "distance": result.distance,
-            }
-            for result in list(hits)[0]  # type: ignore
-        ]
 
         Log.create(
             user=user,

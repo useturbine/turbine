@@ -1,6 +1,7 @@
 from src.embedding_model.interface import EmbeddingModel
 from src.db.models import Log, DataSource as DataSourceModel
 from src.vectordb.milvus import MilvusVectorDB
+from src.vectordb.interface import VectorItem
 from src.datasource.interface import DataSource
 import logging
 
@@ -28,7 +29,7 @@ class Daemon:
                 embedding = self.model.get_embedding(update["document"])
                 self.vector_db.insert(
                     collection_name,
-                    [[update["document_id"]], [embedding]],
+                    [VectorItem(id=update["document_id"], vector=embedding)],
                 )
 
                 Log.create(

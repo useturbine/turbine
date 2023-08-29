@@ -1,9 +1,18 @@
-from typing import List, Any
-from pymilvus import Collection
+from typing import List, TypedDict
 from abc import abstractmethod
 
 
-class VectorDBInterface:
+class VectorItem(TypedDict):
+    id: str
+    vector: List[float]
+
+
+class VectorSearchResult(TypedDict):
+    id: str
+    distance: float
+
+
+class VectorDB:
     """
     An interface defining the operations for interacting with a vector database.
     Classes that implement this interface must provide concrete implementations
@@ -13,32 +22,29 @@ class VectorDBInterface:
         This is an interface and methods should be implemented in the derived classes.
     """
 
-    @staticmethod
     @abstractmethod
-    def create_collection(name: str, id_max_length: int, dimension: int) -> Collection:
+    def create_collection(self, name: str, id_max_length: int, dimension: int) -> None:
         """Create a new collection in the database."""
         pass
 
-    @staticmethod
     @abstractmethod
-    def insert(collection_name: str, data: List) -> None:
+    def insert(self, collection_name: str, data: List[VectorItem]) -> None:
         """Insert data into the specified collection."""
         pass
 
-    @staticmethod
     @abstractmethod
-    def search(collection_name: str, data: List[float], limit: int) -> Any:
+    def search(
+        self, collection_name: str, data: List[float], limit: int
+    ) -> List[VectorSearchResult]:
         """Search for vectors in the specified collection."""
         pass
 
-    @staticmethod
     @abstractmethod
-    def delete(collection_name: str, id: str) -> None:
+    def delete(self, collection_name: str, id: str) -> None:
         """Delete a specific entry from the collection."""
         pass
 
-    @staticmethod
     @abstractmethod
-    def drop_collection(collection_name: str) -> None:
+    def drop_collection(self, collection_name: str) -> None:
         """Drop the specified collection from the database."""
         pass

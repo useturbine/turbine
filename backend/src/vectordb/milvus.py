@@ -7,23 +7,23 @@ from pymilvus import (
     Collection,
     utility,
 )
-from typing import List
-from src.vectordb.interface import VectorDBInterface
+from typing import List, Optional
+from src.vectordb.interface import VectorDB, VectorItem, VectorSearchResult
 
 
-class MilvusVectorDB(VectorDBInterface):
-    def __init__(self, url: str) -> None:
+class MilvusVectorDB(VectorDB):
+    def __init__(self, url: str, id_max_length: Optional[int] = 512) -> None:
         connections.connect("default", uri=url)
+        self.id_max_length = id_max_length
 
-    @staticmethod
-    def create_collection(name: str, id_max_length: int, dimension: int) -> Collection:
+    def create_collection(self, name: str, dimension: int) -> None:
         fields = [
             FieldSchema(
                 name="id",
                 dtype=DataType.VARCHAR,
                 is_primary=True,
                 auto_id=False,
-                max_length=id_max_length,
+                max_length=self.id_max_length,
             ),
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=dimension),
         ]
@@ -37,16 +37,19 @@ class MilvusVectorDB(VectorDBInterface):
                 "params": {"nlist": 2048},
             },
         )
-        return collection
 
     @staticmethod
-    def insert(collection_name: str, data: List) -> None:
+    def insert(collection_name: str, data: List[VectorItem]) -> None:
         collection = Collection(collection_name)
-        collection.insert(data=data)
+        collection.insert(
+            data=[[item["id"] for item in data], [item["vector"] for item in data]]
+        )
         collection.flush()
 
     @staticmethod
-    def search(collection_name: str, data: List[float], limit: int):
+    def search(
+        collection_name: str, data: List[float], limit: int
+    ) -> List[VectorSearchResult]:
         collection = Collection(collection_name)
         collection.load()
         results = collection.search(
@@ -58,14 +61,20 @@ class MilvusVectorDB(VectorDBInterface):
             },
         )
         collection.release()
-        return results
+        return [
+            {
+                "id": result.id,
+                "distance": result.distance,
+            }
+            for result in list(results)[0]  # type: ignore
+        ]
 
     @staticmethod
-    def delete(collection_name: str, id: str):
+    def delete(collection_name: str, id: str) -> None:
         collection = Collection(collection_name)
         collection.delete(f"id = {id}")
         collection.flush()
 
     @staticmethod
-    def drop_collection(collection_name: str):
+    def drop_collection(collection_name: str) -> None:
         utility.drop_collection(collection_name)
