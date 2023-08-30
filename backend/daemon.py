@@ -11,7 +11,7 @@ logging.basicConfig(
 )
 
 openai_model = OpenAIModel(api_key=Config.openai_api_key)
-vector_db = MilvusVectorDB(url=Config.milvus_url)
+vector_db = MilvusVectorDB(url=Config.milvus_url, token=Config.milvus_token)
 debezium = DebeziumDataSource(
     debezium_url=Config.debezium_url, kafka_url=Config.kafka_url
 )

@@ -11,7 +11,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-vector_db = MilvusVectorDB(url=Config.milvus_url)
+vector_db = MilvusVectorDB(url=Config.milvus_url, token=Config.milvus_token)
 embedding_model = OpenAIModel(api_key=Config.openai_api_key)
 
 
