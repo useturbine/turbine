@@ -11,4 +11,4 @@ RUN poetry install --no-dev
 
 COPY . .
 
-CMD ["python3", "daemon.py"]
+CMD ["sleep" "60" "&&" "python3", "daemon.py"]

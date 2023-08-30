@@ -50,6 +50,11 @@ services:
       - --advertise-kafka-addr
       - PLAINTEXT://192.168.1.8:29092,OUTSIDE://192.168.1.8:9092
       - --check=false
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "9092" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   debezium:
     image: debezium/connect
