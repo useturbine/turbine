@@ -11,6 +11,4 @@ RUN poetry install --no-dev
 
 COPY . .
 
-EXPOSE 5000
-CMD [ "sleep" "60" ]
-CMD ["flask", "run", "--host=0.0.0.0", "--port=80", "--no-reload"]
+CMD sleep 10 && flask run --host=0.0.0.0 --port=80 --no-reload
