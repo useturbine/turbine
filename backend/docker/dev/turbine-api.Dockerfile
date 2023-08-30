@@ -7,8 +7,4 @@ COPY poetry.lock .
 
 RUN pip install poetry
 RUN poetry config virtualenvs.create false
-RUN poetry install --no-dev
-
-COPY . .
-
-CMD sleep 10 && python3 daemon.py
+RUN poetry install

@@ -5,27 +5,33 @@ services:
     container_name: turbine-api
     image: turbine/api
     build:
-      context: .
-      dockerfile: api.Dockerfile
+      context: ../..
+      dockerfile: docker/dev/turbine-api.Dockerfile
     ports:
       - "80:80"
     depends_on:
       - milvus
       - redpanda
       - debezium
-    env_file: prod.env
+    env_file: .env
+    command: sh -c "sleep 10 && flask run --host=0.0.0.0 --port=80 --debug"
+    volumes:
+      - ../..:/turbine-api
 
   turbine-daemon:
     container_name: turbine-daemon
     image: turbine/daemon
     build:
-      context: .
-      dockerfile: daemon.Dockerfile
+      context: ../..
+      dockerfile: docker/prod/turbine-daemon.Dockerfile
     depends_on:
       - milvus
       - redpanda
       - debezium
-    env_file: prod.env
+    env_file: .env
+    command: sh -c "sleep 10 && python3 daemon.py"
+    volumes:
+      - ../..:/turbine-daemon
 
   redpanda:
     container_name: redpanda
@@ -50,11 +56,6 @@ services:
       - --advertise-kafka-addr
       - PLAINTEXT://192.168.1.8:29092,OUTSIDE://192.168.1.8:9092
       - --check=false
-    healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "9092" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   debezium:
     image: debezium/connect
@@ -91,11 +92,6 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
     command: minio server /minio_data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
 
   milvus:
     container_name: milvus-standalone
@@ -110,5 +106,5 @@ services:
       - "19530:19530"
       - "9091:9091"
     depends_on:
-      - "etcd"
-      - "minio"
+      - etcd
+      - minio
