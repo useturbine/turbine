@@ -31,7 +31,7 @@ parser.add_argument(
 debezium = DebeziumDataSource(
     debezium_url=Config.debezium_url, kafka_url=Config.kafka_url
 )
-vector_db = MilvusVectorDB(url=Config.milvus_url)
+vector_db = MilvusVectorDB(url=Config.milvus_url, token=Config.milvus_token)
 
 
 class Project(Resource):

@@ -7,13 +7,13 @@ from pymilvus import (
     Collection,
     utility,
 )
-from typing import List, Optional
+from typing import List
 from src.vectordb.interface import VectorDB, VectorItem, VectorSearchResult
 
 
 class MilvusVectorDB(VectorDB):
-    def __init__(self, url: str, id_max_length: Optional[int] = 512) -> None:
-        connections.connect("default", uri=url)
+    def __init__(self, url: str, token: str, id_max_length: int = 512) -> None:
+        connections.connect("default", uri=url, token=token)
         self.id_max_length = id_max_length
 
     def create_collection(self, name: str, dimension: int) -> None:

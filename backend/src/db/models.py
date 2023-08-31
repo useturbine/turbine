@@ -3,6 +3,7 @@ from datetime import datetime
 import json
 import jsonschema
 import os
+from config import Config
 
 
 def create_postgres_connection(connection_string: str):
@@ -23,11 +24,7 @@ def create_postgres_connection(connection_string: str):
     )
 
 
-postgres_url = os.environ.get("POSTGRES_URL", "")
-if postgres_url:
-    db = create_postgres_connection(postgres_url)
-else:
-    db = SqliteDatabase("database.db")
+db = create_postgres_connection(Config.postgres_url)
 
 
 class User(Model):
@@ -111,8 +108,18 @@ class Log(Model):
         database = db
 
 
+class Document(Model):
+    id = CharField(primary_key=True)
+    created_at = DateTimeField(default=datetime.now())
+    project = ForeignKeyField(ProjectModel, backref="documents")
+    hash = CharField()
+
+    class Meta:
+        database = db
+
+
 try:
-    db.create_tables([User, ProjectModel, Log])
+    db.create_tables([User, ProjectModel, Log, Document])
     User.create(name="Test User", email="test@example.com", api_key="test")
 except IntegrityError:
     pass
