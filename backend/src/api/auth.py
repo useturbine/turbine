@@ -9,10 +9,13 @@ def get_user() -> User:
     return g.user
 
 
+TurbineAPIKeyHeader = "X-Turbine-Key"
+
+
 def requires_auth(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
-        api_key = request.headers.get("X-Turbine-Key")
+        api_key = request.headers.get(TurbineAPIKeyHeader)
         if not api_key:
             return make_response(jsonify({"error": "API key missing"}), 401)
 

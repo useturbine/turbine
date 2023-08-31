@@ -1,6 +1,7 @@
 from peewee import *
 from datetime import datetime
 import json
+import jsonschema
 import os
 
 
@@ -39,10 +40,9 @@ class User(Model):
         database = db
 
 
-class DataSource(Model):
+class ProjectModel(Model):
     id = AutoField()
-    user = ForeignKeyField(User, backref="datasources")
-    type = CharField()
+    user = ForeignKeyField(User, backref="project")
     config = TextField()
     created_at = DateTimeField(default=datetime.now())
     updated_at = DateTimeField(default=datetime.now())
@@ -50,16 +50,55 @@ class DataSource(Model):
     class Meta:
         database = db
 
+    def get_config(self):
+        return json.loads(str(self.config))
+
     def save(self, *args, **kwargs):
+        self.validate_config()
         self.updated_at = datetime.now()
         return super().save(*args, **kwargs)
 
     def to_dict(self):
         return {
             "id": self.id,
-            "type": self.type,
-            "config": json.loads(str(self.config)),
+            "config": self.get_config(),
         }
+
+    def validate_config(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "data_source": {
+                    "type": "object",
+                    "properties": {
+                        "type": {"type": "string", "enum": ["mongo", "postgres"]},
+                    },
+                    "required": ["type"],
+                },
+                "embedding": {
+                    "type": "object",
+                    "properties": {
+                        "dimensions": {"type": "integer"},
+                        "chunk_size": {"type": "integer"},
+                    },
+                    "required": [],
+                },
+                "vectordb": {
+                    "type": "object",
+                    "properties": {
+                        "host": {"type": "string"},
+                        "port": {"type": "integer"},
+                    },
+                    "required": ["host", "port"],
+                },
+            },
+            "required": ["data_source"],
+        }
+
+        try:
+            jsonschema.validate(instance=self.get_config(), schema=schema)
+        except (ValueError, jsonschema.ValidationError) as e:
+            raise ValueError(f"Invalid config: {str(e)}")
 
 
 class Log(Model):
@@ -73,7 +112,7 @@ class Log(Model):
 
 
 try:
-    db.create_tables([User, DataSource, Log])
+    db.create_tables([User, ProjectModel, Log])
     User.create(name="Test User", email="test@example.com", api_key="test")
 except IntegrityError:
     pass
