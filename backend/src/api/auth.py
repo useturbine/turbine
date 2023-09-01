@@ -1,29 +1,16 @@
-from functools import wraps
-from flask import request, jsonify, make_response, g
 from src.db.models import User
+from fastapi import HTTPException, Depends
+from fastapi.security import APIKeyHeader
+from typing import Annotated
 
 
-def get_user() -> User:
-    if "user" not in g:
-        raise Exception("User not found in request context")
-    return g.user
+auth_scheme = APIKeyHeader(name="X-Turbine-Token", auto_error=False)
 
 
-TurbineAPIKeyHeader = "X-Turbine-Key"
-
-
-def requires_auth(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        api_key = request.headers.get(TurbineAPIKeyHeader)
-        if not api_key:
-            return make_response(jsonify({"error": "API key missing"}), 401)
-
-        user = User.get_or_none(User.api_key == api_key)
-        if not user:
-            return make_response(jsonify({"error": "Invalid API key"}), 401)
-
-        g.user = user
-        return func(*args, **kwargs)
-
-    return decorated_function
+def get_user(turbine_key: Annotated[str, Depends(auth_scheme)]) -> User:
+    if not turbine_key:
+        raise HTTPException(status_code=401, detail="Missing API key")
+    user = User.get_or_none(User.api_key == turbine_key)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    return user

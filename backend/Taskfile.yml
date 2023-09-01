@@ -1,25 +1,33 @@
 version: "3"
 
 tasks:
-  clean-dev:
+  docker:clean:dev:
     desc: Clean local development stack on Docker Compose.
     cmds:
       - cd docker/dev && docker compose down
-  clean-prod:
+  docker:clean:prod:
     desc: Clean production stack on Docker Compose.
     cmds:
       - cd docker/prod && docker compose down
-  run-dev:
+  docker:run:dev:
     desc: Run local development setup using Docker Compose.
     deps:
       - clean-dev
       - clean-prod
     cmds:
       - cd docker/dev && docker compose up -V --remove-orphans --build
-  run-prod:
+  docker:run:prod:
     desc: Run production setup using Docker Compose.
     deps:
       - clean-dev
       - clean-prod
     cmds:
       - cd docker/prod && docker compose up --remove-orphans --build
+  turbine-api:
+    desc: Run Turbine API locally.
+    cmds:
+      - uvicorn src.api.app:app --reload
+  turbine-daemon:
+    desc: Run Turbine daemon locally.
+    cmds:
+      - python3 daemon.py

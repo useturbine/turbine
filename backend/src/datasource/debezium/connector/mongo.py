@@ -2,11 +2,12 @@ from src.datasource.debezium.connector.interface import DebeziumConnector
 from src.datasource.interface import DataSourceUpdate
 from kafka.consumer.fetcher import ConsumerRecord
 from typing import List
-from src.db.models import DataSource
+from src.db.models import Project
 import json
 import logging
 import requests
 from pymongo import MongoClient
+from src.schema import MongoConfig
 
 logger = logging.getLogger(__name__)
 
@@ -16,18 +17,15 @@ class MongoConnector(DebeziumConnector):
         self.debezium_url = debezium_url
 
     @staticmethod
-    def validate_config(config: dict) -> bool:
-        if "url" not in config or "collection" not in config:
-            return False
-
+    def validate_config(config: MongoConfig) -> bool:
         try:
-            client = MongoClient(host=config["url"])
+            client = MongoClient(host=config.url)
             client.server_info()
         except Exception:
             return False
 
         try:
-            database_name, collection_name = config["collection"].split(".")
+            database_name, collection_name = config.collection.split(".")
         except ValueError:
             return False
 
@@ -37,15 +35,15 @@ class MongoConnector(DebeziumConnector):
         client.close()
         return collection_name in collection_names
 
-    def add_connector(self, id: str, config: dict) -> None:
+    def add_connector(self, id: str, config: MongoConfig) -> None:
         response = requests.post(
             f"{self.debezium_url}/connectors",
             json={
                 "name": f"turbine-{id}",
                 "config": {
                     "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
-                    "mongodb.connection.string": config["url"],
-                    "collection.include.list": config["collection"],
+                    "mongodb.connection.string": config.url,
+                    "collection.include.list": config.collection,
                     "topic.prefix": f"turbine.debezium.mongo.{id}",
                 },
             },
@@ -55,11 +53,14 @@ class MongoConnector(DebeziumConnector):
 
     @staticmethod
     def get_topics() -> List[str]:
-        data_sources = DataSource.select().where(DataSource.type == "mongo")
+        projects = Project.select().where(
+            Project.config["data_source"]["type"] == "mongo"
+        )
         topics = []
-        for source in data_sources:
-            config = json.loads(source.config)
-            topics.append(f"turbine.debezium.mongo.{source.id}.{config['collection']}")
+        for project in projects:
+            topics.append(
+                f"turbine.debezium.mongo.{project.id}.{project.config['data_source']['config']['collection']}"
+            )
         logger.debug(f"Fetched Mongo topics: {topics}")
         return topics
 

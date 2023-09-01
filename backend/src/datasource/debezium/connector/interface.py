@@ -6,11 +6,11 @@ from kafka.consumer.fetcher import ConsumerRecord
 
 class DebeziumConnector:
     @abstractmethod
-    def validate_config(self, config: dict) -> bool:
+    def validate_config(self, config) -> bool:
         ...
 
     @abstractmethod
-    def add_connector(self, id: int, config: dict) -> None:
+    def add_connector(self, id: int, config) -> None:
         ...
 
     @abstractmethod

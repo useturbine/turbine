@@ -2,11 +2,12 @@ from src.datasource.debezium.connector.interface import DebeziumConnector
 from src.datasource.interface import DataSourceUpdate
 from kafka.consumer.fetcher import ConsumerRecord
 from typing import List
-from src.db.models import DataSource
+from src.db.models import Project
 import json
 import logging
 import requests
 import psycopg2
+from src.schema import PostgresConfig
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ class PostgresConnector(DebeziumConnector):
     def __init__(self, debezium_url: str) -> None:
         self.debezium_url = debezium_url
 
-    def add_connector(self, id: str, config: dict) -> None:
+    def add_connector(self, id: str, config: PostgresConfig) -> None:
         response = requests.post(
             f"{self.debezium_url}/connectors",
             json={
@@ -25,12 +26,12 @@ class PostgresConnector(DebeziumConnector):
                     "plugin.name": "pgoutput",
                     "publication.autocreate.mode": "filtered",
                     "include.schema.changes": "false",
-                    "database.hostname": config["host"],
-                    "database.port": config["port"],
-                    "database.user": config["user"],
-                    "database.password": config["password"],
-                    "database.dbname": config["database"],
-                    "table.include.list": config["table"],
+                    "database.hostname": config.host,
+                    "database.port": config.port,
+                    "database.user": config.user,
+                    "database.password": config.password,
+                    "database.dbname": config.database,
+                    "table.include.list": config.table,
                     "topic.prefix": f"turbine.debezium.postgres.{id}",
                 },
             },
@@ -57,39 +58,32 @@ class PostgresConnector(DebeziumConnector):
 
     @staticmethod
     def get_topics() -> List[str]:
-        data_sources = DataSource.select().where(DataSource.type == "postgres")
+        projects = Project.select().where(
+            Project.config["data_source"]["type"] == "postgres"
+        )
         topics = []
-        for source in data_sources:
-            config = json.loads(source.config)
-            topics.append(f"turbine.debezium.postgres.{source.id}.{config['table']}")
+        for project in projects:
+            topics.append(
+                f"turbine.debezium.postgres.{project.id}.{project.config['data_source']['config']['table']}"
+            )
         logger.debug(f"Fetched Postgres topics: {topics}")
         return topics
 
     @staticmethod
-    def validate_config(config: dict) -> bool:
-        if (
-            "host" not in config
-            or "port" not in config
-            or "user" not in config
-            or "password" not in config
-            or "database" not in config
-            or "table" not in config
-        ):
-            return False
-
+    def validate_config(config: PostgresConfig) -> bool:
         try:
             connection = psycopg2.connect(
-                host=config["host"],
-                port=config["port"],
-                user=config["user"],
-                password=config["password"],
-                dbname=config["database"],
+                host=config.host,
+                port=config.port,
+                user=config.user,
+                password=config.password,
+                dbname=config.database,
             )
         except psycopg2.OperationalError:
             return False
 
         try:
-            schema_name, table_name = config["table"].split(".")
+            schema_name, table_name = config.table.split(".")
         except ValueError:
             return False
 

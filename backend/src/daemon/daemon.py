@@ -1,5 +1,5 @@
 from src.embedding_model.interface import EmbeddingModel
-from src.db.models import Log, DataSource as DataSourceModel, Document
+from src.db.models import Log, Project, Document
 from src.vectordb.milvus import MilvusVectorDB
 from src.vectordb.interface import VectorItem
 from src.datasource.interface import DataSource
@@ -24,8 +24,8 @@ class Daemon:
     def run(self):
         for update in self.data_source.listen_for_updates():
             logger.info(f"Received update: {update}")
-            collection_name = f"turbine_{update['data_source']}"
-            user = DataSourceModel.get_by_id(update["data_source"]).user
+            collection_name = f"turbine{update['data_source']}"
+            user = Project.get_by_id(update["data_source"]).user
 
             if not update["document"]:
                 self.vector_db.delete(
@@ -46,7 +46,7 @@ class Daemon:
 
             document = Document.get_or_none(
                 Document.id == update["document_id"],
-                Document.data_source == update["data_source"],
+                Document.project == update["data_source"],
             )
             document_hash = hashlib.sha256(
                 update["document"].encode("utf-8")
@@ -67,7 +67,7 @@ class Daemon:
             else:
                 Document.create(
                     id=update["document_id"],
-                    data_source=update["data_source"],
+                    project=update["data_source"],
                     hash=document_hash,
                 )
 

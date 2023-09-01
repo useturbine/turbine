@@ -8,6 +8,7 @@ import logging
 from src.datasource.debezium.connector.postgres import PostgresConnector
 from src.datasource.debezium.connector.mongo import MongoConnector
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +33,7 @@ class DebeziumDataSource(DataSourceInterface):
         self.postgres_connector = PostgresConnector(debezium_url)
         self.mongo_connector = MongoConnector(debezium_url)
 
-    def validate_config(self, type: str, config: dict) -> bool:
+    def validate_config(self, type: str, config) -> bool:
         if type == "mongo":
             return self.mongo_connector.validate_config(config)
         elif type == "postgres":
@@ -43,7 +44,7 @@ class DebeziumDataSource(DataSourceInterface):
         self,
         id: str,
         type: str,
-        config: dict,
+        config,
     ) -> None:
         if type == "mongo":
             self.mongo_connector.add_connector(id=id, config=config)

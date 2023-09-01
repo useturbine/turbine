@@ -1,8 +1,7 @@
 from peewee import *
+from playhouse.postgres_ext import BinaryJSONField
 from datetime import datetime
 import json
-import jsonschema
-import os
 from config import Config
 
 
@@ -37,10 +36,10 @@ class User(Model):
         database = db
 
 
-class ProjectModel(Model):
+class Project(Model):
     id = AutoField()
     user = ForeignKeyField(User, backref="project")
-    config = TextField()
+    config = BinaryJSONField()
     created_at = DateTimeField(default=datetime.now())
     updated_at = DateTimeField(default=datetime.now())
 
@@ -51,7 +50,6 @@ class ProjectModel(Model):
         return json.loads(str(self.config))
 
     def save(self, *args, **kwargs):
-        self.validate_config()
         self.updated_at = datetime.now()
         return super().save(*args, **kwargs)
 
@@ -60,42 +58,6 @@ class ProjectModel(Model):
             "id": self.id,
             "config": self.get_config(),
         }
-
-    def validate_config(self):
-        schema = {
-            "type": "object",
-            "properties": {
-                "data_source": {
-                    "type": "object",
-                    "properties": {
-                        "type": {"type": "string", "enum": ["mongo", "postgres"]},
-                    },
-                    "required": ["type"],
-                },
-                "embedding": {
-                    "type": "object",
-                    "properties": {
-                        "dimensions": {"type": "integer"},
-                        "chunk_size": {"type": "integer"},
-                    },
-                    "required": [],
-                },
-                "vectordb": {
-                    "type": "object",
-                    "properties": {
-                        "host": {"type": "string"},
-                        "port": {"type": "integer"},
-                    },
-                    "required": ["host", "port"],
-                },
-            },
-            "required": ["data_source"],
-        }
-
-        try:
-            jsonschema.validate(instance=self.get_config(), schema=schema)
-        except (ValueError, jsonschema.ValidationError) as e:
-            raise ValueError(f"Invalid config: {str(e)}")
 
 
 class Log(Model):
@@ -111,7 +73,7 @@ class Log(Model):
 class Document(Model):
     id = CharField(primary_key=True)
     created_at = DateTimeField(default=datetime.now())
-    project = ForeignKeyField(ProjectModel, backref="documents")
+    project = ForeignKeyField(Project, backref="documents")
     hash = CharField()
 
     class Meta:
@@ -119,7 +81,7 @@ class Document(Model):
 
 
 try:
-    db.create_tables([User, ProjectModel, Log, Document])
+    db.create_tables([User, Project, Log, Document])
     User.create(name="Test User", email="test@example.com", api_key="test")
 except IntegrityError:
     pass
