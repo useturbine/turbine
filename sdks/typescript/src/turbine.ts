@@ -1,5 +1,5 @@
 import axios, { Axios } from "axios";
-import { ProjectConfig } from "./types";
+import { Project, ProjectConfig, SearchResult } from "./types";
 import { snakeifyKeys } from "./utils";
 
 export class Turbine {
@@ -14,24 +14,36 @@ export class Turbine {
     });
   }
 
-  async createProject(project: ProjectConfig) {
-    return await this.axios.post("/projects", snakeifyKeys(project));
+  async createProject(project: ProjectConfig): Promise<string> {
+    const response = await this.axios.post("/projects", snakeifyKeys(project));
+    return response.data.id;
   }
 
-  async getProject(projectId: string) {
-    return await this.axios.get(`/projects/${projectId}`);
+  async getProject(projectId: string): Promise<Project> {
+    const response = await this.axios.get(`/projects/${projectId}`);
+    return response.data;
   }
 
-  async deleteProject(projectId: string) {
-    return await this.axios.delete(`/projects/${projectId}`);
+  async getProjects(): Promise<Project[]> {
+    const response = await this.axios.get("/projects");
+    return response.data;
   }
 
-  async search(projectId: string, query: string, limit: number = 10) {
-    return await this.axios.get(`/projects/${projectId}/search`, {
+  async deleteProject(projectId: string): Promise<void> {
+    await this.axios.delete(`/projects/${projectId}`);
+  }
+
+  async search(
+    projectId: string,
+    query: string,
+    limit: number = 10
+  ): Promise<SearchResult[]> {
+    const response = await this.axios.get(`/projects/${projectId}/search`, {
       params: {
         query,
         limit,
       },
     });
+    return response.data;
   }
 }

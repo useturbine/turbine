@@ -1,10 +1,10 @@
-// import { Turbine } from "./src";
-import { Turbine } from "@useturbine/turbine";
+import { Turbine } from "./src";
+// import { Turbine } from "@useturbine/turbine";
 
 const main = async () => {
   const turbine = new Turbine("test");
 
-  const response = await turbine.createProject({
+  const projectId = await turbine.createProject({
     dataSource: {
       type: "postgres",
       config: {
@@ -20,10 +20,10 @@ const main = async () => {
     vectorDB: "milvus",
     similarityMetric: "cosine",
   });
-  console.log(response.data);
+  console.log(projectId);
 
   const results = await turbine.search("1", "test", 10);
-  console.log(results.data);
+  console.log(results);
 };
 
 main();

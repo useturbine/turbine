@@ -64,7 +64,7 @@ class MilvusVectorDB(VectorDB):
         return [
             {
                 "id": result.id,
-                "distance": result.distance,
+                "score": result.distance,
             }
             for result in list(results)[0]  # type: ignore
         ]

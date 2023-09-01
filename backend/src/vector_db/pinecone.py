@@ -37,7 +37,7 @@ class PineconeVectorDB(VectorDB):
         return [
             {
                 "id": result.id,
-                "distance": result.score,
+                "score": result.score,
             }
             for result in results["matches"]
         ]

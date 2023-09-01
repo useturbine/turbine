@@ -24,3 +24,13 @@ export type ProjectConfig = {
   vectorDB: "milvus" | "pinecone";
   similarityMetric: "cosine" | "euclidean";
 };
+
+export type Project = {
+  id: string;
+  config: ProjectConfig;
+};
+
+export type SearchResult = {
+  id: string;
+  score: number;
+};

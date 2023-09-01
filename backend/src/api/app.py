@@ -59,7 +59,7 @@ def create_project(project: ProjectSchema, user=Depends(get_user)):
         ),
     )
     logger.info(f"Added project {project_instance.id} for user {user.id}")
-    return {"message": f"Project {project_instance.id} added successfully"}
+    return {"message": f"Project created successfully", "id": project_instance.id}
 
 
 @app.get("/v1/projects")
@@ -151,8 +151,8 @@ def search(project_id: str, query: str, limit: int = 10, user=Depends(get_user))
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    vector_db = get_vector_db(project.vector_db)
-    embedding_model = get_embedding_model(project.embedding_model)
+    vector_db = get_vector_db(project.config["vector_db"])
+    embedding_model = get_embedding_model(project.config["embedding_model"])
 
     results = vector_db.search(
         collection_name=f"turbine{project.id}",

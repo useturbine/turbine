@@ -9,7 +9,7 @@ class VectorItem(TypedDict):
 
 class VectorSearchResult(TypedDict):
     id: str
-    distance: float
+    score: float
 
 
 class VectorDB:
