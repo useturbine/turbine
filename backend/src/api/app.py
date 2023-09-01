@@ -21,7 +21,7 @@ vector_db = MilvusVectorDB(url=Config.milvus_url, token=Config.milvus_token)
 embedding_model = OpenAIModel(api_key=Config.openai_api_key)
 
 
-@app.post("/v1/projects")
+@app.post("/v1/projects", status_code=201)
 def create_project(project: ProjectSchema, user=Depends(get_user)):
     project_instance = Project.create(config=project.model_dump(), user=user)
 
@@ -57,7 +57,7 @@ def create_project(project: ProjectSchema, user=Depends(get_user)):
         ),
     )
     logger.info(f"Added project {project_instance.id} for user {user.id}")
-    return {"message": f"Project {project_instance.id} added successfully"}, 201
+    return {"message": f"Project {project_instance.id} added successfully"}
 
 
 @app.get("/v1/projects")
@@ -68,7 +68,7 @@ def get_projects(id: Optional[str] = None, user=Depends(get_user)):
             raise HTTPException(status_code=404, detail="Project not found")
         return project.to_dict(), 200
 
-    return [p.to_dict() for p in Project.select().where(Project.user == user)], 200
+    return [p.to_dict() for p in Project.select().where(Project.user == user)]
 
 
 @app.delete("/v1/projects")
@@ -136,7 +136,7 @@ def update_project(id: str, project: ProjectSchema, user=Depends(get_user)):
         ),
     )
     logger.info(f"Updated project {project_instance.id} for user {user.id}")
-    return {"message": f"Project {project_instance.id} updated successfully"}, 200
+    return {"message": f"Project {project_instance.id} updated successfully"}
 
 
 @app.get("/v1/projects/{project_id}/search")

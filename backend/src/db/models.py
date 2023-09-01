@@ -46,18 +46,12 @@ class Project(Model):
     class Meta:
         database = db
 
-    def get_config(self):
-        return json.loads(str(self.config))
-
     def save(self, *args, **kwargs):
         self.updated_at = datetime.now()
         return super().save(*args, **kwargs)
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "config": self.get_config(),
-        }
+        return {"id": self.id, "config": self.config}
 
 
 class Log(Model):

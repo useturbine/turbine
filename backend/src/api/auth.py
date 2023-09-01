@@ -4,7 +4,7 @@ from fastapi.security import APIKeyHeader
 from typing import Annotated
 
 
-auth_scheme = APIKeyHeader(name="X-Turbine-Token", auto_error=False)
+auth_scheme = APIKeyHeader(name="X-Turbine-Key", auto_error=False)
 
 
 def get_user(turbine_key: Annotated[str, Depends(auth_scheme)]) -> User:
