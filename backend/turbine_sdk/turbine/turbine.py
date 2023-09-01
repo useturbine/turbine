@@ -1,4 +1,4 @@
-from turbine_sdk.api import project, search
+from turbine_sdk.turbine.api import project, search
 
 
 class Turbine:

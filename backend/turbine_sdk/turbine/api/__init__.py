@@ -1,4 +1,4 @@
-from turbine_sdk.config import BASE_URL, HEADERS
+from turbine_sdk.turbine.config import BASE_URL, HEADERS
 from turbine_sdk.exceptions.exceptions import APIRequestException
 
 import requests
