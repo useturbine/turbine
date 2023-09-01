@@ -2,8 +2,8 @@
 requires = ["setuptools", "wheel"]
 
 [project]
-name = "turbine_sdk"
-version = "0.1"
+name = "turbine-sdk"
+version = "0.0.1"
 description= "SDK designed to simplify making API requests to useturbine.com's API offerings."
 authors = [{"name"="Turbine Team", "email"="ankit@useturbine.com"}]
 readme = "README.md"
