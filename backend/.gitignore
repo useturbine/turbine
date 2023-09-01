@@ -5,3 +5,4 @@ database.db
 volumes
 prod.env
 venv
+requirements.txt
