@@ -14,19 +14,11 @@ logger = logging.getLogger(__name__)
 
 parser = reqparse.RequestParser()
 parser.add_argument(
-    "type",
-    type=str,
-    required=True,
-    choices=["mongo", "postgres"],
-    help="Data source type must be either mongo or postgres",
-)
-parser.add_argument(
     "config",
     type=dict,
     required=True,
     help="Configuration details for the data source cannot be blank",
 )
-
 
 debezium = DebeziumDataSource(
     debezium_url=Config.debezium_url, kafka_url=Config.kafka_url
@@ -65,8 +57,8 @@ class Project(Resource):
 
     @requires_auth
     def post(self):
-        args = parser.parse_args()
         user = get_user()
+        args = parser.parse_args()
 
         project = ProjectModel.create(
             type=args["type"], config=json.dumps(args["config"]), user=user
@@ -131,3 +123,37 @@ class Project(Resource):
         return {
             "message": f"All data purged. Project {project_id} removed successfully. This action can not be reversed."
         }, 200
+
+    @requires_auth
+    def put(self, project_id: str):
+        user = get_user()
+
+        project = ProjectModel.get_or_none(
+            ProjectModel.id == project_id, ProjectModel.user == user
+        )
+        if not project:
+            return {"error": "Project not found or not authorized"}, 404
+
+        args = parser.parse_args()
+        if "config" in args:
+            project.config = json.dumps(args["config"])
+
+        project.save()
+
+        # @Sumit is this right? can it be optimised
+        # disconnect and reconnect debezium
+        # re-index vectordb
+
+        Log.create(
+            user=user,
+            info=json.dumps(
+                {
+                    "action": "update_project",
+                    "user": user.id,
+                    "project": project.id,
+                }
+            ),
+        )
+
+        logger.info(f"Updated project {project.id} for user {user.id}")
+        return {"message": f"Project {project.id} updated successfully"}, 200

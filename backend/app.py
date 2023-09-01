@@ -17,8 +17,8 @@ api:
 """
 
 
-api.add_resource(Project, "/source/", "/source/<string:source_id>")
-api.add_resource(Search, "/source/<string:source_id>/search")
+api.add_resource(Project, "/project/", "/source/<string:project_id>")
+api.add_resource(Search, "/project/<string:project_id>/search")
 
 if __name__ == "__main__":
     app.run(debug=True)
