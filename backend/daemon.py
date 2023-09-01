@@ -1,7 +1,7 @@
 from src.daemon.daemon import Daemon
 from src.embedding_model.openai import OpenAIModel
-from src.vectordb.milvus import MilvusVectorDB
-from src.datasource.debezium.debezium import DebeziumDataSource
+from src.vector_db.milvus import MilvusVectorDB
+from src.data_source.debezium.debezium import DebeziumDataSource
 from config import Config
 import logging
 

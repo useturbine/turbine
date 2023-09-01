@@ -3,10 +3,13 @@ from typing import List, Iterator, Tuple, Optional
 from datetime import datetime
 from kafka import KafkaConsumer
 import json
-from src.datasource.interface import DataSource as DataSourceInterface, DataSourceUpdate
+from src.data_source.interface import (
+    DataSource as DataSourceInterface,
+    DataSourceUpdate,
+)
 import logging
-from src.datasource.debezium.connector.postgres import PostgresConnector
-from src.datasource.debezium.connector.mongo import MongoConnector
+from src.data_source.debezium.connector.postgres import PostgresConnector
+from src.data_source.debezium.connector.mongo import MongoConnector
 
 
 logger = logging.getLogger(__name__)

@@ -1,4 +1,4 @@
-from src.vectordb.interface import VectorDB, VectorItem, VectorSearchResult
+from src.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
 import pinecone
 from pinecone import Vector
 from typing import List

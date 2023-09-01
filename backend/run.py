@@ -1,5 +1,5 @@
-from src.vectordb.milvus import MilvusVectorDB
-from src.vectordb.pinecone import PineconeVectorDB
+from src.vector_db.milvus import MilvusVectorDB
+from src.vector_db.pinecone import PineconeVectorDB
 from config import Config
 
 # vector_db = MilvusVectorDB(url=Config.milvus_url)

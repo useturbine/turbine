@@ -1,5 +1,5 @@
 import boto3
-from src.datasource.interface import DataSource
+from src.data_source.interface import DataSource
 from typing import Iterator, Tuple, Optional
 
 

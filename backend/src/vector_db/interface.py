@@ -23,7 +23,7 @@ class VectorDB:
     """
 
     @abstractmethod
-    def create_collection(self, name: str, id_max_length: int, dimension: int) -> None:
+    def create_collection(self, name: str, dimension: int) -> None:
         """Create a new collection in the database."""
         pass
 

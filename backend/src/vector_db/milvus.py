@@ -8,7 +8,7 @@ from pymilvus import (
     utility,
 )
 from typing import List
-from src.vectordb.interface import VectorDB, VectorItem, VectorSearchResult
+from src.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
 
 
 class MilvusVectorDB(VectorDB):

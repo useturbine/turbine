@@ -1,8 +1,8 @@
 from src.embedding_model.interface import EmbeddingModel
 from src.db.models import Log, Project, Document
-from src.vectordb.milvus import MilvusVectorDB
-from src.vectordb.interface import VectorItem
-from src.datasource.interface import DataSource
+from src.vector_db.milvus import MilvusVectorDB
+from src.vector_db.interface import VectorItem
+from src.data_source.interface import DataSource
 import logging
 import hashlib
 

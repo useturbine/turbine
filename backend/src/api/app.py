@@ -3,13 +3,12 @@ from .schema import Project as ProjectSchema
 from src.db.models import Project, Log
 from .auth import get_user
 from logging import getLogger
-from src.datasource.debezium.debezium import DebeziumDataSource
-from src.vectordb.milvus import MilvusVectorDB
+from src.data_source.debezium.debezium import DebeziumDataSource
 from src.embedding_model.openai import OpenAIModel
 from config import Config
 import json
 from typing import Optional
-
+from .utils import get_vector_db, get_embedding_model
 
 logger = getLogger(__name__)
 app = FastAPI()
@@ -17,29 +16,32 @@ app = FastAPI()
 debezium = DebeziumDataSource(
     debezium_url=Config.debezium_url, kafka_url=Config.kafka_url
 )
-vector_db = MilvusVectorDB(url=Config.milvus_url, token=Config.milvus_token)
-embedding_model = OpenAIModel(api_key=Config.openai_api_key)
 
 
 @app.post("/v1/projects", status_code=201)
 def create_project(project: ProjectSchema, user=Depends(get_user)):
     project_instance = Project.create(config=project.model_dump(), user=user)
 
+    vector_db = get_vector_db(project.vector_db)
+    embedding_model = get_embedding_model(project.embedding_model)
+
     try:
-        debezium.add_connector(
-            id=project_instance.id,
-            type=project.data_source.type,
-            config=project.data_source.config,
-        )
+        if project.data_source.type in ["mongo", "postgres"]:
+            debezium.add_connector(
+                id=project_instance.id,
+                type=project.data_source.type,
+                config=project.data_source.config,
+            )
     except Exception as e:
         project_instance.delete_instance()
         logger.info(f"Failed to add connector to debezium: {e}")
         raise HTTPException(status_code=400, detail="Invalid data source config")
 
     try:
-        vector_db.create_collection(
-            f"turbine{project_instance.id}", OpenAIModel.embedding_dimension
-        )
+        if project.vector_db == "milvus":
+            vector_db.create_collection(
+                f"turbine{project_instance.id}", embedding_model.embedding_dimension
+            )
     except Exception as e:
         project_instance.delete_instance()
         debezium.delete_connector(project_instance.id)
@@ -77,6 +79,8 @@ def delete_project(id: str, user=Depends(get_user)):
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
+    vector_db = get_vector_db(project.vector_db)
+
     project.delete_instance()
     debezium.delete_connector(project.id)
     vector_db.drop_collection(f"turbine_{project.id}")
@@ -100,6 +104,8 @@ def update_project(id: str, project: ProjectSchema, user=Depends(get_user)):
     project_instance = Project.get_or_none(Project.id == id, Project.user == user)
     if not project_instance:
         raise HTTPException(status_code=404, detail="Project not found")
+
+    vector_db = get_vector_db(project.vector_db)
 
     project_instance.config = project.model_dump_json()
     project_instance.save()
@@ -144,6 +150,9 @@ def search(project_id: str, query: str, limit: int = 10, user=Depends(get_user))
     project = Project.get_or_none(Project.id == project_id, Project.user == user)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+
+    vector_db = get_vector_db(project.vector_db)
+    embedding_model = get_embedding_model(project.embedding_model)
 
     results = vector_db.search(
         collection_name=f"turbine{project.id}",

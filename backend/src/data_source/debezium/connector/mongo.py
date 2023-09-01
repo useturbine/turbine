@@ -1,5 +1,5 @@
-from src.datasource.debezium.connector.interface import DebeziumConnector
-from src.datasource.interface import DataSourceUpdate
+from src.data_source.debezium.connector.interface import DebeziumConnector
+from src.data_source.interface import DataSourceUpdate
 from kafka.consumer.fetcher import ConsumerRecord
 from typing import List
 from src.db.models import Project
