@@ -35,27 +35,15 @@ services:
 
   redpanda:
     container_name: redpanda
-    image: vectorized/redpanda
-    ports:
-      - "9092:9092"
-      - "29092:29092"
+    image: redpandadata/redpanda
     command:
-      - redpanda
-      - start
+      - redpanda start
+      - --smp 1
       - --overprovisioned
-      - --smp
-      - "1"
-      - --memory
-      - "1G"
-      - --reserve-memory
-      - "0M"
-      - --node-id
-      - "0"
-      - --kafka-addr
-      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
-      - --advertise-kafka-addr
-      - PLAINTEXT://redpanda:29092,OUTSIDE://redpanda:9092
-      - --check=false
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+    ports:
+      - "19092:19092"
 
   debezium:
     image: debezium/connect
