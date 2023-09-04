@@ -53,4 +53,10 @@ export default {
       <link rel="icon" type="image/svg" href="/images/turbine.svg" />
     </>
   ),
+  feedback: {
+    content: null,
+  },
+  editLink: {
+    text: null,
+  },
 };
