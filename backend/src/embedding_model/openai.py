@@ -1,4 +1,5 @@
-from src.embedding_model.interface import EmbeddingModel, DistanceFunction
+from src.embedding_model.interface import EmbeddingModel
+from src.schema import SimilarityMetric
 import tiktoken
 import openai
 from typing import List
@@ -6,7 +7,7 @@ from typing import List
 
 class OpenAIModel(EmbeddingModel):
     embedding_dimension = 1536
-    distance_function = DistanceFunction.Cosine
+    similarity_metric = SimilarityMetric.Cosine
 
     def __init__(self, api_key: str) -> None:
         openai.api_key = api_key

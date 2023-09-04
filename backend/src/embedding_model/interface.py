@@ -1,16 +1,11 @@
 from abc import abstractmethod
 from typing import List
-from enum import Enum
-
-
-class DistanceFunction(Enum):
-    Cosine = "cosine"
-    Euclidean = "euclidean"
+from src.schema import SimilarityMetric
 
 
 class EmbeddingModel:
     embedding_dimension: int
-    distance_function: DistanceFunction
+    similarity_metric: SimilarityMetric
 
     @abstractmethod
     def get_embedding(self, text: str) -> List[float]:

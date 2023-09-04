@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from enum import Enum
 
 
 class PostgresConfig(BaseModel):
@@ -13,3 +14,8 @@ class PostgresConfig(BaseModel):
 class MongoConfig(BaseModel):
     url: str
     collection: str
+
+
+class SimilarityMetric(Enum):
+    Cosine = "cosine"
+    Euclidean = "euclidean"
