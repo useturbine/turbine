@@ -1,0 +1,60 @@
+import { Tabs, Tab, Steps } from "nextra/components";
+
+# Quickstart
+
+In this guide, we will create a Turbine project and get it up and running in a few minutes. To follow this guide, you'll need a Turbine API key. You can get one by signing up for a [free account](https://useturbine.com).
+
+<Steps>
+
+### Install the Turbine SDK
+
+<Tabs items={["Python", "TypeScript"]}>
+  <Tab>
+  ```bash
+  pip install turbine-sdk
+  ```
+  </Tab>
+  <Tab>
+  ```bash
+  npm install @useturbine/turbine
+  ```
+  </Tab>
+</Tabs>
+
+### Create a Turbine project
+
+<Tabs items={["Python", "TypeScript"]}>
+  <Tab>
+  ```python
+  turbine = Turbine(api_key="YOUR_API_KEY")
+  project_id = turbine.create_project("my-project")
+  ```
+  </Tab>
+  <Tab>
+  ```typescript
+  const turbine = new Turbine(apiKey="YOUR_API_KEY")
+  const projectId = await turbine.createProject("my-project")
+  ```
+  </Tab>
+</Tabs>
+
+### Run search queries
+
+<Tabs items={["Python", "TypeScript"]}>
+  <Tab>
+  ```python
+  turbine = Turbine(api_key="YOUR_API_KEY")
+  results = turbine.search("my-project", "my query")
+  ```
+  </Tab>
+  <Tab>
+  ```typescript
+  const turbine = new Turbine(apiKey="YOUR_API_KEY");
+  const results = await turbine.search("my-project", "my query");
+  ```
+  </Tab>
+</Tabs>
+
+
+</Steps>
+
