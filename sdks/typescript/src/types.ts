@@ -21,7 +21,7 @@ type MongoDataSource = {
 export type ProjectConfig = {
   dataSource: PostgresDataSource | MongoDataSource;
   embeddingModel: "openai";
-  vectorDB: "milvus" | "pinecone";
+  vectorDb: "milvus" | "pinecone";
   similarityMetric: "cosine" | "euclidean";
 };
 

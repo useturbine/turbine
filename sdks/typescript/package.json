@@ -1,6 +1,6 @@
 {
   "name": "@useturbine/turbine",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "TypeScript SDK for Turbine",
   "license": "MIT",
   "main": "dist/index.js",

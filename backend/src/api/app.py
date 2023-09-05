@@ -63,17 +63,18 @@ def create_project(project: ProjectSchema, user=Depends(get_user)):
 
 
 @app.get("/v1/projects")
+@app.get("/v1/projects/{id}")
 def get_projects(id: Optional[str] = None, user=Depends(get_user)):
     if id:
         project = Project.get_or_none(Project.id == id, Project.user == user)
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
-        return project.to_dict(), 200
+        return project.to_dict()
 
     return [p.to_dict() for p in Project.select().where(Project.user == user)]
 
 
-@app.delete("/v1/projects")
+@app.delete("/v1/projects/{id}")
 def delete_project(id: str, user=Depends(get_user)):
     project = Project.get_or_none(Project.id == id, Project.user == user)
     if not project:
@@ -99,7 +100,7 @@ def delete_project(id: str, user=Depends(get_user)):
     return {"message": f"Project {project.id} deleted successfully"}
 
 
-@app.put("/v1/projects")
+@app.put("/v1/projects/{id}")
 def update_project(id: str, project: ProjectSchema, user=Depends(get_user)):
     project_instance = Project.get_or_none(Project.id == id, Project.user == user)
     if not project_instance:

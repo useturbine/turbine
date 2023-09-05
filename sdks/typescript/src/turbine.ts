@@ -1,13 +1,13 @@
 import axios, { Axios } from "axios";
 import { Project, ProjectConfig, SearchResult } from "./types";
-import { snakeifyKeys } from "./utils";
+import { snakeifyKeys, camelizeKeys } from "./utils";
 
 export class Turbine {
   private axios: Axios;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, baseUrl?: string) {
     this.axios = axios.create({
-      baseURL: "http://localhost/v1",
+      baseURL: baseUrl ?? "https://api.useturbine.com/v1",
       headers: {
         "X-Turbine-Key": apiKey,
       },
@@ -21,12 +21,12 @@ export class Turbine {
 
   async getProject(projectId: string): Promise<Project> {
     const response = await this.axios.get(`/projects/${projectId}`);
-    return response.data;
+    return camelizeKeys(response.data);
   }
 
   async getProjects(): Promise<Project[]> {
     const response = await this.axios.get("/projects");
-    return response.data;
+    return camelizeKeys(response.data);
   }
 
   async deleteProject(projectId: string): Promise<void> {
