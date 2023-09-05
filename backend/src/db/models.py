@@ -50,7 +50,7 @@ class Project(Model):
         return super().save(*args, **kwargs)
 
     def to_dict(self):
-        return {"id": self.id, "config": self.config}
+        return {"id": str(self.id), "config": self.config}
 
 
 class Log(Model):

@@ -14,8 +14,8 @@ export class Turbine {
     });
   }
 
-  async createProject(project: ProjectConfig): Promise<string> {
-    const response = await this.axios.post("/projects", snakeifyKeys(project));
+  async createProject(config: ProjectConfig): Promise<string> {
+    const response = await this.axios.post("/projects", snakeifyKeys(config));
     return response.data.id;
   }
 

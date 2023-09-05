@@ -1,38 +1,39 @@
-from turbine_sdk.turbine.api import project, search
+from typing import Optional, List
+from httpx import Client
+from .types import Project, SearchResult, ProjectConfig
 
 
 class Turbine:
-    def __init__(self, token):
-        self.turbine_systems = None
-        self.project_api = project.ProjectAPI(token)
-        self.search_api = search.SearchAPI(token)
+    def __init__(self, api_key: str, base_url: Optional[str] = None):
+        self.client = Client(
+            headers={"X-Turbine-Key": api_key},
+            base_url=base_url or "https://api.useturbine.com/v1",
+        )
 
-    def create_project(self, project_data, _async=False):
-        if _async:
-            return self.project_api.create_project_async(project_data)
+    def get_projects(self) -> List[Project]:
+        response = self.client.get("/projects")
+        if response.status_code != 200:
+            raise Exception(response.text)
+        return [Project(**project) for project in response.json()]
 
-        return self.project_api.create_project(project_data)
+    def get_project(self, project_id: str) -> Project:
+        response = self.client.get(f"/projects/{project_id}")
+        if response.status_code != 200:
+            raise Exception(response.text)
+        return Project(**response.json())
 
-    def get_project(self, project_id=None, _async=False):
-        if _async:
-            return self.project_api.get_project_async(project_id)
+    def create_project(self, config: ProjectConfig) -> str:
+        response = self.client.post("/projects", json=config.model_dump())
+        if response.status_code != 201:
+            raise Exception(response.text)
+        return response.json()["id"]
 
-        return self.project_api.get_project(project_id)
-
-    def update_project(self, project_id, project_data, _async=False):
-        if _async:
-            return self.project_api.update_project_async(project_id, project_data)
-
-        return self.project_api.update_project(project_id, project_data)
-
-    def delete_project(self, project_id, _async=False):
-        if _async:
-            return self.project_api.delete_project_async(project_id)
-
-        return self.project_api.delete_project(project_id)
-
-    def search(self, **args):
-        return self.search_api.search(**args)
-
-    def status(self):
-        return self.turbine_systems.status()
+    def search(
+        self, project_id: str, query: str, limit: int = 10
+    ) -> List[SearchResult]:
+        response = self.client.get(
+            f"/projects/{project_id}/search", params={query, limit}
+        )
+        if response.status_code != 200:
+            raise Exception(response.text)
+        return [SearchResult(**result) for result in response.json()]
