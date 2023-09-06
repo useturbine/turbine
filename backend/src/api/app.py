@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
-from .schema import Project as ProjectSchema
+from src.schema import Project as ProjectSchema
 from src.db.models import Project, Log
 from .auth import get_user
 from logging import getLogger
@@ -8,9 +8,15 @@ from src.embedding_model.openai import OpenAIModel
 from config import Config
 import json
 from typing import Optional
-from .utils import get_vector_db, get_embedding_model
+from src.utils import get_vector_db, get_embedding_model
+import logging
+
 
 logger = getLogger(__name__)
+logging.basicConfig(
+    level=logging.DEBUG,
+)
+
 app = FastAPI()
 
 debezium = DebeziumDataSource(
@@ -38,10 +44,9 @@ def create_project(project: ProjectSchema, user=Depends(get_user)):
         raise HTTPException(status_code=400, detail="Invalid data source config")
 
     try:
-        if project.vector_db == "milvus":
-            vector_db.create_collection(
-                f"turbine{project_instance.id}", embedding_model.embedding_dimension
-            )
+        vector_db.create_collection(
+            f"turbine{project_instance.id}", embedding_model.embedding_dimension
+        )
     except Exception as e:
         project_instance.delete_instance()
         debezium.delete_connector(project_instance.id)
@@ -84,7 +89,7 @@ def delete_project(id: str, user=Depends(get_user)):
 
     project.delete_instance()
     debezium.delete_connector(project.id)
-    vector_db.drop_collection(f"turbine_{project.id}")
+    vector_db.drop_collection(f"turbine{project.id}")
 
     Log.create(
         user=user,

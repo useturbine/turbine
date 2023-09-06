@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from enum import Enum
+from typing import Literal
 
 
 class PostgresConfig(BaseModel):
@@ -16,6 +16,21 @@ class MongoConfig(BaseModel):
     collection: str
 
 
-class SimilarityMetric(Enum):
-    Cosine = "cosine"
-    Euclidean = "euclidean"
+class PostgresDataSource(BaseModel):
+    type: Literal["postgres"]
+    config: PostgresConfig
+
+
+class MongoDataSource(BaseModel):
+    type: Literal["mongo"]
+    config: MongoConfig
+
+
+SimilarityMetric = Literal["cosine", "euclidean"]
+
+
+class Project(BaseModel):
+    data_source: PostgresDataSource | MongoDataSource
+    embedding_model: Literal["openai"]
+    vector_db: Literal["milvus", "pinecone"]
+    similarity_metric: SimilarityMetric

@@ -1,34 +1,33 @@
-from src.embedding_model.interface import EmbeddingModel
 from src.db.models import Log, Project, Document
-from src.vector_db.milvus import MilvusVectorDB
 from src.vector_db.interface import VectorItem
-from src.data_source.interface import DataSource
+from src.data_source.debezium.debezium import DebeziumDataSource
 import logging
 import hashlib
+from src.utils import get_vector_db, get_embedding_model
+from config import Config
 
 
 logger = logging.getLogger(__name__)
 
+data_source = DebeziumDataSource(
+    debezium_url=Config.debezium_url, kafka_url=Config.kafka_url
+)
+
 
 class Daemon:
-    def __init__(
-        self,
-        data_source: DataSource,
-        embedding_model: EmbeddingModel,
-        vector_db: MilvusVectorDB,
-    ) -> None:
-        self.data_source = data_source
-        self.model = embedding_model
-        self.vector_db = vector_db
-
-    def run(self):
-        for update in self.data_source.listen_for_updates():
+    @staticmethod
+    def run():
+        for update in data_source.listen_for_updates():
             logger.info(f"Received update: {update}")
             collection_name = f"turbine{update['data_source']}"
-            user = Project.get_by_id(update["data_source"]).user
+
+            project = Project.get_by_id(update["data_source"])
+            user = project.user
+            vector_db = get_vector_db(project.config["vector_db"])
+            model = get_embedding_model(project.config["embedding_model"])
 
             if not update["document"]:
-                self.vector_db.delete(
+                vector_db.delete(
                     collection_name,
                     update["document_id"],
                 )
@@ -55,8 +54,9 @@ class Daemon:
                 logger.info(f"Skipping {update['document_id']}")
                 continue
 
-            embedding = self.model.get_embedding(update["document"])
-            self.vector_db.insert(
+            embedding = model.get_embedding(update["document"])
+            print(collection_name)
+            vector_db.insert(
                 collection_name,
                 [VectorItem(id=update["document_id"], vector=embedding)],
             )
