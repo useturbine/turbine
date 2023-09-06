@@ -2,6 +2,7 @@ from src.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
 import pinecone
 from pinecone import Vector
 from typing import List
+from src.schema import SimilarityMetric
 
 
 class PineconeVectorDB(VectorDB):
@@ -9,8 +10,10 @@ class PineconeVectorDB(VectorDB):
         pinecone.init(api_key=api_key, environment=environment)
 
     @staticmethod
-    def create_collection(name: str, dimension: int) -> None:
-        pinecone.create_index(name, dimension=dimension)
+    def create_collection(
+        name: str, dimension: int, similarity_metric: SimilarityMetric
+    ) -> None:
+        pinecone.create_index(name, dimension=dimension, metric=similarity_metric)
 
     @staticmethod
     def insert(collection_name: str, data: List[VectorItem]) -> None:

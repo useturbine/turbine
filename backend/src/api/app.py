@@ -45,7 +45,9 @@ def create_project(project: ProjectSchema, user=Depends(get_user)):
 
     try:
         vector_db.create_collection(
-            f"turbine{project_instance.id}", embedding_model.embedding_dimension
+            f"turbine{project_instance.id}",
+            embedding_model.embedding_dimension,
+            embedding_model.similarity_metric,
         )
     except Exception as e:
         project_instance.delete_instance()

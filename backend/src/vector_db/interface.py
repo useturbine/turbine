@@ -1,5 +1,6 @@
 from typing import List, TypedDict
 from abc import abstractmethod
+from src.schema import SimilarityMetric
 
 
 class VectorItem(TypedDict):
@@ -23,7 +24,9 @@ class VectorDB:
     """
 
     @abstractmethod
-    def create_collection(self, name: str, dimension: int) -> None:
+    def create_collection(
+        self, name: str, dimension: int, similarity_metric: SimilarityMetric
+    ) -> None:
         """Create a new collection in the database."""
         pass
 

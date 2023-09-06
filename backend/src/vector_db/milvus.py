@@ -9,6 +9,7 @@ from pymilvus import (
 )
 from typing import List
 from src.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
+from src.schema import SimilarityMetric
 
 
 class MilvusVectorDB(VectorDB):
@@ -16,7 +17,9 @@ class MilvusVectorDB(VectorDB):
         connections.connect("default", uri=url, token=token)
         self.id_max_length = id_max_length
 
-    def create_collection(self, name: str, dimension: int) -> None:
+    def create_collection(
+        self, name: str, dimension: int, similarity_metric: SimilarityMetric
+    ) -> None:
         fields = [
             FieldSchema(
                 name="id",
@@ -33,7 +36,7 @@ class MilvusVectorDB(VectorDB):
             field_name="embedding",
             index_params={
                 "index_type": "IVF_SQ8",
-                "metric_type": "L2",
+                "metric_type": "COSINE" if similarity_metric == "cosine" else "L2",
                 "params": {"nlist": 2048},
             },
         )
