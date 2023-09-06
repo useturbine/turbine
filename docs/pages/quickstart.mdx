@@ -1,6 +1,6 @@
 import { Tabs, Tab, Steps } from "nextra/components";
 
-# Quickstart
+# Quick Start
 
 In this guide, we will create a Turbine project and get it up and running in a few minutes. To follow this guide, you'll need a Turbine API key. You can get one by signing up for a [free account](https://useturbine.com).
 
@@ -26,14 +26,18 @@ In this guide, we will create a Turbine project and get it up and running in a f
 <Tabs items={["Python", "TypeScript"]}>
   <Tab>
   ```python
+  from turbine import Turbine
+
   turbine = Turbine(api_key="YOUR_API_KEY")
   project_id = turbine.create_project("my-project")
   ```
   </Tab>
   <Tab>
   ```typescript
-  const turbine = new Turbine(apiKey="YOUR_API_KEY")
-  const projectId = await turbine.createProject("my-project")
+  import { Turbine } from "@useturbine/turbine";
+
+  const turbine = new Turbine(apiKey="YOUR_API_KEY");
+  const projectId = await turbine.createProject("my-project");
   ```
   </Tab>
 </Tabs>
@@ -43,12 +47,16 @@ In this guide, we will create a Turbine project and get it up and running in a f
 <Tabs items={["Python", "TypeScript"]}>
   <Tab>
   ```python
+  from turbine import Turbine
+
   turbine = Turbine(api_key="YOUR_API_KEY")
   results = turbine.search("my-project", "my query")
   ```
   </Tab>
   <Tab>
   ```typescript
+  import { Turbine } from "@useturbine/turbine";
+
   const turbine = new Turbine(apiKey="YOUR_API_KEY");
   const results = await turbine.search("my-project", "my query");
   ```
