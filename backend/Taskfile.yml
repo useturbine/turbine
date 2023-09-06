@@ -22,7 +22,7 @@ tasks:
       - docker:clean:dev
       - docker:clean:prod
     cmds:
-      - cd docker/prod && docker compose up --remove-orphans --build
+      - cd docker/prod && docker compose up --remove-orphans --build -d
   api:
     desc: Run Turbine API locally.
     cmds:
