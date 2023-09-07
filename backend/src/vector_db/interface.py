@@ -1,14 +1,15 @@
-from typing import List, TypedDict
+from typing import List
 from abc import abstractmethod
 from src.schema import SimilarityMetric
+from pydantic import BaseModel
 
 
-class VectorItem(TypedDict):
+class VectorItem(BaseModel):
     id: str
     vector: List[float]
 
 
-class VectorSearchResult(TypedDict):
+class VectorSearchResult(BaseModel):
     id: str
     score: float
 

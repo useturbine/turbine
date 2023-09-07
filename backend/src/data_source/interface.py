@@ -1,10 +1,11 @@
 from abc import abstractmethod
-from typing import Iterator, Tuple, Optional, TypedDict
+from typing import Iterator, Tuple, Optional
+from pydantic import BaseModel
 from datetime import datetime
 
 
-class DataSourceUpdate(TypedDict):
-    data_source: str
+class DataSourceUpdate(BaseModel):
+    project_id: str
     document_id: str
     document: Optional[str]
 

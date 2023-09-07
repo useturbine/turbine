@@ -4,7 +4,6 @@ from src.db.models import Project, Log
 from .auth import get_user
 from logging import getLogger
 from src.data_source.debezium.debezium import DebeziumDataSource
-from src.embedding_model.openai import OpenAIModel
 from config import Config
 import json
 from typing import Optional
@@ -105,52 +104,6 @@ def delete_project(id: str, user=Depends(get_user)):
     )
     logger.info(f"Deleted project {project.id} for user {user.id}")
     return {"message": f"Project {project.id} deleted successfully"}
-
-
-@app.put("/v1/projects/{id}")
-def update_project(id: str, project: ProjectSchema, user=Depends(get_user)):
-    project_instance = Project.get_or_none(Project.id == id, Project.user == user)
-    if not project_instance:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    vector_db = get_vector_db(project.vector_db)
-
-    project_instance.config = project.model_dump_json()
-    project_instance.save()
-
-    try:
-        debezium.add_connector(
-            id=project_instance.id,
-            type=project.data_source.type,
-            config=project.data_source.config,
-        )
-    except Exception as e:
-        project_instance.delete_instance()
-        logger.info(f"Failed to add connector to debezium: {e}")
-        raise HTTPException(status_code=400, detail="Invalid data source config")
-
-    try:
-        vector_db.create_collection(
-            f"turbine{project_instance.id}", OpenAIModel.embedding_dimension
-        )
-    except Exception as e:
-        project_instance.delete_instance()
-        debezium.delete_connector(project_instance.id)
-        logger.info(f"Failed to create vector DB: {e}")
-        raise HTTPException(status_code=400, detail="Failed to create vector DB")
-
-    Log.create(
-        user=user,
-        info=json.dumps(
-            {
-                "action": "update_project",
-                "user": user.id,
-                "project": project_instance.id,
-            }
-        ),
-    )
-    logger.info(f"Updated project {project_instance.id} for user {user.id}")
-    return {"message": f"Project {project_instance.id} updated successfully"}
 
 
 @app.get("/v1/projects/{project_id}/search")

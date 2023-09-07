@@ -45,7 +45,7 @@ class MilvusVectorDB(VectorDB):
     def insert(collection_name: str, data: List[VectorItem]) -> None:
         collection = Collection(collection_name)
         collection.insert(
-            data=[[item["id"] for item in data], [item["vector"] for item in data]]
+            data=[[item.id for item in data], [item.vector for item in data]]
         )
         collection.flush()
 
@@ -65,10 +65,7 @@ class MilvusVectorDB(VectorDB):
         )
         collection.release()
         return [
-            {
-                "id": result.id,
-                "score": result.distance,
-            }
+            VectorSearchResult(id=result.id, score=result.distance)
             for result in list(results)[0]  # type: ignore
         ]
 

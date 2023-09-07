@@ -66,7 +66,7 @@ class MongoConnector(DebeziumConnector):
 
     @staticmethod
     def parse_message(message: ConsumerRecord) -> DataSourceUpdate:
-        data_source = message.topic.split(".")[3]
+        project_id = message.topic.split(".")[3]
         document_id = json.loads(message.key["payload"]["id"])["$oid"]
 
         if message.value["payload"]["op"] == "d":
@@ -76,8 +76,6 @@ class MongoConnector(DebeziumConnector):
             after_item.pop("_id")
             document = "\n".join(f"{k}: {v}" for k, v in after_item.items())
 
-        return {
-            "data_source": data_source,
-            "document_id": document_id,
-            "document": document,
-        }
+        return DataSourceUpdate(
+            project_id=project_id, document_id=document_id, document=document
+        )

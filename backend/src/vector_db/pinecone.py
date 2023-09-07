@@ -21,8 +21,8 @@ class PineconeVectorDB(VectorDB):
         index.upsert(
             vectors=[
                 Vector(
-                    values=vector["vector"],
-                    id=vector["id"],
+                    values=vector.vector,
+                    id=vector.id,
                 )
                 for vector in data
             ]
@@ -38,10 +38,7 @@ class PineconeVectorDB(VectorDB):
             top_k=limit,
         )
         return [
-            {
-                "id": result.id,
-                "score": result.score,
-            }
+            VectorSearchResult(id=result.id, score=result.score)
             for result in results["matches"]
         ]
 

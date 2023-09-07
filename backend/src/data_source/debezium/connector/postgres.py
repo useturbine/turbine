@@ -3,7 +3,6 @@ from src.data_source.interface import DataSourceUpdate
 from kafka.consumer.fetcher import ConsumerRecord
 from typing import List
 from src.db.models import Project
-import json
 import logging
 import requests
 import psycopg2
@@ -41,7 +40,7 @@ class PostgresConnector(DebeziumConnector):
 
     @staticmethod
     def parse_message(message: ConsumerRecord) -> DataSourceUpdate:
-        data_source = message.topic.split(".")[3]
+        project_id = message.topic.split(".")[3]
         document_id = str(message.key["payload"]["id"])
 
         document = None
@@ -50,11 +49,11 @@ class PostgresConnector(DebeziumConnector):
                 f"{k}: {v}" for k, v in message.value["payload"]["after"].items()
             )
 
-        return {
-            "data_source": data_source,
-            "document_id": document_id,
-            "document": document,
-        }
+        return DataSourceUpdate(
+            project_id=project_id,
+            document_id=document_id,
+            document=document,
+        )
 
     @staticmethod
     def get_topics() -> List[str]:

@@ -3,10 +3,7 @@ from typing import List, Iterator, Tuple, Optional
 from datetime import datetime
 from kafka import KafkaConsumer
 import json
-from src.data_source.interface import (
-    DataSource as DataSourceInterface,
-    DataSourceUpdate,
-)
+from src.data_source.interface import DataSource, DataSourceUpdate
 import logging
 from src.data_source.debezium.connector.postgres import PostgresConnector
 from src.data_source.debezium.connector.mongo import MongoConnector
@@ -15,7 +12,7 @@ from src.data_source.debezium.connector.mongo import MongoConnector
 logger = logging.getLogger(__name__)
 
 
-class DebeziumDataSource(DataSourceInterface):
+class DebeziumDataSource(DataSource):
     def __init__(
         self,
         debezium_url: str,
