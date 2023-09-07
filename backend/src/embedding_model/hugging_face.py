@@ -4,9 +4,6 @@ from typing import List
 
 
 class HuggingFaceModel(EmbeddingModel):
-    embedding_dimension = 384
-    similarity_metric = "cosine"
-
     def __init__(self, token: str, model: str) -> None:
         self.model = model
         self.client = InferenceClient(token=token)

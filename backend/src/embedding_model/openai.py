@@ -4,9 +4,6 @@ from typing import List
 
 
 class OpenAIModel(EmbeddingModel):
-    embedding_dimension = 1536
-    similarity_metric = "cosine"
-
     def __init__(self, api_key: str, model: str) -> None:
         openai.api_key = api_key
         self.model = model

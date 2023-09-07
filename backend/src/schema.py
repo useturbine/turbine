@@ -4,6 +4,7 @@ from typing import Literal, Optional, List, Union
 
 class DataSourceBase(BaseModel):
     fields: Optional[List[str]] = None
+    filter: Optional[str] = None
 
 
 class PostgresConfig(BaseModel):
