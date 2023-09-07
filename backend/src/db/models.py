@@ -66,7 +66,7 @@ class Log(Model):
 class Document(Model):
     id = CharField(primary_key=True)
     created_at = DateTimeField(default=datetime.now())
-    project = ForeignKeyField(Project, backref="documents")
+    project = ForeignKeyField(Project, backref="documents", on_delete="CASCADE")
     hash = CharField()
 
     class Meta:

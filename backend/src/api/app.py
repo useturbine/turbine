@@ -86,7 +86,7 @@ def delete_project(id: str, user=Depends(get_user)):
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    vector_db = get_vector_db(project.vector_db)
+    vector_db = get_vector_db(project.config["vector_db"])
 
     project.delete_instance()
     debezium.delete_connector(project.id)
