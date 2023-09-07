@@ -41,13 +41,23 @@ class PostgresConnector(DebeziumConnector):
     @staticmethod
     def parse_message(message: ConsumerRecord) -> DataSourceUpdate:
         project_id = message.topic.split(".")[3]
+        project = Project.get_by_id(project_id)
+        fields = project.config["data_source"].get("fields", None)
+
         document_id = str(message.key["payload"]["id"])
 
         document = None
         if message.value["payload"]["op"] != "d":
-            document = "\n".join(
-                f"{k}: {v}" for k, v in message.value["payload"]["after"].items()
-            )
+            if fields is not None:
+                document = "\n".join(
+                    f"{k}: {v}"
+                    for k, v in message.value["payload"]["after"].items()
+                    if k in fields
+                )
+            else:
+                document = "\n".join(
+                    f"{k}: {v}" for k, v in message.value["payload"]["after"].items()
+                )
 
         return DataSourceUpdate(
             project_id=project_id,

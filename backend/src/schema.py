@@ -1,5 +1,9 @@
 from pydantic import BaseModel
-from typing import Literal
+from typing import Literal, Optional, List, Union
+
+
+class DataSourceBase(BaseModel):
+    fields: Optional[List[str]] = None
 
 
 class PostgresConfig(BaseModel):
@@ -11,26 +15,29 @@ class PostgresConfig(BaseModel):
     table: str
 
 
+class PostgresDataSource(DataSourceBase):
+    type: Literal["postgres"]
+    config: PostgresConfig
+
+
 class MongoConfig(BaseModel):
     url: str
     collection: str
 
 
-class PostgresDataSource(BaseModel):
-    type: Literal["postgres"]
-    config: PostgresConfig
-
-
-class MongoDataSource(BaseModel):
+class MongoDataSource(DataSourceBase):
     type: Literal["mongo"]
     config: MongoConfig
+
+
+DataSource = Union[PostgresDataSource, MongoDataSource]
 
 
 SimilarityMetric = Literal["cosine", "euclidean"]
 
 
 class Project(BaseModel):
-    data_source: PostgresDataSource | MongoDataSource
+    data_source: DataSource
     embedding_model: Literal["openai"]
     vector_db: Literal["milvus", "pinecone"]
     similarity_metric: SimilarityMetric
