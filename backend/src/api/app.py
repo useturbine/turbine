@@ -7,9 +7,9 @@ from src.data_source.debezium.debezium import DebeziumDataSource
 from config import Config
 import json
 from typing import Optional
-from src.utils import get_vector_db, get_embedding_model
+from src.utils import get_vector_db
 import logging
-
+from src.embedding_model import get_embedding_model
 
 logger = getLogger(__name__)
 logging.basicConfig(
@@ -45,7 +45,7 @@ def create_project(project: ProjectSchema, user=Depends(get_user)):
     try:
         vector_db.create_collection(
             f"turbine{project_instance.id}",
-            embedding_model.embedding_dimension,
+            embedding_model.dimensions,
             embedding_model.similarity_metric,
         )
     except Exception as e:
@@ -117,7 +117,7 @@ def search(project_id: str, query: str, limit: int = 10, user=Depends(get_user))
 
     results = vector_db.search(
         collection_name=f"turbine{project.id}",
-        data=embedding_model.get_embedding(query),
+        data=embedding_model.model.get_embedding(query),
         limit=limit,
     )
 

@@ -34,10 +34,10 @@ DataSource = Union[PostgresDataSource, MongoDataSource]
 
 
 SimilarityMetric = Literal["cosine", "euclidean"]
+EmbeddingModel = Literal["text-embedding-ada-002", "all-MiniLM-L6-v2"]
 
 
 class Project(BaseModel):
     data_source: DataSource
-    embedding_model: Literal["openai"]
+    embedding_model: EmbeddingModel
     vector_db: Literal["milvus", "pinecone"]
-    similarity_metric: SimilarityMetric

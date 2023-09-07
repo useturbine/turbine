@@ -13,10 +13,12 @@ services:
       - milvus
       - redpanda
       - debezium
+      - postgres
     env_file: .env
-    command: sh -c "sleep 10 && uvicorn src.api.app:app --reload --host 0.0.0.0 --port 80"
+    command: uvicorn src.api.app:app --reload --host 0.0.0.0 --port 80
     volumes:
       - ../..:/turbine-api
+    restart: always
 
   turbine-daemon:
     container_name: turbine-daemon
@@ -29,9 +31,10 @@ services:
       - redpanda
       - debezium
     env_file: .env
-    command: sh -c "sleep 10 && python3 daemon.py"
+    command: python3 daemon.py
     volumes:
       - ../..:/turbine-daemon
+    restart: always
 
   redpanda:
     container_name: redpanda

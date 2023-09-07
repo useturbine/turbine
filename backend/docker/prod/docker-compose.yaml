@@ -13,6 +13,7 @@ services:
       - redpanda
       - debezium
     env_file: .env
+    restart: always
 
   turbine-daemon:
     container_name: turbine-daemon
@@ -24,6 +25,7 @@ services:
       - redpanda
       - debezium
     env_file: .env
+    restart: always
 
   redpanda:
     container_name: redpanda
@@ -36,6 +38,7 @@ services:
       - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
     ports:
       - "19092:19092"
+    restart: always
 
   debezium:
     image: debezium/connect
@@ -50,3 +53,4 @@ services:
       CONFIG_STORAGE_TOPIC: "inventory.configs"
       OFFSET_STORAGE_TOPIC: "inventory.offset"
       STATUS_STORAGE_TOPIC: "inventory.status"
+    restart: always

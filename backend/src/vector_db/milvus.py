@@ -55,13 +55,12 @@ class MilvusVectorDB(VectorDB):
     ) -> List[VectorSearchResult]:
         collection = Collection(collection_name)
         collection.load()
+        metric_type = collection.index().params["metric_type"]
         results = collection.search(
             data=[data],
             anns_field="embedding",
             limit=limit,
-            param={
-                "metric_type": "L2",
-            },
+            param={"metric_type": metric_type},
         )
         collection.release()
         return [

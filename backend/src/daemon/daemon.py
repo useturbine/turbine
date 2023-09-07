@@ -3,7 +3,8 @@ from src.vector_db import VectorItem
 from src.data_source import DebeziumDataSource
 import logging
 import hashlib
-from src.utils import get_vector_db, get_embedding_model
+from src.utils import get_vector_db
+from src.embedding_model import get_embedding_model
 from config import Config
 
 
@@ -52,7 +53,7 @@ class Daemon:
                 logger.info(f"Skipping {update.document_id}")
                 continue
 
-            embedding = model.get_embedding(update.document)
+            embedding = model.model.get_embedding(update.document)
             print(collection_name)
             vector_db.insert(
                 collection_name,

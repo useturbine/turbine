@@ -1,20 +1,5 @@
-from src.vector_db.milvus import MilvusVectorDB
-from src.vector_db.pinecone import PineconeVectorDB
-from config import Config
+from src.embedding_model import get_embedding_model
 
-# vector_db = MilvusVectorDB(url=Config.milvus_url)
-vector_db = PineconeVectorDB(
-    api_key=Config.pinecone_api_key, environment=Config.pinecone_environment
-)
-
-try:
-    vector_db.drop_collection("testcollection")
-except Exception as e:
-    print(e)
-
-
-vector_db.create_collection("testcollection", 3)
-vector_db.insert("testcollection", [{"id": "1", "vector": [0.1, 0.2, 0.3]}])
-
-response = vector_db.search("testcollection", [0.1, 0.2, 0.3], limit=10)
-print(response)
+model = get_embedding_model("all-MiniLM-L6-v2")
+embedding = model.model.get_embedding("Hello world!")
+print(embedding)
