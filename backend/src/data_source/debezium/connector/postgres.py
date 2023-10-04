@@ -6,9 +6,47 @@ from src.db.models import Project
 import logging
 import requests
 import psycopg2
+from pydantic import BaseModel
+from urllib.parse import urlparse
 from src.schema import PostgresConfig
 
 logger = logging.getLogger(__name__)
+
+
+class PostgresConnectionParams(BaseModel):
+    host: str
+    port: int
+    user: str
+    password: str
+    database: str
+
+
+def parse_postgres_url(url: str) -> PostgresConnectionParams:
+    """
+    Parse Postgres connection params from a connection string URL.
+
+    Args:
+        url (str): A connection string in the format postgres://username:password@host:port/database_name
+    """
+    parsed_url = urlparse(url)
+    if (
+        parsed_url.scheme != "postgres"
+        or not parsed_url.hostname
+        or not parsed_url.port
+        or not parsed_url.username
+        or not parsed_url.password
+        or not parsed_url.path
+        or len(parsed_url.path) < 2
+    ):
+        raise ValueError("Invalid Postgres connection string")
+
+    return PostgresConnectionParams(
+        host=parsed_url.hostname,
+        port=parsed_url.port,
+        user=parsed_url.username,
+        password=parsed_url.password,
+        database=parsed_url.path[1:],
+    )
 
 
 class PostgresConnector(DebeziumConnector):
@@ -16,6 +54,7 @@ class PostgresConnector(DebeziumConnector):
         self.debezium_url = debezium_url
 
     def add_connector(self, id: str, config: PostgresConfig) -> None:
+        connection_params = parse_postgres_url(config.url)
         response = requests.post(
             f"{self.debezium_url}/connectors",
             json={
@@ -25,11 +64,11 @@ class PostgresConnector(DebeziumConnector):
                     "plugin.name": "pgoutput",
                     "publication.autocreate.mode": "filtered",
                     "include.schema.changes": "false",
-                    "database.hostname": config.host,
-                    "database.port": config.port,
-                    "database.user": config.user,
-                    "database.password": config.password,
-                    "database.dbname": config.database,
+                    "database.hostname": connection_params.host,
+                    "database.port": connection_params.port,
+                    "database.user": connection_params.user,
+                    "database.password": connection_params.password,
+                    "database.dbname": connection_params.database,
                     "table.include.list": config.table,
                     "topic.prefix": f"turbine.debezium.postgres.{id}",
                 },
@@ -80,13 +119,14 @@ class PostgresConnector(DebeziumConnector):
 
     @staticmethod
     def validate_config(config: PostgresConfig) -> bool:
+        connection_params = parse_postgres_url(config.url)
         try:
             connection = psycopg2.connect(
-                host=config.host,
-                port=config.port,
-                user=config.user,
-                password=config.password,
-                dbname=config.database,
+                host=connection_params.host,
+                port=connection_params.port,
+                user=connection_params.user,
+                password=connection_params.password,
+                dbname=connection_params.database,
             )
         except psycopg2.OperationalError:
             return False
