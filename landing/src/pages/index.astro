@@ -1,58 +1,21 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Navigation from "../components/global/Navigation.astro";
-
-import Hero from "../components/landing/Hero.astro";
-import SectionOne from "../components/landing/SectionOne.astro";
-import SectionTwo from "../components/landing/SectionTwo.astro";
-import Testimonial from "../components/global/Testimonial.astro";
-import Pricing from "../components/landing/Pricing.astro";
-import Cta from "../components/global/Cta.astro";
-import Footer from "../components/global/Footer.astro";
-import { AstroSeo } from "@astrolib/seo";
+import Container from "@components/container.astro";
+import Features from "@components/features.astro";
+import Faq from "@components/faq.astro";
+import Hero from "@components/hero.astro";
+// import Newsletter from "@components/newsletter.astro";
+import Layout from "@layouts/Layout.astro";
+import CodeSample from "@components/codesample.astro";
+import Pricing from "@components/pricing.astro";
 ---
 
-<!---
-Use AstroSeo in all the pages you want different Seo than the index page
--->
-<AstroSeo
-  title="Home"
-  description="Rotate your way to refined searches"
-  canonical="https://useturbine.com"
-  openGraph={{
-    url: "https://useturbine.com",
-    title: "Turbine",
-    description: "Rotate your way to refined searches",
-    images: [
-      {
-        url: "https://www.michaelandreuzza.com/opengraph/social-og.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Social open graph",
-        type: "image/jpeg",
-      },
-      {
-        url: "https://www.michaelandreuzza.com/opengraph/twitter-og.jpg",
-        width: 4096,
-        height: 4096,
-        alt: "Twitter open graph",
-        type: "image/jpeg",
-      },
-      { url: "https://www.michaelandreuzza.com/opengraph/social-og.jpg" },
-      { url: "https://www.michaelandreuzza.com/opengraph/twitter-og.jpg" },
-    ],
-    site_name: "Use Turbine",
-  }}
-  twitter={{
-    handle: "@solanki",
-    site: "@site",
-    cardType: "summary_large_image",
-  }}
-/>
-<BaseLayout>
-  <Navigation />
-  <Hero />
-  <SectionOne />
-  <Pricing />
-  <Footer />
-</BaseLayout>
+<Layout title="Turbine" lang="en">
+	<Container>
+		<Hero />
+		<Features />
+		<CodeSample />
+		<Faq />
+		<Pricing />
+		<!-- <Newsletter /> -->
+	</Container>
+</Layout>
