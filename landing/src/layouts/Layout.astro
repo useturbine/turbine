@@ -16,7 +16,7 @@ const resolvedImageWithDomain = new URL("/meta/opengraph.png", Astro.site).toStr
 
 const { title = null } = Astro.props;
 
-const makeTitle = title ? title + " | " + "Turbine" : "Turbine - Automated Data Pipeline for Your AI Apps";
+const makeTitle = title ? title + " | " + "Turbine" : "Turbine | Automated Data Pipeline for Your AI Apps";
 ---
 
 <!doctype html>
@@ -41,7 +41,7 @@ const makeTitle = title ? title + " | " + "Turbine" : "Turbine - Automated Data 
 				basic: {
 					url: canonicalURL,
 					type: "website",
-					title: "Turbine - Automated Data Pipeline for Your AI Apps",
+					title: "Turbine | Automated Data Pipeline for Your AI Apps",
 					image: resolvedImageWithDomain,
 				},
 				image: {
