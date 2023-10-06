@@ -1,59 +1,48 @@
 ---
 const faqs = [
 	{
-		title: "What is Turbine and how does it benefit my AI applications?",
-		description: "Turbine is a real-time semantic search platform tailored for AI applications. It fetches updates from your database, generates vector embeddings, and then stores them for swift and efficient vector search."
+		title: "How does Turbine help in building Generative AI applications?",
+		description: "To get accurate answers from an LLM model such as ChatGPT, you need to provide all the required information in the prompt itself. But since LLMs can take a limited amount of text in its prompt, you can not dump all the information in it. Turbine solves this problem by letting you store all the information in your database, and then retrieve the most relevant information for each prompt in real-time using semantic search. This allows you to build more accurate and efficient Generative AI applications."
 	},
 	{
-		title: "How does Turbine’s real-time semantic search differ from traditional database searches?",
-		description: "Traditional database searches rely on exact matches or pattern-based queries. Turbine’s real-time semantic search, on the other hand, understands the meaning and context of data, allowing for more relevant and nuanced search results."
+		title: "How does Turbine’s semantic search differ from traditional database searches?",
+		description: "Traditional database searches rely on exact matches or pattern-based queries. Turbine’s semantic search, on the other hand, understands the meaning and context of data, allowing for more relevant and nuanced search results."
 	},
 	{
 		title: "Which types of databases are compatible with Turbine?",
-		description: "[Here, the specific databases supported can be listed.]"
+		description: "Turbine supports both SQL and NoSQL databases, with support coming for non-database data sources as well. As of now, Turbine is compatible with PostgreSQL, MongoDB and MySQL."
 	},
 	{
 		title: "How does Turbine ensure the freshness of the search results?",
-		description: "Turbine continuously fetches changes from your database, ensuring that the search results always reflect the most recent and relevant data."
+		description: "Turbine continuously fetches changes from your database using state-of-the-art CDC—Change data capture—methods, ensuring that the search results always reflect the most recent and relevant data."
 	},
 	{
 		title: "What are vector embeddings and how do they enhance the search experience?",
 		description: "Vector embeddings are mathematical representations of data that capture their semantic meaning. By converting your data into these embeddings, Turbine allows for similarity-based searching which provides more contextual and relevant results compared to traditional methods."
 	},
 	{
-		title: "Is there a limit to the size of the database or the number of changes Turbine can handle?",
-		description: " [Answer based on the platform’s scalability and limits.]"
-	},
-	{
 		title: "How secure is Turbine? What measures are taken to protect my data and the generated embeddings?",
-		description: "[Details about the security protocols, encryption, and data protection measures in place.]"
+		description: "Turbine itself does not store any of your data or embeddings. It only stores the metadata required to perform the search operations. All the data are stored in your database, and the embeddings are stored in cloud solutions of the respective vector databases, Turbine only accesses them when a search query is made. This ensures that your data is always secure and protected."
 	},
 	{
 		title: "Can I integrate Turbine with other applications or platforms I’m using?",
-		description: "Yes, Turbine is designed to be compatible with a wide range of platforms and applications. [More details on the specific integrations supported can be provided.]"
+		description: "Yes, Turbine is designed to be compatible with a wide range of platforms and applications. It provides Python, TypeScript and REST APIs, and can be integrated with any application with a few lines of code."
+	},
+	{
+		title: "Can I integrate Turbine with my LangChain application?",
+		description: "Yes, integrating Turbine with LangChain is very easy, you only need a few lines of code. Our team is always available to help you with the integration, we are also working on a plugin to make the integration even easier."
+	},
+	{
+		title: "What is context-aware splitting and how does it help in building more accurate Generative AI applications?",
+		description: "Context-aware splitting is a technique that allows you to split your data into multiple documents. It takes into consideration the context and structure of the text and the information within in, so that each document is as coherent and self-contained as possible. It's critical to run a effective context-aware splitting over unstructured data before storing them for semantic search. This helps in creating more relevant context for the LLM, which in turn helps in generating more accurate answers. Turbine provides context-aware splitting for unstructured data out-of-the-box which provides optimal results for usage in LLMs."
+	},
+	{
+		title: "Why should I use Turbine instead of developing my own semantic search system?",
+		description: "Developing Turbine's features in-house is a massive undertaking, which requires substantial engineering time, resources, and expertise. Maintaining and scaling it is even more challenging. Turbine uses state-of-the-art technologies in each of its components, and is designed to scale. It lets you focus on the core business logic of your AI applications, without worrying about the underlying infrastructure."
 	},
 	{
 		title: "How do I get started with Turbine? Is there a trial period or demo available?",
-		description: "[Information on onboarding, trial offers, and demo availability.]"
-	},
-	{
-		title: "How does Turbine handle complex or multi-language data?",
-		description: "Turbine’s advanced semantic search capabilities are designed to understand and process complex and multi-language data, ensuring consistent and relevant search results across diverse datasets."
-	},
-	{
-		title: "What is LLM context? How to fine-tune LLM.",
-		description: "Any LLM model needs to align to the specific nuances and requirements. This is almost always an input along with prompt. Since prompt is limited, it becomes very important to choose correct context. Which adheres to your per-query fine-tuning needs. It serves as a foundational aspect in enhancing the accuracy and relevance of the model's output. If you have ~2-3 cases, fine-tuning it by re-training LLM is good (given you have time and resources). If you want to use LLM for your per user needs (exceeding >= 3 contextual data) Then context is a must. Turbine's context designing takes care of all that under the hood..",
-	},
-	{
-		title: "How important is chunking? Does it really matter.",
-		description: "Chunking means to divide up data before storing it in a way that makes semantic searching over data easier. It plays a critical role in managing and processing large sets of data more efficiently. Our auto-chunking algorithmcally finds the sweet spots and iteratively adjust it according to your searches. This not only speeds up the data retrieval process but also helps in maintaining data accuracy."	},
-	{
-		title: "Why use a third-party and why not tell my dev to implement it on our own?",
-		description: `Developing this kind of system in-house is a massive undertaking, which requires substantial time, resources, expertise. Utilizing Turbine is not game done, but it allows developers to focus on other critical areas without the hefty investment of building and maintaining it yourself. Turbine is built with specialized expertise and is pre-tailored to adhere to nuanced needs. Designed to scale`,
-	},
-	{
-		title: "Do you have a free trial?",
-		description: "Yes. Contact us and we'll get you started.",
+		description: "We do offer a free trial period. Book a call with us, we will discuss your use-case and help you get started with Turbine."
 	},
 ];
 
