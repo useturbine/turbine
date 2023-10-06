@@ -19,8 +19,8 @@ const plans = [
 		description: "For larger businesses looking to grow and scale.",
 		price: null,
 		features: ["Connect upto 10 databases", "Process upto 10M documents per month", "Priority support", "Feature requests"],
-		link: "mailto:hello@useturbine.com",
-		cta: "Contact Us",
+		link: "https://calendly.com/ankit-9t4/30min?month=2023-10",
+		cta: "Book a Call",
 	},
 ];
 ---
@@ -58,7 +58,9 @@ const plans = [
 									</li>
 								))}
 							</ul>
-							<Link href={plan.link}>{plan.cta}</Link>
+							<Link href={plan.link} target="_blank">
+								{plan.cta}
+							</Link>
 						</div>
 					</div>
 				))

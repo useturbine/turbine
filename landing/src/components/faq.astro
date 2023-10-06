@@ -1,73 +1,20 @@
 ---
 const faqs = [
 	{
-		title: "What is this?",
-		description: "This is a astro template that uses tailwindcss and alpinejs",
+		title: "What is LLM context? How to fine-tune LLM.",
+		description: "Any LLM model needs to align to the specific nuances and requirements. This is almost always an input along with prompt. Since prompt is limited, it becomes very important to choose correct context. Which adheres to your per-query fine-tuning needs. It serves as a foundational aspect in enhancing the accuracy and relevance of the model's output. If you have ~2-3 cases, fine-tuning it by re-training LLM is good (given you have time and resources). If you want to use LLM for your per user needs (exceeding >= 3 contextual data) Then context is a must. Turbine's context designing takes care of all that under the hood..",
 	},
 	{
-		title: "Why alpinejs? Why don't just use js?",
-		description: "Alpine js is less than 17kb and it make javascript very fast to write, there are also various open source ready to use components like https://js.hyperui.dev, https://www.alpinetoolbox.com/examples, https://alpinejs.dev/components#components",
+		title: "How important is chunking? Does it really matter.",
+		description: "Chunking means to divide up data before storing it in a way that makes semantic searching over data easier. It plays a critical role in managing and processing large sets of data more efficiently. Our auto-chunking algorithmcally finds the sweet spots and iteratively adjust it according to your searches. This not only speeds up the data retrieval process but also helps in maintaining data accuracy."	},
+	{
+		title: "Why use a third-party and why not tell my dev to implement it on our own?",
+		description: `Developing this kind of system in-house is a massive undertaking, which requires substantial time, resources, expertise. Utilizing Turbine is not game done, but it allows developers to focus on other critical areas without the hefty investment of building and maintaining it yourself. Turbine is built with specialized expertise and is pre-tailored to adhere to nuanced needs. Designed to scale`,
 	},
 	{
-		title: "But I don't need alpine js, can I remove it?",
-		description: `Of course, but some components use it and you'll have to edit these, more specifically you ll have to: <br/>
-					<ul style="list-style: inside;">
-						<li>First remove the package with the command <code>npm unistall @astrojs/alpinejs @types/alpinejs alpinejs</code></li>
-						<li>Adjust all components that uses alpine js: <code>faq.astro</code>, <code>themeselector.astro</code>, <code>navbar.astro</code></li>
-					</ul>`,
+		title: "Do you have a free trial?",
+		description: "Yes. Contact us and we'll get you started.",
 	},
-	{
-		title: "Can I remove also tailwidcss?",
-		description: "I mean, you can, but you'll have to basically rewrite all the template, so I don't recommend it",
-	},
-	{
-		title: "I don't need multiple language, how can I remove it?",
-		description: `One way is to simply keep one language and remove the selector from the footer but in order to fully remove the localization you have to: <br/>
-					<ul style="list-style: inside;">
-						<li>Remove the i18next pacakage <code>npm unistall astro-i18next</code></li>
-						<li>Remove <code>astro-i18next.config.mjs</code> file</li>
-						<li>Remove <code>locales</code> folder from public</li>
-						<li>Remove <code>languageselector.astro</code> file and from footer</li>
-						<li>Find all reference to <code>i18next</code> and <code>astro-i18next</code> and replace with your text</li>
-					</ul>`
-	},
-	{
-		title: "I don't need dark mode, how can I remove it?",
-		description: "Dark mode is embedded into tailwindcss, so you can't remove it, but you can remove the switch from the navbar",
-	},
-	{
-		title: "I don't need decap CMS, how can I remove it?",
-		description: `In order to remove decap CMS you need to:
-					<ul style="list-style: inside;">
-						<li>Remove the netlify-cms pacakage <code>npm unistall astro-netlify-cms</code></li>
-						<li>Remove NetlifyCMS configuration from <code>astro.config.mjs</code></li>
-					</ul>`,
-	},
-	{
-		title: "How can I configure the decap CMS authentication with cloudflare?",
-		description: `To configure decap CMS with cloudflare follow this guide <a href="https://github.com/i40west/netlify-cms-cloudflare-pages" target="_blank">https://github.com/i40west/netlify-cms-cloudflare-pages</a>`,
-	},
-	{
-		title: "How can I configure the decap CMS authentication with netlify?",
-		description: `To configure decap CMS with netlify do the followings:
-					<ul style="list-style: inside;">
-						<li>Change NetlifyCMS config <code>config.backend.name</code> to git-gateway</li>
-						<li>Use integrated NetlifyCMS auth <a href="https://decapcms.org/docs/git-gateway-backend/#git-gateway-with-netlify" target="_blank">https://decapcms.org/docs/git-gateway-backend/#git-gateway-with-netlify</a></li>
-					</ul>`,
-	},
-	{
-		title: "How can I change the localization languages?",
-		description: `In order to change the languages you have to change the languages in the file <code>astro-i18next.config.mjs</code> and in the netlifyCMS configuration on the file <code>astro.config.mjs</code> <br/>
-					Then change the locales files folders in <code>public/locales</code>`,
-	},
-	{
-		title: "What are the files in the funciotn folder used for?",
-		description: `These are cloudflare function that are used for the authentication to the decap CMS`,
-	},
-	{
-		title: "The build on cloudflare keep failing, why?",
-		description: `One of the problem could be that the Build system version is setted to version 1, make sure that version 2 is selected`,
-	}
 ];
 
 const title = "Frequently Asked Questions";
