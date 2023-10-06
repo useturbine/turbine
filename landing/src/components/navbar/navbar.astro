@@ -1,6 +1,8 @@
 ---
 import Link from "@components/ui/link.astro";
 import { Icon } from "astro-icon";
+import ThemeSelector from "@components/themeselector.astro";
+import Themeselector from "@components/themeselector.astro";
 
 export const menuitems = [
 	{
@@ -100,6 +102,7 @@ const secondaryButtonText = "Join Our Slack";
 			<Link href="https://join.slack.com/t/turbinespace/shared_invite/zt-24haihf2d-Mu71smnsyjb~mschxugjVQ" target="_blank" class="md:px-3 md:py-2 leading-6">
 				{primaryButtonText}
 			</Link>
+			<Themeselector/>
 		</div>
 	</nav>
 </div>
