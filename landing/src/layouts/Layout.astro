@@ -14,9 +14,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
 
 const resolvedImageWithDomain = new URL("/meta/opengraph.png", Astro.site).toString();
 
-const { title } = Astro.props;
+const { title = null } = Astro.props;
 
-const makeTitle = title ? title + " | " + "Astros" : "Astros - Starter Template for Astro with Tailwind CSS";
+const makeTitle = title ? title + " | " + "Turbine" : "Turbine - Automated Data Pipeline for Your AI Apps";
 ---
 
 <!doctype html>
@@ -35,17 +35,17 @@ const makeTitle = title ? title + " | " + "Astros" : "Astros - Starter Template 
 
 		<SEO
 			title={makeTitle}
-			description="Astros is a starter website template for Astro built with TailwindCSS and alpine js."
+			description="Turbine is the solution for automating the data pipeline of your AI apps. It offers real-time semantic search over any database. It fetches changes from your database, creates vector embeddings, and stores them for efficient vector search."
 			canonical={canonicalURL}
 			openGraph={{
 				basic: {
 					url: canonicalURL,
 					type: "website",
-					title: "Astros - Starter Template for Astro",
+					title: "Turbine - Automated Data Pipeline for Your AI Apps",
 					image: resolvedImageWithDomain,
 				},
 				image: {
-					alt: "Astros Homepage Screenshot",
+					alt: "Turbine Homepage Screenshot",
 				},
 			}}
 		/>
