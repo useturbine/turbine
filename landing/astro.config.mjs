@@ -8,12 +8,7 @@ import alpinejs from "@astrojs/alpinejs";
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://astros.zank.studio",
-	vite: {
-		define: {
-			__DATE__: `'${new Date().toISOString()}'`,
-		},
-	},
+	site: "https://useturbine.com",
 	integrations: [tailwind(), sitemap(), alpinejs()],
 	markdown: {
 		rehypePlugins: [
