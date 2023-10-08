@@ -52,19 +52,19 @@ const makeTitle = title ? title + " | " + "Turbine" : "Turbine | Serverless Vect
 		<!--Ionicons -->
 		<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 		<script async src="https://js.stripe.com/v3/pricing-table.js"></script>
+
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-E3T4EWSZQS"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-E3T4EWSZQS");
+		</script>
 	</head>
-
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-E3T4EWSZQS"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag() {
-			dataLayer.push(arguments);
-		}
-		gtag("js", new Date());
-
-		gtag("config", "G-E3T4EWSZQS");
-	</script>
 
 	<body class="dark:bg-stone-950">
 		<Navbar />
