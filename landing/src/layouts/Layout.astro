@@ -16,7 +16,7 @@ const resolvedImageWithDomain = new URL("/meta/opengraph.png", Astro.site).toStr
 
 const { title = null } = Astro.props;
 
-const makeTitle = title ? title + " | " + "Turbine" : "Turbine | Serverless Vector Search over Any Database";
+const makeTitle = title ? title + " | " + "Turbine" : "Turbine | Automated data pipeline for your AI apps";
 ---
 
 <!doctype html>
@@ -35,13 +35,13 @@ const makeTitle = title ? title + " | " + "Turbine" : "Turbine | Serverless Vect
 
 		<SEO
 			title={makeTitle}
-			description="Turbine is the solution for automating the data pipeline of your AI apps. It offers real-time semantic search over any database. It fetches changes from your database, creates vector embeddings, and stores them for efficient vector search."
+			description="Turbine is a vector search engine that automatically syncs your data from any database and prepares it for vector search. It lets you use the latest language models to power your AI bots, without having to worry about the infrastructure."
 			canonical={canonicalURL}
 			openGraph={{
 				basic: {
 					url: canonicalURL,
 					type: "website",
-					title: "Turbine | Serverless Vector Search over Any Database",
+					title: "Turbine | Automated data pipeline for your AI apps",
 					image: resolvedImageWithDomain,
 				},
 				image: {
