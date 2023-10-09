@@ -6,7 +6,8 @@
 	"scripts": {
 		"start": "astro dev",
 		"build": "astro build",
-		"preview": "astro preview"
+		"preview": "astro preview",
+		"deploy": "yarn wrangler pages deploy dist --project-name turbine-landing --commit-dirty=true"
 	},
 	"dependencies": {
 		"@astrojs/alpinejs": "^0.3.0",
@@ -31,6 +32,7 @@
 		"prettier-plugin-astro": "^0.12.0",
 		"rehype": "^13.0.1",
 		"sharp": "^0.32.5",
-		"workbox-window": "^7.0.0"
+		"workbox-window": "^7.0.0",
+		"wrangler": "^3.11.0"
 	}
 }
