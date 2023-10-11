@@ -1,2 +1,3 @@
 from .interface import EmbeddingModel
-from .utils import get_embedding_model
+from .hugging_face import HuggingFaceModel
+from .openai import OpenAIModel

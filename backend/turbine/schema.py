@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 from typing import Literal, Optional, List, Union
+from turbine.vector_db import MilvusVectorDB, PineconeVectorDB
+from turbine.embedding_model import HuggingFaceModel, OpenAIModel
+from turbine.vector_db.types import SimilarityMetric
 
 
 class DataSourceBase(BaseModel):
@@ -30,19 +33,18 @@ class MongoDataSource(DataSourceBase):
 DataSource = Union[PostgresDataSource, MongoDataSource]
 
 
-SimilarityMetric = Literal["cosine", "euclidean"]
-EmbeddingModel = Literal["text-embedding-ada-002", "all-MiniLM-L6-v2"]
+EmbeddingModelName = Literal["text-embedding-ada-002", "all-MiniLM-L6-v2"]
 
 
 class Project(BaseModel):
     data_source: DataSource
-    embedding_model: EmbeddingModel
+    embedding_model: EmbeddingModelName
     vector_db: Literal["milvus", "pinecone"]
 
 
 class MilvusConfig(BaseModel):
     url: str
-    token: Optional[str] = None
+    token: str
 
 
 class PineconeConfig(BaseModel):
@@ -50,14 +52,29 @@ class PineconeConfig(BaseModel):
     environment: str
 
 
-class PineconeVectorDB(BaseModel):
+class PineconeSchema(BaseModel):
     type: Literal["pinecone"]
     config: PineconeConfig
 
+    def get_instance(self):
+        return PineconeVectorDB(
+            api_key=self.config.api_key,
+            environment=self.config.environment,
+        )
 
-class MilvusVectorDB(BaseModel):
+
+class MilvusSchema(BaseModel):
     type: Literal["milvus"]
     config: MilvusConfig
+
+    def get_instance(self):
+        return MilvusVectorDB(
+            url=self.config.url,
+            token=self.config.token,
+        )
+
+
+VectorDBSchema = Union[MilvusSchema, PineconeSchema]
 
 
 class HuggingFaceConfig(BaseModel):
@@ -70,18 +87,39 @@ class OpenAIConfig(BaseModel):
     model: str
 
 
-class HuggingFaceModel(BaseModel):
+class HuggingFaceSchema(BaseModel):
     type: Literal["huggingface"]
     config: HuggingFaceConfig
 
+    def get_instance(self):
+        return HuggingFaceModel(
+            token=self.config.token,
+            model=self.config.model,
+        )
 
-class OpenAIModel(BaseModel):
+
+class OpenAISchema(BaseModel):
     type: Literal["openai"]
     config: OpenAIConfig
 
+    def get_instance(self):
+        return OpenAIModel(
+            api_key=self.config.api_key,
+            model=self.config.model,
+        )
 
-class Index(BaseModel):
+
+EmbeddingModelSchema = Union[HuggingFaceSchema, OpenAISchema]
+
+
+class IndexSchema(BaseModel):
     name: str
     description: Optional[str] = None
-    vector_db: Union[MilvusVectorDB, PineconeVectorDB]
-    embedding_model: Union[HuggingFaceModel, OpenAIModel]
+    vector_db: VectorDBSchema
+    embedding_model: EmbeddingModelSchema
+    embedding_dimension: int
+    similarity_metric: SimilarityMetric
+
+
+class ExistingIndexSchema(IndexSchema):
+    id: str

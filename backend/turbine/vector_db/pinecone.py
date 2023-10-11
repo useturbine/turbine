@@ -2,10 +2,15 @@ from turbine.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
 import pinecone
 from pinecone import Vector
 from typing import List
-from turbine.schema import SimilarityMetric
+from .types import SimilarityMetric
+from uuid import UUID
 
 
 class PineconeVectorDB(VectorDB):
+    @staticmethod
+    def get_collection_name(index_id: UUID) -> str:
+        return f"turbine-{index_id}"
+
     def __init__(self, api_key: str, environment: str) -> None:
         pinecone.init(api_key=api_key, environment=environment)
 

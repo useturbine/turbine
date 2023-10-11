@@ -13,6 +13,7 @@ from playhouse.postgres_ext import BinaryJSONField
 from datetime import datetime
 from config import Config
 import uuid
+from turbine.schema import ExistingIndexSchema
 
 
 def create_postgres_connection(connection_string: str):
@@ -91,12 +92,35 @@ class Index(Model):
     updated_at = DateTimeField(default=datetime.now())
     name = CharField()
     description = CharField(null=True)
-    vector_db = BinaryJSONField()
-    embedding_model = BinaryJSONField()
+    vector_db_type = CharField()
+    vector_db_config = BinaryJSONField()
+    embedding_model_type = CharField()
+    embedding_model_config = BinaryJSONField()
+    embedding_dimension = CharField()
+    similarity_metric = CharField()
 
     def save(self, *args, **kwargs):
         self.updated_at = datetime.now()
         return super().save(*args, **kwargs)
+
+    def dump(self):
+        return ExistingIndexSchema(
+            **{
+                "id": str(self.id),
+                "name": self.name,
+                "description": self.description,
+                "vector_db": {
+                    "type": self.vector_db_type,
+                    "config": self.vector_db_config,
+                },
+                "embedding_model": {
+                    "type": self.embedding_model_type,
+                    "config": self.embedding_model_config,
+                },
+                "embedding_dimension": self.embedding_dimension,
+                "similarity_metric": self.similarity_metric,
+            }
+        )
 
     class Meta:
         database = db

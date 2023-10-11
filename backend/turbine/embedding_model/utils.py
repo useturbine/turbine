@@ -1,9 +1,12 @@
-from turbine.schema import EmbeddingModel as EmbeddingModelName, SimilarityMetric
 from .interface import EmbeddingModel
 from .hugging_face import HuggingFaceModel
 from .openai import OpenAIModel
 from config import Config
 from pydantic import BaseModel
+from typing import Literal
+
+EmbeddingModelName = Literal["text-embedding-ada-002", "all-MiniLM-L6-v2"]
+SimilarityMetric = Literal["cosine", "euclidean"]
 
 
 class EmbeddingModelItem(BaseModel):

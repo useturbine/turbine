@@ -1,7 +1,8 @@
 from typing import List
 from abc import abstractmethod
-from turbine.schema import SimilarityMetric
+from .types import SimilarityMetric
 from pydantic import BaseModel
+from uuid import UUID
 
 
 class VectorItem(BaseModel):
@@ -15,14 +16,10 @@ class VectorSearchResult(BaseModel):
 
 
 class VectorDB:
-    """
-    An interface defining the operations for interacting with a vector database.
-    Classes that implement this interface must provide concrete implementations
-    for all methods to interact with the database.
-
-    Note:
-        This is an interface and methods should be implemented in the derived classes.
-    """
+    @staticmethod
+    @abstractmethod
+    def get_collection_name(index_id: UUID) -> str:
+        ...
 
     @abstractmethod
     def create_collection(

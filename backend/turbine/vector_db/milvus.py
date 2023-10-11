@@ -9,10 +9,15 @@ from pymilvus import (
 )
 from typing import List
 from turbine.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
-from turbine.schema import SimilarityMetric
+from .types import SimilarityMetric
+from uuid import UUID
 
 
 class MilvusVectorDB(VectorDB):
+    @staticmethod
+    def get_collection_name(index_id: UUID) -> str:
+        return f"turbine_{str(index_id).replace('-', '_')}"
+
     def __init__(self, url: str, token: str, id_max_length: int = 512) -> None:
         connections.connect("default", uri=url, token=token)
         self.id_max_length = id_max_length
