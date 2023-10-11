@@ -12,13 +12,11 @@ class DataSourceUpdate(BaseModel):
 
 class DataSource:
     @abstractmethod
-    def get_documents(
-        self, updated_since: Optional[datetime] = None
-    ) -> Iterator[Tuple[str, str]]:
-        """Retrieve documents from the data source."""
+    def get_documents(self, **kwargs) -> Iterator[Tuple[str, str]]:
+        """Retrieve all documents from the data source."""
         pass
 
     @abstractmethod
-    def listen_for_updates(self) -> Iterator[DataSourceUpdate]:
+    def listen_for_updates(self, **kwargs) -> Iterator[DataSourceUpdate]:
         """Listen for updates to the data source and yield documents as they come in."""
         pass

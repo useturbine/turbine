@@ -1,7 +1,18 @@
-from peewee import *
+from peewee import (
+    AutoField,
+    CharField,
+    DateTimeField,
+    ForeignKeyField,
+    Model,
+    PostgresqlDatabase,
+    TextField,
+    UUIDField,
+    IntegrityError,
+)
 from playhouse.postgres_ext import BinaryJSONField
 from datetime import datetime
 from config import Config
+import uuid
 
 
 def create_postgres_connection(connection_string: str):
@@ -73,8 +84,26 @@ class Document(Model):
         database = db
 
 
+class Index(Model):
+    id = UUIDField(primary_key=True, default=uuid.uuid4)
+    user = ForeignKeyField(User, backref="indices")
+    created_at = DateTimeField(default=datetime.now())
+    updated_at = DateTimeField(default=datetime.now())
+    name = CharField()
+    description = CharField(null=True)
+    vector_db = BinaryJSONField()
+    embedding_model = BinaryJSONField()
+
+    def save(self, *args, **kwargs):
+        self.updated_at = datetime.now()
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        database = db
+
+
 try:
-    db.create_tables([User, Project, Log, Document])
+    db.create_tables([User, Project, Log, Document, Index])
     User.create(name="Test User", email="test@example.com", api_key="test")
 except IntegrityError:
     pass

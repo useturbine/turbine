@@ -1,10 +1,10 @@
-from src.db.models import Log, Project, Document
-from src.vector_db import VectorItem
-from src.data_source import DebeziumDataSource
+from turbine.db.models import Log, Project, Document
+from turbine.vector_db import VectorItem
+from turbine.data_source import DebeziumDataSource
 import logging
 import hashlib
-from src.utils import get_vector_db
-from src.embedding_model import get_embedding_model
+from turbine.utils import get_vector_db
+from turbine.embedding_model import get_embedding_model
 from config import Config
 
 

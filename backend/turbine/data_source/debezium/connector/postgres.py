@@ -1,14 +1,14 @@
-from src.data_source.debezium.connector.interface import DebeziumConnector
-from src.data_source.interface import DataSourceUpdate
+from turbine.data_source.debezium.connector.interface import DebeziumConnector
+from turbine.data_source.interface import DataSourceUpdate
 from kafka.consumer.fetcher import ConsumerRecord
 from typing import List
-from src.db.models import Project
+from turbine.db.models import Project
 import logging
 import requests
 import psycopg2
 from pydantic import BaseModel
 from urllib.parse import urlparse
-from src.schema import PostgresConfig
+from turbine.schema import PostgresConfig
 
 logger = logging.getLogger(__name__)
 

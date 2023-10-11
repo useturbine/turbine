@@ -1,7 +1,7 @@
-from src.vector_db.milvus import MilvusVectorDB
-from src.vector_db.pinecone import PineconeVectorDB
+from turbine.vector_db.milvus import MilvusVectorDB
+from turbine.vector_db.pinecone import PineconeVectorDB
 from config import Config
-from src.vector_db.interface import VectorDB
+from turbine.vector_db.interface import VectorDB
 
 
 def get_vector_db(vector_db: str) -> VectorDB:

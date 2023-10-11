@@ -8,8 +8,8 @@ from pymilvus import (
     utility,
 )
 from typing import List
-from src.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
-from src.schema import SimilarityMetric
+from turbine.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
+from turbine.schema import SimilarityMetric
 
 
 class MilvusVectorDB(VectorDB):

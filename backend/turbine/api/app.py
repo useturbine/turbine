@@ -1,15 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException
-from src.schema import Project as ProjectSchema
-from src.db.models import Project, Log
+from turbine.schema import Project as ProjectSchema
+from turbine.db.models import Project, Log
 from .auth import get_user
 from logging import getLogger
-from src.data_source.debezium.debezium import DebeziumDataSource
+from turbine.data_source.debezium.debezium import DebeziumDataSource
 from config import Config
 import json
 from typing import Optional
-from src.utils import get_vector_db
+from turbine.utils import get_vector_db
 import logging
-from src.embedding_model import get_embedding_model
+from turbine.embedding_model import get_embedding_model
+from .routers import indices
 
 logger = getLogger(__name__)
 logging.basicConfig(
@@ -17,6 +18,7 @@ logging.basicConfig(
 )
 
 app = FastAPI()
+app.include_router(indices.router)
 
 debezium = DebeziumDataSource(
     debezium_url=Config.debezium_url, kafka_url=Config.kafka_url

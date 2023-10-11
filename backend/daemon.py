@@ -1,4 +1,4 @@
-from src.daemon.daemon import Daemon
+from turbine.daemon.daemon import Daemon
 import logging
 
 logging.basicConfig(

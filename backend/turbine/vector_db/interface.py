@@ -1,6 +1,6 @@
 from typing import List
 from abc import abstractmethod
-from src.schema import SimilarityMetric
+from turbine.schema import SimilarityMetric
 from pydantic import BaseModel
 
 

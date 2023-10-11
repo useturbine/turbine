@@ -1,8 +1,8 @@
-from src.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
+from turbine.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
 import pinecone
 from pinecone import Vector
 from typing import List
-from src.schema import SimilarityMetric
+from turbine.schema import SimilarityMetric
 
 
 class PineconeVectorDB(VectorDB):

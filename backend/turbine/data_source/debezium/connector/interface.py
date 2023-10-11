@@ -1,6 +1,6 @@
 from typing import List
 from abc import abstractmethod
-from src.data_source.interface import DataSourceUpdate
+from turbine.data_source.interface import DataSourceUpdate
 from kafka.consumer.fetcher import ConsumerRecord
 
 
