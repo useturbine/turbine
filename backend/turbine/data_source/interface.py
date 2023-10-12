@@ -5,6 +5,7 @@ from typing import Any
 
 
 class DataSourceDocument(BaseModel):
+    id: str
     text: str
     metadata: Optional[dict[str, Any]] = None
 

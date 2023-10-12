@@ -5,6 +5,7 @@ from typing import Literal, Any
 import boto3
 from urllib.parse import urlparse
 from config import Config
+import hashlib
 
 
 class S3TextDataSource(DataSource, BaseModel):
@@ -29,6 +30,10 @@ class S3TextDataSource(DataSource, BaseModel):
         obj = self._s3.Object(bucket, key)
         text = obj.get()["Body"].read().decode("utf-8")
         return [
-            DataSourceDocument(text=document.text, metadata=document.metadata)
+            DataSourceDocument(
+                id=hashlib.sha256(document.text.encode("utf-8")).hexdigest(),
+                text=document.text,
+                metadata=document.metadata,
+            )
             for document in self.splitter.split(text)
         ]

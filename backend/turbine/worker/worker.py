@@ -26,15 +26,15 @@ def create_embedding(pipeline_id: UUID, document: dict):
         Index.select().join(Pipeline).where(Pipeline.id == pipeline_id).first().dump()
     )
     embedding = index.embedding_model.get_embedding(document_parsed.text)
-    print(embedding)
+    store_embedding.delay(pipeline_id, document_parsed.id, embedding)
 
 
-# @app.task
-# def store_embedding(pipeline_id: UUID, embedding: list[float]):
-#     index: ExistingIndexSchema = (
-#         Index.select().join(Pipeline).where(Pipeline.id == pipeline_id).first().dump()
-#     )
-#     collection_name = index.vector_db.get_collection_name(index.id)
-#     index.vector_db.insert(
-#         collection_name, [VectorItem(id=document_id, vector=embedding)]
-#     )
+@app.task
+def store_embedding(pipeline_id: UUID, document_id: str, embedding: list[float]):
+    index: ExistingIndexSchema = (
+        Index.select().join(Pipeline).where(Pipeline.id == pipeline_id).first().dump()
+    )
+    collection_name = index.vector_db.get_collection_name(index.id)
+    index.vector_db.insert(
+        collection_name, [VectorItem(id=document_id, vector=embedding)]
+    )
