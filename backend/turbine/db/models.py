@@ -40,7 +40,7 @@ db = create_postgres_connection(Config.postgres_url)
 
 class User(Model):
     id = AutoField()
-    clerk_id = CharField(unique=True, null=True)
+    external_id = CharField(unique=True, null=True)
     api_key = UUIDField(unique=True, default=uuid.uuid4)
 
     class Meta:
