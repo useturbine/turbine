@@ -11,8 +11,8 @@ services:
       - "80:80"
     depends_on:
       - milvus
-      - redpanda
-      - debezium
+      # - redpanda
+      # - debezium
       - postgres
     env_file: .env
     command: uvicorn turbine.api.app:app --reload --host 0.0.0.0 --port 80
@@ -20,21 +20,21 @@ services:
       - ../..:/turbine-api
     restart: always
 
-  turbine-daemon:
-    container_name: turbine-daemon
-    image: turbine/daemon
-    build:
-      context: ../..
-      dockerfile: docker/prod/turbine-daemon.Dockerfile
-    depends_on:
-      - milvus
-      - redpanda
-      - debezium
-    env_file: .env
-    command: python3 daemon.py
-    volumes:
-      - ../..:/turbine-daemon
-    restart: always
+  # turbine-daemon:
+  #   container_name: turbine-daemon
+  #   image: turbine/daemon
+  #   build:
+  #     context: ../..
+  #     dockerfile: docker/prod/turbine-daemon.Dockerfile
+  #   depends_on:
+  #     - milvus
+  #     - redpanda
+  #     - debezium
+  #   env_file: .env
+  #   command: python3 daemon.py
+  #   volumes:
+  #     - ../..:/turbine-daemon
+  #   restart: always
 
   turbine-worker:
     container_name: turbine-worker
@@ -44,8 +44,8 @@ services:
       dockerfile: docker/dev/turbine-worker.Dockerfile
     depends_on:
       - milvus
-      - redpanda
-      - debezium
+      # - redpanda
+      # - debezium
     env_file: .env
     command: celery --app turbine.worker.worker worker --loglevel=INFO
     volumes:
@@ -59,31 +59,31 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-  redpanda:
-    container_name: redpanda
-    image: redpandadata/redpanda
-    command:
-      - redpanda start
-      - --smp 1
-      - --overprovisioned
-      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
-      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
-    ports:
-      - "19092:19092"
+  # redpanda:
+  #   container_name: redpanda
+  #   image: redpandadata/redpanda
+  #   command:
+  #     - redpanda start
+  #     - --smp 1
+  #     - --overprovisioned
+  #     - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+  #     - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+  #   ports:
+  #     - "19092:19092"
 
-  debezium:
-    image: debezium/connect
-    container_name: debezium
-    depends_on:
-      - redpanda
-    ports:
-      - "8083:8083"
-    environment:
-      BOOTSTRAP_SERVERS: "redpanda:9092"
-      GROUP_ID: "1"
-      CONFIG_STORAGE_TOPIC: "inventory.configs"
-      OFFSET_STORAGE_TOPIC: "inventory.offset"
-      STATUS_STORAGE_TOPIC: "inventory.status"
+  # debezium:
+  #   image: debezium/connect
+  #   container_name: debezium
+  #   depends_on:
+  #     - redpanda
+  #   ports:
+  #     - "8083:8083"
+  #   environment:
+  #     BOOTSTRAP_SERVERS: "redpanda:9092"
+  #     GROUP_ID: "1"
+  #     CONFIG_STORAGE_TOPIC: "inventory.configs"
+  #     OFFSET_STORAGE_TOPIC: "inventory.offset"
+  #     STATUS_STORAGE_TOPIC: "inventory.status"
 
   etcd:
     container_name: milvus-etcd

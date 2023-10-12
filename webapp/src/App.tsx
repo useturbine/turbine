@@ -1,26 +1,22 @@
-import {
-  ClerkProvider,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  SignIn,
-} from "@clerk/clerk-react";
-
-if (!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)
-  throw new Error("Missing Clerk Publishable Key");
+import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-react";
+import "@mantine/core/styles.css";
+import { MantineProvider } from "@mantine/core";
+import { Home } from "./pages/Home";
+import { LogIn } from "./pages/LogIn";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 function App() {
   return (
     <ClerkProvider publishableKey={clerkPubKey}>
-      <SignedIn>
-        <div>You are signed in!</div>
-        <UserButton />
-      </SignedIn>
-      <SignedOut>
-        <SignIn />
-      </SignedOut>
+      <MantineProvider>
+        <SignedIn>
+          <Home />
+        </SignedIn>
+        <SignedOut>
+          <LogIn />
+        </SignedOut>
+      </MantineProvider>
     </ClerkProvider>
   );
 }

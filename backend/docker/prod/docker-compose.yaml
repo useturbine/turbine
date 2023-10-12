@@ -15,9 +15,9 @@ services:
     env_file: .env
     restart: always
 
-  turbine-daemon:
-    container_name: turbine-daemon
-    image: turbine/daemon
+  turbine-worker:
+    container_name: turbine-worker
+    image: turbine/worker
     build:
       context: ../..
       dockerfile: docker/prod/turbine-daemon.Dockerfile
@@ -27,30 +27,42 @@ services:
     env_file: .env
     restart: always
 
-  redpanda:
-    container_name: redpanda
-    image: redpandadata/redpanda
-    command:
-      - redpanda start
-      - --smp 1
-      - --overprovisioned
-      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
-      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
-    ports:
-      - "19092:19092"
-    restart: always
+  # turbine-daemon:
+  #   container_name: turbine-daemon
+  #   image: turbine/daemon
+  #   build:
+  #     context: ../..
+  #     dockerfile: docker/prod/turbine-daemon.Dockerfile
+  #   depends_on:
+  #     - redpanda
+  #     - debezium
+  #   env_file: .env
+  #   restart: always
 
-  debezium:
-    image: debezium/connect
-    container_name: debezium
-    depends_on:
-      - redpanda
-    ports:
-      - "8083:8083"
-    environment:
-      BOOTSTRAP_SERVERS: "redpanda:9092"
-      GROUP_ID: "1"
-      CONFIG_STORAGE_TOPIC: "inventory.configs"
-      OFFSET_STORAGE_TOPIC: "inventory.offset"
-      STATUS_STORAGE_TOPIC: "inventory.status"
-    restart: always
+  # redpanda:
+  #   container_name: redpanda
+  #   image: redpandadata/redpanda
+  #   command:
+  #     - redpanda start
+  #     - --smp 1
+  #     - --overprovisioned
+  #     - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+  #     - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+  #   ports:
+  #     - "19092:19092"
+  #   restart: always
+
+  # debezium:
+  #   image: debezium/connect
+  #   container_name: debezium
+  #   depends_on:
+  #     - redpanda
+  #   ports:
+  #     - "8083:8083"
+  #   environment:
+  #     BOOTSTRAP_SERVERS: "redpanda:9092"
+  #     GROUP_ID: "1"
+  #     CONFIG_STORAGE_TOPIC: "inventory.configs"
+  #     OFFSET_STORAGE_TOPIC: "inventory.offset"
+  #     STATUS_STORAGE_TOPIC: "inventory.status"
+  #   restart: always
