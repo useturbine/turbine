@@ -33,7 +33,9 @@ async def create_pipeline(pipeline: PipelineSchema):
 async def get_pipelines(user=Depends(get_user)):
     return [
         pipeline.dump()
-        for pipeline in Pipeline.select().join(Index).where(Index.user == user)
+        for pipeline in Pipeline.select()
+        .join(Index)
+        .where(Index.user == user, Pipeline.deleted == False)
     ]
 
 
@@ -42,7 +44,7 @@ async def get_pipeline(id: UUID, user=Depends(get_user)):
     pipeline = (
         Pipeline.select()
         .join(Index)
-        .where(Pipeline.id == id, Index.user == user)
+        .where(Pipeline.id == id, Index.user == user, Pipeline.deleted == False)
         .first()
     )
 
@@ -56,13 +58,14 @@ async def delete_pipeline(id: UUID, user=Depends(get_user)):
     pipeline = (
         Pipeline.select()
         .join(Index)
-        .where(Pipeline.id == id, Index.user == user)
+        .where(Pipeline.id == id, Index.user == user, Pipeline.deleted == False)
         .first()
     )
     if not pipeline:
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
-    pipeline.delete_instance()
+    pipeline.deleted = True
+    pipeline.save()
     return {"message": "Pipeline deleted"}
 
 
@@ -71,14 +74,13 @@ async def run_pipeline(id: UUID, user=Depends(get_user)):
     pipeline_instance = (
         Pipeline.select()
         .join(Index)
-        .where(Pipeline.id == id, Index.user == user)
+        .where(Pipeline.id == id, Index.user == user, Pipeline.deleted == False)
         .first()
     )
     if not pipeline_instance:
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
     task = run_pipeline_task.delay(id)
-    print("index id", pipeline_instance.index_)
     Task.create(
         id=task.id,
         index_=pipeline_instance.index_,

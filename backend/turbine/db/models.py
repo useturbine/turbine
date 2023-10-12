@@ -8,6 +8,7 @@ from peewee import (
     UUIDField,
     IntegrityError,
     IntegerField,
+    BooleanField,
 )
 from playhouse.postgres_ext import BinaryJSONField
 from datetime import datetime
@@ -42,6 +43,7 @@ class User(Model):
     id = AutoField()
     external_id = CharField(unique=True, null=True)
     api_key = UUIDField(unique=True, default=uuid.uuid4)
+    deleted = BooleanField(default=False)
 
     class Meta:
         database = db
@@ -58,6 +60,7 @@ class Index(Model):
     embedding_model = BinaryJSONField()
     embedding_dimension = IntegerField()
     similarity_metric = CharField()
+    deleted = BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         self.updated_at = datetime.now()
@@ -99,6 +102,7 @@ class Pipeline(Model):
     data_source = BinaryJSONField()
     created_at = DateTimeField(default=datetime.now())
     updated_at = DateTimeField(default=datetime.now())
+    deleted = BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         self.updated_at = datetime.now()

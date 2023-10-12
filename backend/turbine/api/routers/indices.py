@@ -13,12 +13,17 @@ router = APIRouter(prefix="/indices")
 
 @router.get("/")
 def get_indices(user=Depends(get_user)):
-    return [index.dump() for index in Index.select().where(Index.user == user)]
+    return [
+        index.dump()
+        for index in Index.select().where(Index.user == user, Index.deleted == False)
+    ]
 
 
 @router.get("/{id}")
 def get_index(id: UUID, user=Depends(get_user)):
-    index = Index.get_or_none(Index.id == id, user == user)
+    index = Index.get_or_none(
+        Index.id == id, Index.user == user, Index.deleted == False
+    )
     if not index:
         raise HTTPException(404, "Index not found")
     return index.dump()
@@ -68,7 +73,8 @@ def delete_index(id: UUID, user=Depends(get_user)):
     vector_db: VectorDB = index.dump().vector_db
     collection_name = vector_db.get_collection_name(index.id)
 
-    index.delete_instance()
+    index.deleted = True
+    index.save()
     vector_db.drop_collection(collection_name)
 
     return {"message": "Index deleted"}
@@ -76,7 +82,9 @@ def delete_index(id: UUID, user=Depends(get_user)):
 
 @router.get("/{id}/search")
 def search_index(id: UUID, query: str, limit: int = 10, user=Depends(get_user)):
-    index_instance = Index.get_or_none(Index.id == id, user=user.id)
+    index_instance = Index.get_or_none(
+        Index.id == id, Index.user == user.id, Index.deleted == False
+    )
     if not index_instance:
         raise HTTPException(404, "Index not found")
 
