@@ -13,12 +13,12 @@ router = APIRouter(prefix="/indices")
 
 @router.get("/")
 def get_indices(user=Depends(get_user)):
-    return [index.dump() for index in Index.select().where(Index.user == user.id)]
+    return [index.dump() for index in Index.select().where(Index.user == user)]
 
 
 @router.get("/{id}")
 def get_index(id: UUID, user=Depends(get_user)):
-    index = Index.get_or_none(Index.id == id, user=user.id)
+    index = Index.get_or_none(Index.id == id, user == user)
     if not index:
         raise HTTPException(404, "Index not found")
     return index.dump()

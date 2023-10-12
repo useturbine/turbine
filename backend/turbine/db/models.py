@@ -15,6 +15,7 @@ from datetime import datetime
 from config import Config
 import uuid
 from turbine.schema import ExistingIndexSchema, ExistingPipelineSchema
+import uuid
 
 
 def create_postgres_connection(connection_string: str):
@@ -40,47 +41,8 @@ db = create_postgres_connection(Config.postgres_url)
 
 class User(Model):
     id = AutoField()
-    name = CharField()
-    email = CharField(unique=True)
-    api_key = CharField(unique=True)
-
-    class Meta:
-        database = db
-
-
-class Project(Model):
-    id = AutoField()
-    user = ForeignKeyField(User, backref="project")
-    config = BinaryJSONField()
-    created_at = DateTimeField(default=datetime.now())
-    updated_at = DateTimeField(default=datetime.now())
-
-    class Meta:
-        database = db
-
-    def save(self, *args, **kwargs):
-        self.updated_at = datetime.now()
-        return super().save(*args, **kwargs)
-
-    def to_dict(self):
-        return {"id": str(self.id), "config": self.config}
-
-
-class Log(Model):
-    id = AutoField()
-    user = ForeignKeyField(User, backref="logs")
-    info = TextField()
-    created_at = DateTimeField(default=datetime.now())
-
-    class Meta:
-        database = db
-
-
-class Document(Model):
-    id = CharField(primary_key=True)
-    created_at = DateTimeField(default=datetime.now())
-    project = ForeignKeyField(Project, backref="documents", on_delete="CASCADE")
-    hash = CharField()
+    clerk_id = CharField(unique=True, null=True)
+    api_key = UUIDField(unique=True, default=uuid.uuid4)
 
     class Meta:
         database = db
@@ -159,7 +121,7 @@ class Pipeline(Model):
 
 
 try:
-    db.create_tables([User, Project, Log, Document, Index, Task, Pipeline])
-    User.create(name="Test User", email="test@example.com", api_key="test")
+    db.create_tables([User, Index, Task, Pipeline])
+    User.create(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
 except IntegrityError:
     pass
