@@ -4,15 +4,22 @@ from pinecone import Vector
 from typing import List
 from .types import SimilarityMetric
 from uuid import UUID
+from pydantic import BaseModel
+from typing import Literal
 
 
-class PineconeVectorDB(VectorDB):
+class PineconeVectorDB(VectorDB, BaseModel):
+    type: Literal["pinecone"]
+    api_key: str
+    environment: str
+
     @staticmethod
     def get_collection_name(index_id: UUID) -> str:
         return f"turbine-{index_id}"
 
-    def __init__(self, api_key: str, environment: str) -> None:
-        pinecone.init(api_key=api_key, environment=environment)
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
+        pinecone.init(api_key=self.api_key, environment=self.environment)
 
     @staticmethod
     def create_collection(

@@ -38,11 +38,10 @@ def create_index(
         similarity_metric=index.similarity_metric,
     )
 
-    vector_db = index.vector_db.get_instance()
-    collection_name = vector_db.get_collection_name(index_instance.id)
+    collection_name = index.vector_db.get_collection_name(index_instance.id)
 
     try:
-        vector_db.create_collection(
+        index.vector_db.create_collection(
             collection_name,
             index.embedding_dimension,
             index.similarity_metric,

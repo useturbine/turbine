@@ -25,27 +25,22 @@ class VectorDB:
     def create_collection(
         self, name: str, dimension: int, similarity_metric: SimilarityMetric
     ) -> None:
-        """Create a new collection in the database."""
-        pass
+        ...
 
     @abstractmethod
     def insert(self, collection_name: str, data: List[VectorItem]) -> None:
-        """Insert data into the specified collection."""
-        pass
+        ...
 
     @abstractmethod
     def search(
         self, collection_name: str, data: List[float], limit: int
     ) -> List[VectorSearchResult]:
-        """Search for vectors in the specified collection."""
-        pass
+        ...
 
     @abstractmethod
     def delete(self, collection_name: str, id: str) -> None:
-        """Delete a specific entry from the collection."""
-        pass
+        ...
 
     @abstractmethod
     def drop_collection(self, collection_name: str) -> None:
-        """Drop the specified collection from the database."""
-        pass
+        ...

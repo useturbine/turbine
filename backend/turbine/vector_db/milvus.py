@@ -11,16 +11,24 @@ from typing import List
 from turbine.vector_db.interface import VectorDB, VectorItem, VectorSearchResult
 from .types import SimilarityMetric
 from uuid import UUID
+from pydantic import BaseModel
+from typing import Literal
 
 
-class MilvusVectorDB(VectorDB):
+class MilvusVectorDB(VectorDB, BaseModel):
+    type: Literal["milvus"]
+    url: str
+    token: str
+    _id_max_length: int
+
     @staticmethod
     def get_collection_name(index_id: UUID) -> str:
         return f"turbine_{str(index_id).replace('-', '_')}"
 
-    def __init__(self, url: str, token: str, id_max_length: int = 512) -> None:
-        connections.connect("default", uri=url, token=token)
-        self.id_max_length = id_max_length
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
+        connections.connect("default", uri=self.url, token=self.token)
+        self._id_max_length = 512
 
     def create_collection(
         self, name: str, dimension: int, similarity_metric: SimilarityMetric
@@ -31,7 +39,7 @@ class MilvusVectorDB(VectorDB):
                 dtype=DataType.VARCHAR,
                 is_primary=True,
                 auto_id=False,
-                max_length=self.id_max_length,
+                max_length=self._id_max_length,
             ),
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=dimension),
         ]
