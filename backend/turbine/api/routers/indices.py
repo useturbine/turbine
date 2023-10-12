@@ -2,7 +2,7 @@ from logging import getLogger
 from fastapi import APIRouter, Depends, HTTPException
 from peewee import DataError, DoesNotExist
 from turbine.api.auth import get_user
-from turbine.db.models import Index
+from turbine.db import Index
 from turbine.schema import ExistingIndexSchema, IndexSchema
 from uuid import UUID
 from turbine.vector_db import VectorDB

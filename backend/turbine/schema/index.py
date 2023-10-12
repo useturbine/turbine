@@ -1,8 +1,7 @@
-from turbine.vector_db import MilvusVectorDB, PineconeVectorDB
+from turbine.vector_db import MilvusVectorDB, PineconeVectorDB, SimilarityMetric
 from turbine.embedding_model import HuggingFaceModel, OpenAIModel
 from pydantic import BaseModel
 from typing import Optional
-from turbine.vector_db.types import SimilarityMetric
 from uuid import UUID
 
 

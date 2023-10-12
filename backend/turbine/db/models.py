@@ -5,7 +5,6 @@ from peewee import (
     ForeignKeyField,
     Model,
     PostgresqlDatabase,
-    TextField,
     UUIDField,
     IntegrityError,
     IntegerField,

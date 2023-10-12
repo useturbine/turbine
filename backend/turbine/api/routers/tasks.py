@@ -1,7 +1,7 @@
 from celery.result import AsyncResult
 from fastapi import APIRouter
 from turbine.worker import app
-from turbine.db.models import Task, User, Index
+from turbine.db import Task, User, Index
 from turbine.api.auth import get_user
 from fastapi import Depends, HTTPException
 

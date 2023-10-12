@@ -1,7 +1,7 @@
 from celery import Celery
 from config import Config
 from uuid import UUID
-from turbine.db.models import Pipeline, Index
+from turbine.db import Pipeline, Index
 from turbine.schema import ExistingPipelineSchema, ExistingIndexSchema
 from turbine.data_source import DataSourceDocument
 from turbine.vector_db import VectorItem

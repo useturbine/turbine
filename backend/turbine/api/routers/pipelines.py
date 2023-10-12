@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from turbine.db.models import Pipeline, Index, Task
+from turbine.db import Pipeline, Index, Task
 from turbine.schema import PipelineSchema, ExistingPipelineSchema
 from turbine.api.auth import get_user
 from fastapi import Depends
