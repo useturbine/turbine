@@ -122,6 +122,7 @@ class Index(Model):
 class Task(Model):
     id = UUIDField(primary_key=True, default=uuid.uuid4)
     index_ = ForeignKeyField(Index, backref="tasks", db_column="index_id")
+    kind = CharField()
     created_at = DateTimeField(default=datetime.now())
     finished_at = DateTimeField(null=True)
 

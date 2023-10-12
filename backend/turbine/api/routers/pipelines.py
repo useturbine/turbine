@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from turbine.db.models import Pipeline, Index
+from turbine.db.models import Pipeline, Index, Task
 from turbine.schema import PipelineSchema, ExistingPipelineSchema
 from turbine.api.auth import get_user
 from fastapi import Depends
@@ -78,4 +78,10 @@ async def run_pipeline(id: UUID, user=Depends(get_user)):
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
     task = run_pipeline_task.delay(id)
+    print("index id", pipeline_instance.index_)
+    Task.create(
+        id=task.id,
+        index_=pipeline_instance.index_,
+        kind="manual_pipeline_run",
+    )
     return {"message": "Task has started running", "id": task.id}
