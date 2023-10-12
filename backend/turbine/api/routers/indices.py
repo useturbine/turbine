@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from peewee import DataError, DoesNotExist
 from turbine.api.auth import get_user
 from turbine.db.models import Index
-from turbine.schema import IndexSchema
+from turbine.schema import ExistingIndexSchema, IndexSchema
 from uuid import UUID
+from turbine.vector_db import VectorDB
 
 logger = getLogger(__name__)
 router = APIRouter(prefix="/indices")
@@ -64,10 +65,23 @@ def delete_index(id: UUID, user=Depends(get_user)):
     except (DoesNotExist, DataError):
         raise HTTPException(404, "Index not found")
 
-    vector_db = index.dump().vector_db.get_instance()
+    vector_db: VectorDB = index.dump().vector_db
     collection_name = vector_db.get_collection_name(index.id)
 
     index.delete_instance()
     vector_db.drop_collection(collection_name)
 
     return {"message": "Index deleted"}
+
+
+@router.get("/{id}/search")
+def search_index(id: UUID, query: str, limit: int = 10, user=Depends(get_user)):
+    index_instance = Index.get_or_none(Index.id == id, user=user.id)
+    if not index_instance:
+        raise HTTPException(404, "Index not found")
+
+    index: ExistingIndexSchema = index_instance.dump()
+    collection_name = index.vector_db.get_collection_name(index.id)
+
+    query_embedding = index.embedding_model.get_embedding(query)
+    return index.vector_db.search(collection_name, query_embedding, limit=limit)
