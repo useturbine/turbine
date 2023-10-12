@@ -126,6 +126,11 @@ class Index(Model):
         database = db
 
 
+class Task(Model):
+    id = AutoField()
+    index_ = ForeignKeyField(Index, backref="tasks", db_column="index_id")
+
+
 try:
     db.create_tables([User, Project, Log, Document, Index])
     User.create(name="Test User", email="test@example.com", api_key="test")

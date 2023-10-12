@@ -41,7 +41,7 @@ def create_index(
         similarity_metric=index.similarity_metric,
     )
 
-    vector_db = index.vector_db.get_instance()
+    vector_db = index.vector_db.config.get_instance()
     collection_name = vector_db.get_collection_name(index_instance.id)
 
     try:
