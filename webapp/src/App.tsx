@@ -1,35 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  SignIn,
+} from "@clerk/clerk-react";
+
+if (!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)
+  throw new Error("Missing Clerk Publishable Key");
+
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <SignedIn>
+        <div>You are signed in!</div>
+        <UserButton />
+      </SignedIn>
+      <SignedOut>
+        <SignIn />
+      </SignedOut>
+    </ClerkProvider>
+  );
 }
 
-export default App
+export default App;
