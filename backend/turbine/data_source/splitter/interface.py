@@ -4,12 +4,12 @@ from pydantic import BaseModel
 from typing import Any
 
 
-class DataSourceDocument(BaseModel):
+class SplitterOutput(BaseModel):
     text: str
     metadata: Optional[dict[str, Any]] = None
 
 
-class DataSource:
+class Splitter:
     @abstractmethod
-    def get_documents(self) -> list[DataSourceDocument]:
+    def split(self, text: str) -> list[SplitterOutput]:
         ...

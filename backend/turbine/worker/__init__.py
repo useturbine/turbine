@@ -1,1 +1,1 @@
-from .worker import app
+from .worker import *

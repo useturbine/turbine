@@ -4,6 +4,7 @@ from peewee import DataError, DoesNotExist
 from turbine.api.auth import get_user
 from turbine.db.models import Index
 from turbine.schema import IndexSchema
+from uuid import UUID
 
 logger = getLogger(__name__)
 router = APIRouter(prefix="/indices")
@@ -15,10 +16,9 @@ def get_indices(user=Depends(get_user)):
 
 
 @router.get("/{id}")
-def get_index(id: str, user=Depends(get_user)):
-    try:
-        index = Index.get(Index.id == id, user=user.id)
-    except (DoesNotExist, DataError):
+def get_index(id: UUID, user=Depends(get_user)):
+    index = Index.get_or_none(Index.id == id, user=user.id)
+    if not index:
         raise HTTPException(404, "Index not found")
     return index.dump()
 
@@ -58,7 +58,7 @@ def create_index(
 
 
 @router.delete("/{id}")
-def delete_index(id: str, user=Depends(get_user)):
+def delete_index(id: UUID, user=Depends(get_user)):
     try:
         index = Index.get(Index.id == id, user=user.id)
     except (DoesNotExist, DataError):

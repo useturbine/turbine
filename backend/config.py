@@ -12,3 +12,5 @@ class Config:
     celery_backend_url = os.getenv("CELERY_BACKEND_URL", "db+sqlite:///results.db")
     kafka_url = os.getenv("KAFKA_URL", "localhost:19092")
     debezium_url = os.getenv("DEBEZIUM_URL", "http://localhost:8083")
+    aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID", "")
+    aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY", "")

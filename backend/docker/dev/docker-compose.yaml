@@ -36,6 +36,22 @@ services:
       - ../..:/turbine-daemon
     restart: always
 
+  turbine-worker:
+    container_name: turbine-worker
+    image: turbine/worker
+    build:
+      context: ../..
+      dockerfile: docker/dev/turbine-worker.Dockerfile
+    depends_on:
+      - milvus
+      - redpanda
+      - debezium
+    env_file: .env
+    command: celery --app turbine.worker.worker worker --loglevel=INFO
+    volumes:
+      - ../..:/turbine-worker
+    restart: always
+
   rabbitmq:
     container_name: rabbitmq
     image: "rabbitmq:management"
