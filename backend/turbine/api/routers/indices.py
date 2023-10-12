@@ -11,8 +11,7 @@ router = APIRouter(prefix="/indices")
 
 @router.get("/")
 def get_indices(user=Depends(get_user)):
-    indices = Index.select().where(Index.user == user.id)
-    return [index.dump() for index in indices]
+    return [index.dump() for index in Index.select().where(Index.user == user.id)]
 
 
 @router.get("/{id}")
@@ -33,15 +32,13 @@ def create_index(
         user=user,
         name=index.name,
         description=index.description,
-        vector_db_type=index.vector_db.type,
-        vector_db_config=index.vector_db.config.model_dump(),
-        embedding_model_type=index.embedding_model.type,
-        embedding_model_config=index.embedding_model.config.model_dump(),
+        vector_db=index.vector_db.model_dump(),
+        embedding_model=index.embedding_model.model_dump(),
         embedding_dimension=index.embedding_dimension,
         similarity_metric=index.similarity_metric,
     )
 
-    vector_db = index.vector_db.config.get_instance()
+    vector_db = index.vector_db.get_instance()
     collection_name = vector_db.get_collection_name(index_instance.id)
 
     try:

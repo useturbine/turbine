@@ -9,7 +9,7 @@ import json
 from typing import Optional
 from turbine.utils import get_vector_db
 import logging
-from .routers import indices, tasks
+from .routers import indices, tasks, pipelines
 
 logger = getLogger(__name__)
 logging.basicConfig(
@@ -19,6 +19,7 @@ logging.basicConfig(
 app = FastAPI()
 app.include_router(indices.router)
 app.include_router(tasks.router)
+app.include_router(pipelines.router)
 
 debezium = DebeziumDataSource(
     debezium_url=Config.debezium_url, kafka_url=Config.kafka_url

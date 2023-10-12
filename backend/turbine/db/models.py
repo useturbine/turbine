@@ -8,12 +8,13 @@ from peewee import (
     TextField,
     UUIDField,
     IntegrityError,
+    IntegerField,
 )
 from playhouse.postgres_ext import BinaryJSONField
 from datetime import datetime
 from config import Config
 import uuid
-from turbine.schema import ExistingIndexSchema
+from turbine.schema import ExistingIndexSchema, ExistingPipelineSchema
 
 
 def create_postgres_connection(connection_string: str):
@@ -92,11 +93,9 @@ class Index(Model):
     updated_at = DateTimeField(default=datetime.now())
     name = CharField()
     description = CharField(null=True)
-    vector_db_type = CharField()
-    vector_db_config = BinaryJSONField()
-    embedding_model_type = CharField()
-    embedding_model_config = BinaryJSONField()
-    embedding_dimension = CharField()
+    vector_db = BinaryJSONField()
+    embedding_model = BinaryJSONField()
+    embedding_dimension = IntegerField()
     similarity_metric = CharField()
 
     def save(self, *args, **kwargs):
@@ -109,14 +108,8 @@ class Index(Model):
                 "id": str(self.id),
                 "name": self.name,
                 "description": self.description,
-                "vector_db": {
-                    "type": self.vector_db_type,
-                    "config": self.vector_db_config,
-                },
-                "embedding_model": {
-                    "type": self.embedding_model_type,
-                    "config": self.embedding_model_config,
-                },
+                "vector_db": self.vector_db,
+                "embedding_model": self.embedding_model,
                 "embedding_dimension": self.embedding_dimension,
                 "similarity_metric": self.similarity_metric,
             }
@@ -127,12 +120,45 @@ class Index(Model):
 
 
 class Task(Model):
-    id = AutoField()
+    id = UUIDField(primary_key=True, default=uuid.uuid4)
     index_ = ForeignKeyField(Index, backref="tasks", db_column="index_id")
+    created_at = DateTimeField(default=datetime.now())
+    finished_at = DateTimeField(null=True)
+
+    class Meta:
+        database = db
+
+
+class Pipeline(Model):
+    id = UUIDField(primary_key=True, default=uuid.uuid4)
+    index_ = ForeignKeyField(Index, backref="pipelines", db_column="index_id")
+    name = CharField()
+    description = CharField(null=True)
+    data_source = BinaryJSONField()
+    created_at = DateTimeField(default=datetime.now())
+    updated_at = DateTimeField(default=datetime.now())
+
+    def save(self, *args, **kwargs):
+        self.updated_at = datetime.now()
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        database = db
+
+    def dump(self):
+        return ExistingPipelineSchema(
+            **{
+                "id": str(self.id),
+                "name": self.name,
+                "description": self.description,
+                "index": str(self.index_.id),
+                "data_source": self.data_source,
+            }
+        )
 
 
 try:
-    db.create_tables([User, Project, Log, Document, Index])
+    db.create_tables([User, Project, Log, Document, Index, Task, Pipeline])
     User.create(name="Test User", email="test@example.com", api_key="test")
 except IntegrityError:
     pass
