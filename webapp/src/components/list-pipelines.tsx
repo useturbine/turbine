@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRootContext } from "../utils";
 import { turbineApiUrl } from "../config";
-import { Accordion, Button } from "flowbite-react";
+import { Accordion, Button, Card } from "flowbite-react";
 import CreatePipelineButton from "./create-pipeline-button";
 
 export const ListPipelines = () => {
@@ -68,9 +68,11 @@ export const ListPipelines = () => {
       <Accordion collapseAll className="mt-6">
         {pipelines.map((pipeline: any) => {
           return (
-            <Accordion.Panel>
-              <Accordion.Title>{pipeline.name}</Accordion.Title>
-              <Accordion.Content>
+            <Card>
+              <div>
+                <h1 className="text-2xl font-bold">{pipeline.name}</h1>
+              </div>
+              <div>
                 <div className="flex gap-4">
                   <pre className="text-gray-500 dark:text-gray-400 flex-1">
                     {JSON.stringify(pipeline, null, 2)}
@@ -88,8 +90,8 @@ export const ListPipelines = () => {
                     </Button>
                   </div>
                 </div>
-              </Accordion.Content>
-            </Accordion.Panel>
+              </div>
+            </Card>
           );
         })}
       </Accordion>

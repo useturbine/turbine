@@ -5,10 +5,11 @@ import {
   UserButton,
   useUser,
 } from "@clerk/clerk-react";
-import { Navbar } from "flowbite-react";
+import { Sidebar } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { turbineAdminApiKey, turbineApiUrl } from "../config";
+import { HiDatabase, HiKey } from "react-icons/hi";
 
 export const Root = () => {
   const { user } = useUser();
@@ -42,21 +43,34 @@ export const Root = () => {
   return (
     <>
       <SignedIn>
-        <div className="mx-auto max-w-6xl">
-          <Navbar fluid rounded>
-            <Navbar.Brand as={Link} href="https://app.useturbine.com">
-              <img
-                src="/images/turbine.png"
-                className="mr-3 h-6 sm:h-9"
-                alt="Turbine Logo"
-              />
-              <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-                Turbine App
-              </span>
-            </Navbar.Brand>
-            <UserButton afterSignOutUrl="/sign-in" />
-          </Navbar>
-          <Outlet context={{ userApiKey }} />
+        <div className="mx-auto flex h-full pr-10">
+          <Sidebar className="h-screen">
+            <Sidebar.Logo
+              href="#"
+              img="/images/turbine-transparent.png"
+              imgAlt="Turbine Logo"
+            >
+              <p>Turbine App</p>
+            </Sidebar.Logo>
+            <Sidebar.Items>
+              <Sidebar.ItemGroup>
+                <Sidebar.Item as={Link} href="/" icon={HiDatabase}>
+                  <p>Indexes</p>
+                </Sidebar.Item>
+                <Sidebar.Item href="#" icon={HiKey} active>
+                  <p>API Keys</p>
+                </Sidebar.Item>
+              </Sidebar.ItemGroup>
+            </Sidebar.Items>
+          </Sidebar>
+          <div className="flex flex-col flex-1">
+            <div className="flex justify-end mt-4">
+              <UserButton afterSignOutUrl="/sign-in" />
+            </div>
+            <div className="flex flex-1 items-start ml-6">
+              <Outlet context={{ userApiKey }} />
+            </div>
+          </div>
         </div>
       </SignedIn>
       <SignedOut>

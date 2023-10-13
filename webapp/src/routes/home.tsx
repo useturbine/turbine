@@ -4,10 +4,10 @@ import { ListPipelines } from "../components/list-pipelines";
 
 export const Home = () => {
   return (
-    <div className="flex flex-col justify-center">
-      <ApiKey />
+    <div className="flex flex-col justify-center flex-1">
+      {/* <ApiKey /> */}
       <ListIndices />
-      <ListPipelines />
+      {/* <ListPipelines /> */}
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useRootContext } from "../utils";
 import { turbineApiUrl } from "../config";
-import { Accordion, Button } from "flowbite-react";
+import { Accordion, Button, Card } from "flowbite-react";
 import CreateIndexButton from "./create-index-button";
+import { ClickToCopy } from "./click-to-copy";
 
 export const ListIndices = () => {
   const [indices, setIndices] = useState([]);
@@ -37,27 +38,35 @@ export const ListIndices = () => {
         <CreateIndexButton />
       </div>
 
-      <Accordion collapseAll className="mt-6">
+      <div className="mt-6 flex flex-col gap-6">
         {indices.map((index: any) => {
           return (
-            <Accordion.Panel>
-              <Accordion.Title>{index.name}</Accordion.Title>
-              <Accordion.Content>
-                <div className="flex gap-4">
-                  <pre className="text-gray-500 dark:text-gray-400 flex-1">
-                    {JSON.stringify(index, null, 2)}
-                  </pre>
-                  <div className="flex flex-col gap-2 justify-end">
-                    <Button disabled color="warning">
-                      Delete Index
-                    </Button>
-                  </div>
-                </div>
-              </Accordion.Content>
-            </Accordion.Panel>
+            <Card href={`/indexes/${index.id}`}>
+              <div className="flex flex-col gap-2">
+                <h1 className="text-xl font-bold">{index.name}</h1>
+                <ClickToCopy text={index.id} />
+                <p className="text-gray-500 dark:text-gray-400">
+                  Uses{" "}
+                  {
+                    {
+                      milvus: "Milvus",
+                      pinecone: "Pinecone",
+                    }[index.vector_db.type]
+                  }{" "}
+                  as vector database and{" "}
+                  {
+                    {
+                      openai: "OpenAI",
+                      huggingface: "Hugging Face",
+                    }[index.embedding_model.type]
+                  }{" "}
+                  for generating embeddings.
+                </p>
+              </div>
+            </Card>
           );
         })}
-      </Accordion>
+      </div>
     </div>
   );
 };
