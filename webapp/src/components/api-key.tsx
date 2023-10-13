@@ -1,4 +1,4 @@
-import { Button } from "flowbite-react";
+import { Tooltip } from "flowbite-react";
 import { useRootContext } from "../utils";
 import { useCopyToClipboard } from "usehooks-ts";
 
@@ -8,16 +8,16 @@ export const ApiKey = () => {
   const [_, copy] = useCopyToClipboard();
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex items-center mt-4">
       {userApiKey ? (
-        <>
-          <p>
-            Your API key is <span className="font-mono">{userApiKey}</span>
-          </p>
-          <Button onClick={() => copy(userApiKey)} className="ml-3" size="sm">
-            Copy
-          </Button>
-        </>
+        <div className="flex gap-1">
+          <p>Your API key is</p>
+          <Tooltip content="Click to copy">
+            <button className="font-mono" onClick={() => copy(userApiKey)}>
+              {userApiKey}
+            </button>
+          </Tooltip>
+        </div>
       ) : (
         <p>Your API key is loading...</p>
       )}

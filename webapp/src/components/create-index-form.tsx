@@ -214,8 +214,13 @@ export const CreateIndexForm = () => {
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 mt-10 justify-between"
+        className="flex flex-col gap-4 justify-between"
       >
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-bold">Create Index</h1>
+          <p className="text-gray-500">Create an index to start searching</p>
+        </div>
+
         <div className="flex gap-10 justify-between">
           <div className="flex flex-col flex-1 gap-2">
             <div>
@@ -312,8 +317,7 @@ export const CreateIndexForm = () => {
             helperText="Give a name to your index"
           />
         </div>
-
-        <Button className="mt-4" type="submit" isProcessing={isLoading}>
+        <Button type="submit" isProcessing={isLoading}>
           Create Index
         </Button>
       </form>
