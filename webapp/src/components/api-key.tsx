@@ -4,7 +4,8 @@ import { useCopyToClipboard } from "usehooks-ts";
 
 export const ApiKey = () => {
   const { userApiKey } = useRootContext();
-  const [value, copy] = useCopyToClipboard();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, copy] = useCopyToClipboard();
 
   return (
     <div className="flex justify-center items-center">

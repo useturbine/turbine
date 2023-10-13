@@ -32,6 +32,7 @@ export const Root = () => {
         }
         const userDetails = await result.json();
         setUserApiKey(userDetails.api_key);
+        break;
       }
     };
 
