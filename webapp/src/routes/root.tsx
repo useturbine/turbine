@@ -44,8 +44,8 @@ export const Root = () => {
   return (
     <>
       <SignedIn>
-        <div className="mx-auto flex h-full pr-10">
-          <Sidebar className="h-screen">
+        <div className="flex">
+          <Sidebar className="h-screen sticky top-0">
             <Sidebar.Logo
               href="#"
               img="/images/turbine-transparent.png"
@@ -72,14 +72,14 @@ export const Root = () => {
               </Sidebar.ItemGroup>
             </Sidebar.Items>
           </Sidebar>
-          <div className="flex flex-col flex-1">
+          <main className="flex flex-col flex-1 pr-10">
             <div className="flex justify-end mt-4">
               <UserButton afterSignOutUrl="/sign-in" />
             </div>
             <div className="flex flex-1 items-start ml-6">
               <Outlet context={{ userApiKey }} />
             </div>
-          </div>
+          </main>
         </div>
       </SignedIn>
       <SignedOut>
