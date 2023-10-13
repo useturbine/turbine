@@ -27,17 +27,17 @@ services:
     env_file: .env
     restart: always
 
-  # turbine-daemon:
-  #   container_name: turbine-daemon
-  #   image: turbine/daemon
-  #   build:
-  #     context: ../..
-  #     dockerfile: docker/prod/turbine-daemon.Dockerfile
-  #   depends_on:
-  #     - redpanda
-  #     - debezium
-  #   env_file: .env
-  #   restart: always
+  turbine-daemon:
+    container_name: turbine-daemon
+    image: turbine/daemon
+    build:
+      context: ../..
+      dockerfile: docker/prod/turbine-daemon.Dockerfile
+    depends_on:
+      - redpanda
+      - debezium
+    env_file: .env
+    restart: always
 
   redpanda:
     container_name: redpanda
