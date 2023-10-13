@@ -7,13 +7,14 @@ import {
 } from "@clerk/clerk-react";
 import { Sidebar } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { turbineAdminApiKey, turbineApiUrl } from "../config";
 import { HiDatabase, HiKey } from "react-icons/hi";
 
 export const Root = () => {
   const { user } = useUser();
   const [userApiKey, setUserApiKey] = useState<string | null>(null);
+  const location = useLocation();
 
   // Fetch user's API key, keep retrying until it's available
   useEffect(() => {
@@ -54,10 +55,20 @@ export const Root = () => {
             </Sidebar.Logo>
             <Sidebar.Items>
               <Sidebar.ItemGroup>
-                <Sidebar.Item as={Link} href="/" icon={HiDatabase}>
+                <Sidebar.Item
+                  as={Link}
+                  href="/"
+                  icon={HiDatabase}
+                  active={location.pathname === "/"}
+                >
                   <p>Indexes</p>
                 </Sidebar.Item>
-                <Sidebar.Item href="#" icon={HiKey} active>
+                <Sidebar.Item
+                  as={Link}
+                  href="/keys"
+                  icon={HiKey}
+                  active={location.pathname === "/keys"}
+                >
                   <p>API Keys</p>
                 </Sidebar.Item>
               </Sidebar.ItemGroup>

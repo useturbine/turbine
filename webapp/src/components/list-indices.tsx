@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRootContext } from "../utils";
 import { turbineApiUrl } from "../config";
-import { Accordion, Button, Card } from "flowbite-react";
+import { Card } from "flowbite-react";
 import CreateIndexButton from "./create-index-button";
-import { ClickToCopy } from "./click-to-copy";
 
 export const ListIndices = () => {
   const [indices, setIndices] = useState([]);
@@ -39,26 +38,27 @@ export const ListIndices = () => {
       </div>
 
       <div className="mt-6 flex flex-col gap-6">
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {indices.map((index: any) => {
           return (
             <Card href={`/indexes/${index.id}`}>
               <div className="flex flex-col gap-2">
                 <h1 className="text-xl font-bold">{index.name}</h1>
-                <ClickToCopy text={index.id} />
+                <p className="font-mono">{index.id}</p>
                 <p className="text-gray-500 dark:text-gray-400">
                   Uses{" "}
                   {
                     {
                       milvus: "Milvus",
                       pinecone: "Pinecone",
-                    }[index.vector_db.type]
+                    }[index.vector_db.type as "milvus" | "pinecone"]
                   }{" "}
                   as vector database and{" "}
                   {
                     {
                       openai: "OpenAI",
                       huggingface: "Hugging Face",
-                    }[index.embedding_model.type]
+                    }[index.embedding_model.type as "openai" | "huggingface"]
                   }{" "}
                   for generating embeddings.
                 </p>

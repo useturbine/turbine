@@ -4,6 +4,8 @@ import { ErrorPage } from "./error-page";
 import { Home } from "./routes/home";
 import { SignInPage } from "./routes/sign-in";
 import { SignUpPage } from "./routes/sign-up";
+import { Keys } from "./routes/keys";
+import { Index } from "./routes";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +17,15 @@ export const router = createBrowserRouter([
         path: "/",
         element: <Home />,
         errorElement: <ErrorPage />,
+      },
+      {
+        path: "/keys",
+        element: <Keys />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "/indexes/:indexId",
+        element: <Index />,
       },
     ],
   },

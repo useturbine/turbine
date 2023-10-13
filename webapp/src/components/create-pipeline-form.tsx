@@ -131,6 +131,8 @@ export const CreatePipelineForm = () => {
       }
     } catch (error) {
       console.log(error);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       setError(error.message);
     }
 
@@ -154,6 +156,7 @@ export const CreatePipelineForm = () => {
             <Label htmlFor="indexId" value="Index" />
           </div>
           <Select id="indexId" required {...methods.register("indexId")}>
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {indices.map((index: any) => {
               return <option value={index.id}>{index.name}</option>;
             })}
