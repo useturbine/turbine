@@ -18,6 +18,18 @@ services:
       - ../..:/turbine-api
     restart: always
 
+  ngrok:
+    container_name: ngrok
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command:
+      - "start"
+      - "api"
+    volumes:
+      - ./ngrok.yml:/var/lib/ngrok/ngrok.yml
+    ports:
+      - "4040:4040"
+
   turbine-worker:
     container_name: turbine-worker
     image: turbine/worker

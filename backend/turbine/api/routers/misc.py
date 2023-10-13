@@ -9,14 +9,19 @@ router = APIRouter()
 @router.post("/webhooks/clerk")
 async def clerk_webhook(request: Request):
     request_body = await request.json()
-    print(request_body, request.headers)
 
     if request_body["type"] == "user.created":
-        User.create(
+        User.get_or_create(
             external_id=request_body["data"]["id"],
         )
+    elif request_body["type"] == "session.created":
+        User.get_or_create(
+            external_id=request_body["data"]["user_id"],
+        )
     elif request_body["type"] == "user.deleted":
-        User.delete().where(User.external_id == request_body["data"]["id"])
+        user = User.get_or_create(external_id=request_body["data"]["id"])
+        user.deleted = True
+        user.save()
 
     return {"message": "Webhook processed"}
 
