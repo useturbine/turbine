@@ -49,7 +49,7 @@ export const ListIndices = () => {
                   </pre>
                   <div className="flex flex-col gap-2 justify-end">
                     <Button disabled color="warning">
-                      Delete
+                      Delete Index
                     </Button>
                   </div>
                 </div>

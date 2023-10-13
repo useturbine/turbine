@@ -6,6 +6,7 @@ import CreatePipelineButton from "./create-pipeline-button";
 
 export const ListPipelines = () => {
   const [pipelines, setPipelines] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { userApiKey } = useRootContext();
 
   // Fetch pipelines created by the user
@@ -25,7 +26,32 @@ export const ListPipelines = () => {
     fetchPipelines();
   }, [userApiKey]);
 
-  console.log(pipelines);
+  // Run pipeline using Turbine API
+  const runPipeline = async (pipelineId: string) => {
+    if (!userApiKey) return;
+    setLoading(true);
+
+    try {
+      const result = await fetch(
+        `${turbineApiUrl}/pipelines/${pipelineId}/run`,
+        {
+          method: "POST",
+          headers: {
+            "X-Turbine-Key": userApiKey,
+          },
+        }
+      );
+      const response = await result.json();
+
+      if (!result.ok) {
+        console.error(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div className="flex flex-col mt-6">
@@ -50,8 +76,15 @@ export const ListPipelines = () => {
                     {JSON.stringify(pipeline, null, 2)}
                   </pre>
                   <div className="flex flex-col gap-2 justify-end">
+                    <Button
+                      color="dark"
+                      isProcessing={loading}
+                      onClick={() => runPipeline(pipeline.id)}
+                    >
+                      Run Pipeline
+                    </Button>
                     <Button disabled color="warning">
-                      Delete
+                      Delete Pipeline
                     </Button>
                   </div>
                 </div>
