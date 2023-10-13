@@ -146,7 +146,8 @@ const OpenAIForm = () => {
 
 export const CreateIndexForm = () => {
   const { userApiKey } = useRootContext();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>();
 
   const methods = useForm<Index>({
     defaultValues: {
@@ -164,10 +165,12 @@ export const CreateIndexForm = () => {
   } = methods;
 
   // Create index using Turbine API
-  const onSubmit: SubmitHandler<Index> = (data) => {
+  const onSubmit: SubmitHandler<Index> = async (data) => {
+    setLoading(true);
+    setError(undefined);
+
     try {
-      setIsLoading(true);
-      fetch(`${turbineApiUrl}/indices`, {
+      const result = await fetch(`${turbineApiUrl}/indices`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -203,11 +206,21 @@ export const CreateIndexForm = () => {
           similarity_metric: data.similarityMetric,
         }),
       });
+
+      const response = await result.json();
+
+      if (result.ok) {
+        console.log(response);
+        setError("Something went wrong");
+        setLoading(false);
+        return;
+      }
     } catch (error) {
-      console.error(error);
+      console.log(error);
+      setError(error.message);
     }
 
-    setIsLoading(false);
+    setLoading(false);
   };
 
   return (
@@ -317,9 +330,12 @@ export const CreateIndexForm = () => {
             helperText="Give a name to your index"
           />
         </div>
-        <Button type="submit" isProcessing={isLoading}>
+        <Button type="submit" isProcessing={loading}>
           Create Index
         </Button>
+        {error && (
+          <p className="text-red-500 dark:text-red-400 mx-auto">{error}</p>
+        )}
       </form>
     </FormProvider>
   );
