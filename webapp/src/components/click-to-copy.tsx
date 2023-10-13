@@ -6,10 +6,12 @@ export const ClickToCopy = ({ text }: { text: string }) => {
   const [_, copy] = useCopyToClipboard();
 
   return (
-    <Tooltip content="Click to copy">
-      <button className="font-mono" onClick={() => copy(text)}>
-        {text}
-      </button>
-    </Tooltip>
+    <span className="inline-block">
+      <Tooltip content="Click to copy">
+        <button className="font-mono inline-block" onClick={() => copy(text)}>
+          {text}
+        </button>
+      </Tooltip>
+    </span>
   );
 };

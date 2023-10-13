@@ -7,6 +7,7 @@ from fastapi import Depends
 from uuid import UUID
 from peewee import IntegrityError
 from turbine.worker import run_pipeline as run_pipeline_task
+from typing import Optional
 
 router = APIRouter(prefix="/pipelines")
 
@@ -30,13 +31,24 @@ async def create_pipeline(pipeline: PipelineSchema):
 
 
 @router.get("/", response_model=List[ExistingPipelineSchema])
-async def get_pipelines(user=Depends(get_user)):
-    return [
-        pipeline.dump()
-        for pipeline in Pipeline.select()
-        .join(Index)
-        .where(Index.user == user, Pipeline.deleted == False)
-    ]
+async def get_pipelines(index: Optional[UUID] = None, user=Depends(get_user)):
+    if index:
+        pipelines = (
+            Pipeline.select()
+            .join(Index)
+            .where(
+                Index.user == user,
+                Pipeline.index_ == index,
+                Pipeline.deleted == False,
+            )
+        )
+    else:
+        pipelines = (
+            Pipeline.select()
+            .join(Index)
+            .where(Index.user == user, Pipeline.deleted == False)
+        )
+    return [pipeline.dump() for pipeline in pipelines]
 
 
 @router.get("/{id}", response_model=ExistingPipelineSchema)

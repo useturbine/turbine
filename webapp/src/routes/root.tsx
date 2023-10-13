@@ -7,7 +7,7 @@ import {
 } from "@clerk/clerk-react";
 import { Sidebar } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { turbineAdminApiKey, turbineApiUrl } from "../config";
 import { HiDatabase, HiKey } from "react-icons/hi";
 
@@ -56,7 +56,6 @@ export const Root = () => {
             <Sidebar.Items>
               <Sidebar.ItemGroup>
                 <Sidebar.Item
-                  as={Link}
                   href="/"
                   icon={HiDatabase}
                   active={location.pathname === "/"}
@@ -64,7 +63,6 @@ export const Root = () => {
                   <p>Indexes</p>
                 </Sidebar.Item>
                 <Sidebar.Item
-                  as={Link}
                   href="/keys"
                   icon={HiKey}
                   active={location.pathname === "/keys"}
