@@ -6,9 +6,9 @@ from pydantic import BaseModel
 
 class TaskSchema(BaseModel):
     id: UUID
+    pipeline: UUID
     created_at: datetime
     finished_at: Optional[datetime]
     successful: bool
     type: str
     metadata: Optional[dict]
-    index: UUID

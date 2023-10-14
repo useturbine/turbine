@@ -29,8 +29,6 @@ async def create_pipeline(pipeline: PipelineSchema, user=Depends(get_user)):
         data_source=pipeline.data_source.model_dump(),
         vector_database=pipeline.vector_database.model_dump(),
         embedding_model=pipeline.embedding_model.model_dump(),
-        embedding_dimension=pipeline.embedding_dimension,
-        similarity_metric=pipeline.similarity_metric,
         user=user,
     )
     return {
@@ -79,9 +77,8 @@ async def run_pipeline(id: UUID, user=Depends(get_user)):
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
     task = Task.create(
-        index_=pipeline.index_,
+        pipeline=pipeline,
         type="manual_pipeline_run",
-        metadata={"pipeline_id": str(id)},
     )
     try:
         run_pipeline_task.delay(id, task.id)

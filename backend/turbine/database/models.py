@@ -7,7 +7,6 @@ from peewee import (
     PostgresqlDatabase,
     UUIDField,
     IntegrityError,
-    IntegerField,
     BooleanField,
 )
 from playhouse.postgres_ext import BinaryJSONField
@@ -58,9 +57,7 @@ class Pipeline(Model):
     user = ForeignKeyField(User, backref="pipelines")
     data_source = BinaryJSONField()
     embedding_model = BinaryJSONField()
-    embedding_dimension = IntegerField()
     vector_database = BinaryJSONField()
-    similarity_metric = CharField()
     deleted = BooleanField(default=False)
 
     def save(self, *args, **kwargs):
@@ -78,9 +75,7 @@ class Pipeline(Model):
                 "description": self.description,
                 "data_source": self.data_source,
                 "embedding_model": self.embedding_model,
-                "embedding_dimension": self.embedding_dimension,
                 "vector_database": self.vector_database,
-                "similarity_metric": self.similarity_metric,
             }
         )
 

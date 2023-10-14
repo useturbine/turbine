@@ -25,12 +25,30 @@ def run_pipeline(pipeline_id: str, task_id: str):
     ]
     chains = group(
         (
-            create_embedding.s(pipeline.index, document)
-            | store_embedding.s(pipeline.index, document["id"])
+            create_embedding.s(pipeline_id, document)
+            | store_embedding.s(pipeline_id, document["id"])
         )
         for document in documents
     ) | on_task_success.si(task_id).on_error(on_task_error.s(task_id))
     chains.delay()
+
+
+@app.task
+def create_embedding(pipeline_id: str, document: dict):
+    document_parsed = DataSourceDocument(**document)
+    pipeline: ExistingPipelineSchema = Pipeline.get_by_id(pipeline_id).dump()
+    embedding = pipeline.embedding_model.get_embedding(document_parsed.text)
+    return embedding
+
+
+@app.task
+def store_embedding(
+    embedding: list[float],
+    pipeline_id: str,
+    document_id: str,
+):
+    pipeline: ExistingPipelineSchema = Pipeline.get_by_id(pipeline_id).dump()
+    pipeline.vector_database.insert([VectorItem(id=document_id, vector=embedding)])
 
 
 @app.task
@@ -55,24 +73,3 @@ def on_task_error(
         task.save()
     except Exception as e:
         logger.error("Error while saving task details after task error", e)
-
-
-@app.task
-def create_embedding(index_id: str, document: dict):
-    document_parsed = DataSourceDocument(**document)
-    index: ExistingIndexSchema = Index.get_by_id(index_id).dump()
-    embedding = index.embedding_model.get_embedding(document_parsed.text)
-    return embedding
-
-
-@app.task
-def store_embedding(
-    embedding: list[float],
-    pipeline_id: str,
-    document_id: str,
-):
-    pipeline: ExistingPipelineSchema = Pipeline.get_by_id(pipeline_id).dump()
-    collection_name = index.vector_db.get_collection_name(index.id)
-    index.vector_db.insert(
-        collection_name, [VectorItem(id=document_id, vector=embedding)]
-    )

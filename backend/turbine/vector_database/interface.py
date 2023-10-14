@@ -16,31 +16,14 @@ class VectorSearchResult(BaseModel):
 
 
 class VectorDB:
-    @staticmethod
     @abstractmethod
-    def get_collection_name(index_id: UUID) -> str:
+    def insert(self, data: List[VectorItem]) -> None:
         ...
 
     @abstractmethod
-    def create_collection(
-        self, name: str, dimension: int, similarity_metric: SimilarityMetric
-    ) -> None:
+    def search(self, data: List[float], limit: int) -> List[VectorSearchResult]:
         ...
 
     @abstractmethod
-    def insert(self, collection_name: str, data: List[VectorItem]) -> None:
-        ...
-
-    @abstractmethod
-    def search(
-        self, collection_name: str, data: List[float], limit: int
-    ) -> List[VectorSearchResult]:
-        ...
-
-    @abstractmethod
-    def delete(self, collection_name: str, id: str) -> None:
-        ...
-
-    @abstractmethod
-    def drop_collection(self, collection_name: str) -> None:
+    def delete(self, id: str) -> None:
         ...

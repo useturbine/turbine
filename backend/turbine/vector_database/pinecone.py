@@ -2,8 +2,6 @@ from turbine.vector_database import VectorDB, VectorItem, VectorSearchResult
 import pinecone
 from pinecone import Vector
 from typing import List
-from .types import SimilarityMetric
-from uuid import UUID
 from pydantic import BaseModel
 from typing import Literal
 
@@ -12,24 +10,14 @@ class PineconeVectorDB(VectorDB, BaseModel):
     type: Literal["pinecone"]
     api_key: str
     environment: str
-
-    @staticmethod
-    def get_collection_name(index_id: UUID) -> str:
-        return f"turbine-{index_id}"
+    index_name: str
 
     def __init__(self, **data) -> None:
         super().__init__(**data)
         pinecone.init(api_key=self.api_key, environment=self.environment)
 
-    @staticmethod
-    def create_collection(
-        name: str, dimension: int, similarity_metric: SimilarityMetric
-    ) -> None:
-        pinecone.create_index(name, dimension=dimension, metric=similarity_metric)
-
-    @staticmethod
-    def insert(collection_name: str, data: List[VectorItem]) -> None:
-        index = pinecone.Index(collection_name)
+    def insert(self, data: List[VectorItem]) -> None:
+        index = pinecone.Index(self.index_name)
         index.upsert(
             vectors=[
                 Vector(
@@ -40,11 +28,8 @@ class PineconeVectorDB(VectorDB, BaseModel):
             ]
         )
 
-    @staticmethod
-    def search(
-        collection_name: str, data: List[float], limit: int
-    ) -> List[VectorSearchResult]:
-        index = pinecone.Index(collection_name)
+    def search(self, data: List[float], limit: int) -> List[VectorSearchResult]:
+        index = pinecone.Index(self.index_name)
         results = index.query(
             vector=data,
             top_k=limit,
@@ -54,11 +39,6 @@ class PineconeVectorDB(VectorDB, BaseModel):
             for result in results["matches"]
         ]
 
-    @staticmethod
-    def delete(collection_name: str, id: str) -> None:
-        index = pinecone.Index(collection_name)
+    def delete(self, id: str) -> None:
+        index = pinecone.Index(self.index_name)
         index.delete(ids=[id])
-
-    @staticmethod
-    def drop_collection(collection_name: str) -> None:
-        pinecone.delete_index(collection_name)

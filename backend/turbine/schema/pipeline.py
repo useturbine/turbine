@@ -16,8 +16,6 @@ class PipelineSchema(BaseModel):
     description: Optional[str] = None
     vector_database: VectorDatabase
     embedding_model: EmbeddingModel
-    embedding_dimension: int
-    similarity_metric: SimilarityMetric
     data_source: DataSource
 
 
