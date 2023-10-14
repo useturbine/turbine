@@ -18,6 +18,12 @@ services:
       - ../..:/turbine-api
     restart: always
 
+  redis:
+    container_name: redis
+    image: "bitnami/redis:latest"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
   ngrok:
     container_name: ngrok
     image: ngrok/ngrok:latest

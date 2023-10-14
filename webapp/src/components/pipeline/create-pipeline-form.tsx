@@ -8,7 +8,8 @@ import {
 import { useRootContext } from "../../utils";
 import { turbineApiUrl } from "../../config";
 import axios from "axios";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { fetchIndexes } from "../../queries";
 
 type S3Text = {
   url: string;
@@ -101,14 +102,8 @@ const S3TextForm = () => {
   );
 };
 
-export const CreatePipelineForm = ({
-  indexId,
-  indexName,
-}: {
-  indexId: string;
-  indexName: string;
-}) => {
-  const { userApiKey } = useRootContext();
+export const CreatePipelineForm = ({ indexId }: { indexId: string }) => {
+  const { userApiKey, externalUserId } = useRootContext();
   const methods = useForm<Pipeline>();
 
   // React Query
@@ -124,6 +119,14 @@ export const CreatePipelineForm = ({
     },
   });
 
+  // Get index name
+  const { data: indexes } = useQuery(
+    ["indexes", externalUserId],
+    () => fetchIndexes({ userApiKey }),
+    { enabled: !!userApiKey }
+  );
+  const indexName = indexes?.find((index) => index.id === indexId)?.name;
+
   const onSubmit: SubmitHandler<Pipeline> = (pipeline) =>
     mutate({ ...pipeline, indexId });
 
@@ -135,7 +138,9 @@ export const CreatePipelineForm = ({
       >
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold">Create Pipeline</h1>
-          <p className="text-gray-500">Create a pipeline for index {indexId}</p>
+          <p className="text-gray-500">
+            Create a pipeline for index {indexName}
+          </p>
         </div>
 
         <div>

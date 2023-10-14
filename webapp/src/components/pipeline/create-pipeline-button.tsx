@@ -1,20 +1,16 @@
 import { Button, Modal } from "flowbite-react";
 import { useState } from "react";
 import { CreatePipelineForm } from "./create-pipeline-form";
+import { HiPlus } from "react-icons/hi";
 
-export default function CreatePipelineButton({
-  indexId,
-  indexName,
-}: {
-  indexId: string;
-  indexName: string;
-}) {
+export default function CreatePipelineButton({ indexId }: { indexId: string }) {
   const [openModal, setOpenModal] = useState<string | undefined>();
 
   return (
     <>
       <Button color="blue" onClick={() => setOpenModal("create-pipeline-form")}>
-        Create Pipeline
+        <HiPlus className="mr-2 h-5 w-5" />
+        <p>Create Pipeline</p>
       </Button>
       <Modal
         show={openModal === "create-pipeline-form"}
@@ -24,7 +20,7 @@ export default function CreatePipelineButton({
         <Modal.Header />
         <Modal.Body>
           <div className="mt-4">
-            <CreatePipelineForm {...{ indexId, indexName }} />
+            <CreatePipelineForm {...{ indexId }} />
           </div>
         </Modal.Body>
       </Modal>

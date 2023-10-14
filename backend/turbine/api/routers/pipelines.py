@@ -92,10 +92,15 @@ async def run_pipeline(id: UUID, user=Depends(get_user)):
     if not pipeline_instance:
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
-    task = run_pipeline_task.delay(id)
-    Task.create(
-        id=task.id,
+    task = Task.create(
         index_=pipeline_instance.index_,
-        kind="manual_pipeline_run",
+        type="manual_pipeline_run",
+        metadata={"pipeline_id": str(id)},
     )
+    try:
+        run_pipeline_task.delay(id, task.id)
+    except Exception as e:
+        task.delete_instance()
+        raise HTTPException(status_code=500, detail=str(e))
+
     return {"message": "Task has started running", "id": task.id}

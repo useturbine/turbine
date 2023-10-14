@@ -27,6 +27,12 @@ export const fetchIndexes = async ({
   {
     id: string;
     name: string;
+    embedding_model: {
+      type: "openai" | "huggingface";
+    };
+    vector_db: {
+      type: "milvus" | "pinecone";
+    };
   }[]
 > => {
   if (!userApiKey) throw new Error("User API key is required");
@@ -51,6 +57,28 @@ export const fetchPipelines = async ({
   }[]
 > => {
   const result = await axios.get(`${turbineApiUrl}/pipelines`, {
+    params: { index: indexId },
+    headers: { "X-Turbine-Key": userApiKey },
+  });
+  return result.data;
+};
+
+// Fetch tasks
+export const fetchTasks = async ({
+  userApiKey,
+  indexId,
+}: {
+  userApiKey: string;
+  indexId: string;
+}): Promise<
+  {
+    id: string;
+    name: string;
+    status: string;
+    progress: number;
+  }[]
+> => {
+  const result = await axios.get(`${turbineApiUrl}/tasks`, {
     params: { index: indexId },
     headers: { "X-Turbine-Key": userApiKey },
   });

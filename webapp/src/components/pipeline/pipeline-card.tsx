@@ -2,12 +2,14 @@ import { Button, Card } from "flowbite-react";
 import { ClickToCopy } from "../click-to-copy";
 import axios from "axios";
 import { turbineApiUrl } from "../../config";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { useRootContext } from "../../utils";
+import { HiPlay } from "react-icons/hi";
 
 export type Pipeline = {
   id: string;
   name: string;
+  index: string;
   data_source: {
     url: string;
     splitter: {
@@ -29,6 +31,7 @@ const runPipeline = async ({
 
   const result = await axios.post(
     `${turbineApiUrl}/pipelines/${pipelineId}/run`,
+    null,
     {
       headers: {
         "X-Turbine-Key": userApiKey,
@@ -42,15 +45,15 @@ export const PipelineCard = ({ pipeline }: { pipeline: Pipeline }) => {
   const { userApiKey } = useRootContext();
 
   // React Query
-  //   const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const { mutate, isLoading } = useMutation({
     mutationFn: () => runPipeline({ pipelineId: pipeline.id, userApiKey }),
-    // onSuccess: () => {
-    //   // Invalidate and refetch
-    //   queryClient.invalidateQueries({
-    //     queryKey: ["pipelines", externalUserId],
-    //   });
-    // },
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({
+        queryKey: ["tasks", pipeline.index],
+      });
+    },
   });
 
   return (
@@ -63,14 +66,13 @@ export const PipelineCard = ({ pipeline }: { pipeline: Pipeline }) => {
             <ul className="list-disc">
               <li>
                 Takes documents from{" "}
-                <ClickToCopy text={pipeline.data_source.url} />.
+                <ClickToCopy text={pipeline.data_source.url + "*"} />.
               </li>
               <li>
                 Recursively chunks them using chunk size of{" "}
                 {pipeline.data_source.splitter.size} characters and chunk
                 overlap of {pipeline.data_source.splitter.overlap} characters.
               </li>
-              <li>Stores them into this index.</li>
             </ul>
           </p>
         </div>
@@ -80,7 +82,8 @@ export const PipelineCard = ({ pipeline }: { pipeline: Pipeline }) => {
             isProcessing={isLoading}
             gradientMonochrome="lime"
           >
-            Run pipeline
+            <HiPlay className="mr-2 h-5 w-5" />
+            <p>Run pipeline</p>
           </Button>
         </div>
       </div>

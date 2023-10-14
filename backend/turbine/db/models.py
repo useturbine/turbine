@@ -14,7 +14,7 @@ from playhouse.postgres_ext import BinaryJSONField
 from datetime import datetime
 from config import Config
 import uuid
-from turbine.schema import ExistingIndexSchema, ExistingPipelineSchema
+from turbine.schema import ExistingIndexSchema, ExistingPipelineSchema, TaskSchema
 import uuid
 
 
@@ -86,9 +86,24 @@ class Index(Model):
 class Task(Model):
     id = UUIDField(primary_key=True, default=uuid.uuid4)
     index_ = ForeignKeyField(Index, backref="tasks", db_column="index_id")
-    kind = CharField()
+    type = CharField()
+    metadata = BinaryJSONField(null=True)
     created_at = DateTimeField(default=datetime.now())
     finished_at = DateTimeField(null=True)
+    successful = BooleanField(default=False)
+
+    def dump(self):
+        return TaskSchema(
+            **{
+                "id": self.id,
+                "index": self.index_.id,
+                "type": self.type,
+                "metadata": self.metadata,
+                "created_at": self.created_at,
+                "finished_at": self.finished_at,
+                "successful": self.successful,
+            }
+        )
 
     class Meta:
         database = db
