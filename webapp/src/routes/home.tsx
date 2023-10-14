@@ -1,8 +1,8 @@
 import { useRootContext } from "../utils";
-import { Card } from "flowbite-react";
-import CreateIndexButton from "../components/index/create-index-button";
+import { Button, Card } from "flowbite-react";
 import { fetchIndexes } from "../queries";
 import { useQuery } from "react-query";
+import { HiPlus } from "react-icons/hi";
 
 export const Home = () => {
   const { userApiKey, externalUserId } = useRootContext();
@@ -21,7 +21,10 @@ export const Home = () => {
             Create an index to start searching
           </p>
         </div>
-        <CreateIndexButton />
+        <Button color="blue">
+          <HiPlus className="mr-2 h-5 w-5" />
+          <p>Create Index</p>
+        </Button>
       </div>
 
       <div className="mt-6 flex flex-col gap-6">

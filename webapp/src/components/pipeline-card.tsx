@@ -1,13 +1,13 @@
 import { Button, Card } from "flowbite-react";
-import { ClickToCopy } from "../click-to-copy";
+import { ClickToCopy } from "./click-to-copy";
 import axios from "axios";
-import { turbineApiUrl } from "../../config";
+import { turbineApiUrl } from "../config";
 import { useMutation, useQueryClient } from "react-query";
-import { useRootContext } from "../../utils";
+import { useRootContext } from "../utils";
 import { HiPlay } from "react-icons/hi";
 import { toast } from "react-toastify";
 
-export type Pipeline = {
+export type PipelineFromAPI = {
   id: string;
   name: string;
   index: string;
@@ -42,7 +42,7 @@ const runPipeline = async ({
   return result.data.id;
 };
 
-export const PipelineCard = ({ pipeline }: { pipeline: Pipeline }) => {
+export const PipelineCard = ({ pipeline }: { pipeline: PipelineFromAPI }) => {
   const { userApiKey } = useRootContext();
 
   // React Query

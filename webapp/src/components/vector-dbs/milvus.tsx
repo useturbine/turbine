@@ -1,9 +1,9 @@
 import { useFormContext } from "react-hook-form";
-import { Index } from "../types";
+import { Pipeline } from "../types";
 import { Label, TextInput } from "flowbite-react";
 
 export const MilvusForm = () => {
-  const { register } = useFormContext<Index>();
+  const { register } = useFormContext<Pipeline>();
 
   return (
     <>
@@ -13,11 +13,23 @@ export const MilvusForm = () => {
         </div>
         <TextInput id="url" required {...register("milvusConfig.url")} />
       </div>
+
       <div>
         <div className="mb-1 block">
           <Label htmlFor="token" value="Milvus Token" />
         </div>
         <TextInput id="token" {...register("milvusConfig.token")} />
+      </div>
+
+      <div>
+        <div className="mb-1 block">
+          <Label htmlFor="collectionName" value="Collection Name" />
+        </div>
+        <TextInput
+          id="collectionName"
+          required
+          {...register("milvusConfig.collectionName")}
+        />
       </div>
     </>
   );

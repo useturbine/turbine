@@ -5,7 +5,8 @@ import { Home } from "./routes/home";
 import { SignInPage } from "./routes/sign-in";
 import { SignUpPage } from "./routes/sign-up";
 import { Keys } from "./routes/keys";
-import { Index } from "./routes";
+import { Pipeline } from "./routes/pipeline";
+import { CreatePipelinePage } from "./routes/create-pipeline";
 
 export const router = createBrowserRouter([
   {
@@ -19,14 +20,18 @@ export const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
+        path: "/create-pipeline",
+        element: <CreatePipelinePage />,
+      },
+      {
         path: "/keys",
         element: <Keys />,
         errorElement: <ErrorPage />,
       },
-      {
-        path: "/indexes/:indexId",
-        element: <Index />,
-      },
+      // {
+      //   path: "/pipelines/:pipelineId",
+      //   element: <Pipeline />,
+      // },
     ],
   },
   {

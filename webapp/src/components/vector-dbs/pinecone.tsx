@@ -1,9 +1,9 @@
 import { useFormContext } from "react-hook-form";
-import { Index } from "../types";
+import { Pipeline } from "../types";
 import { Label, TextInput } from "flowbite-react";
 
 export const PineconeForm = () => {
-  const { register } = useFormContext<Index>();
+  const { register } = useFormContext<Pipeline>();
 
   return (
     <>
@@ -26,6 +26,17 @@ export const PineconeForm = () => {
           id="environment"
           required
           {...register("pineconeConfig.environment")}
+        />
+      </div>
+
+      <div>
+        <div className="mb-1 block">
+          <Label htmlFor="indexName" value="Index Name" />
+        </div>
+        <TextInput
+          id="indexName"
+          required
+          {...register("pineconeConfig.indexName")}
         />
       </div>
     </>

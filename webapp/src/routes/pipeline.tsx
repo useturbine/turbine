@@ -7,7 +7,7 @@ import { PipelineCard } from "../components/pipeline";
 import { Tabs } from "flowbite-react";
 import { TaskCard } from "../components/task-card";
 
-export const Index = () => {
+export const Pipeline = () => {
   const { userApiKey, externalUserId } = useRootContext();
   const { indexId } = useParams();
 
