@@ -2,7 +2,7 @@ from turbine.data_source.debezium.connector.interface import DebeziumConnector
 from turbine.data_source.interface import DataSourceDocument
 from kafka.consumer.fetcher import ConsumerRecord
 from typing import List
-from turbine.db.models import Project
+from turbine.database.models import Project
 import logging
 import requests
 import psycopg2

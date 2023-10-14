@@ -10,19 +10,13 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - milvus
+      # - milvus
       - postgres
     env_file: .env
     command: uvicorn turbine.api.app:app --reload --host 0.0.0.0 --port 80
     volumes:
       - ../..:/turbine-api
     restart: always
-
-  redis:
-    container_name: redis
-    image: "bitnami/redis:latest"
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
 
   ngrok:
     container_name: ngrok
@@ -35,6 +29,16 @@ services:
       - ./ngrok.yml:/var/lib/ngrok/ngrok.yml
     ports:
       - "4040:4040"
+
+  postgres:
+    image: postgres:latest
+    container_name: turbine-postgres
+    environment:
+      POSTGRES_DB: turbine
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: passwd
+    ports:
+      - "5432:5432"
 
   turbine-worker:
     container_name: turbine-worker
@@ -56,6 +60,12 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+
+  redis:
+    container_name: redis
+    image: "bitnami/redis:latest"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
 
   etcd:
     container_name: milvus-etcd
@@ -88,13 +98,3 @@ services:
     depends_on:
       - etcd
       - minio
-
-  postgres:
-    image: postgres:latest
-    container_name: turbine-postgres
-    environment:
-      POSTGRES_DB: turbine
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: passwd
-    ports:
-      - "5432:5432"

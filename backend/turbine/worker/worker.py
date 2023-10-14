@@ -1,10 +1,10 @@
 from celery import Celery, group
 from celery.app.task import Context
 from config import Config
-from turbine.db import Pipeline, Index, Task
-from turbine.schema import ExistingPipelineSchema, ExistingIndexSchema
+from turbine.database import Pipeline, Task
+from turbine.schema import ExistingPipelineSchema
 from turbine.data_source import DataSourceDocument
-from turbine.vector_db import VectorItem
+from turbine.vector_database import VectorItem
 from datetime import datetime
 from uuid import UUID
 from types import TracebackType
@@ -68,10 +68,10 @@ def create_embedding(index_id: str, document: dict):
 @app.task
 def store_embedding(
     embedding: list[float],
-    index_id: str,
+    pipeline_id: str,
     document_id: str,
 ):
-    index: ExistingIndexSchema = Index.get_by_id(index_id).dump()
+    pipeline: ExistingPipelineSchema = Pipeline.get_by_id(pipeline_id).dump()
     collection_name = index.vector_db.get_collection_name(index.id)
     index.vector_db.insert(
         collection_name, [VectorItem(id=document_id, vector=embedding)]

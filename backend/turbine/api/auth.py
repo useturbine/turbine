@@ -1,4 +1,4 @@
-from turbine.db import User
+from turbine.database import User
 from fastapi import HTTPException, Depends
 from fastapi.security import APIKeyHeader
 from typing import Annotated

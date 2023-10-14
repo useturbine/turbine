@@ -14,7 +14,7 @@ from playhouse.postgres_ext import BinaryJSONField
 from datetime import datetime
 from config import Config
 import uuid
-from turbine.schema import ExistingIndexSchema, ExistingPipelineSchema, TaskSchema
+from turbine.schema import ExistingPipelineSchema, TaskSchema
 import uuid
 
 
@@ -49,74 +49,18 @@ class User(Model):
         database = db
 
 
-class Index(Model):
-    id = UUIDField(primary_key=True, default=uuid.uuid4)
-    user = ForeignKeyField(User, backref="indexes")
-    created_at = DateTimeField(default=datetime.now())
-    updated_at = DateTimeField(default=datetime.now())
-    name = CharField()
-    description = CharField(null=True)
-    vector_db = BinaryJSONField()
-    embedding_model = BinaryJSONField()
-    embedding_dimension = IntegerField()
-    similarity_metric = CharField()
-    deleted = BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        self.updated_at = datetime.now()
-        return super().save(*args, **kwargs)
-
-    def dump(self):
-        return ExistingIndexSchema(
-            **{
-                "id": str(self.id),
-                "name": self.name,
-                "description": self.description,
-                "vector_db": self.vector_db,
-                "embedding_model": self.embedding_model,
-                "embedding_dimension": self.embedding_dimension,
-                "similarity_metric": self.similarity_metric,
-            }
-        )
-
-    class Meta:
-        database = db
-
-
-class Task(Model):
-    id = UUIDField(primary_key=True, default=uuid.uuid4)
-    index_ = ForeignKeyField(Index, backref="tasks", db_column="index_id")
-    type = CharField()
-    metadata = BinaryJSONField(null=True)
-    created_at = DateTimeField(default=datetime.now())
-    finished_at = DateTimeField(null=True)
-    successful = BooleanField(default=False)
-
-    def dump(self):
-        return TaskSchema(
-            **{
-                "id": self.id,
-                "index": self.index_.id,
-                "type": self.type,
-                "metadata": self.metadata,
-                "created_at": self.created_at,
-                "finished_at": self.finished_at,
-                "successful": self.successful,
-            }
-        )
-
-    class Meta:
-        database = db
-
-
 class Pipeline(Model):
     id = UUIDField(primary_key=True, default=uuid.uuid4)
-    index_ = ForeignKeyField(Index, backref="pipelines", db_column="index_id")
-    name = CharField()
-    description = CharField(null=True)
-    data_source = BinaryJSONField()
     created_at = DateTimeField(default=datetime.now())
     updated_at = DateTimeField(default=datetime.now())
+    name = CharField()
+    description = CharField(null=True)
+    user = ForeignKeyField(User, backref="pipelines")
+    data_source = BinaryJSONField()
+    embedding_model = BinaryJSONField()
+    embedding_dimension = IntegerField()
+    vector_database = BinaryJSONField()
+    similarity_metric = CharField()
     deleted = BooleanField(default=False)
 
     def save(self, *args, **kwargs):
@@ -132,14 +76,43 @@ class Pipeline(Model):
                 "id": str(self.id),
                 "name": self.name,
                 "description": self.description,
-                "index": str(self.index_.id),
                 "data_source": self.data_source,
+                "embedding_model": self.embedding_model,
+                "embedding_dimension": self.embedding_dimension,
+                "vector_database": self.vector_database,
+                "similarity_metric": self.similarity_metric,
             }
         )
 
 
+class Task(Model):
+    id = UUIDField(primary_key=True, default=uuid.uuid4)
+    pipeline = ForeignKeyField(Pipeline, backref="tasks")
+    type = CharField()
+    metadata = BinaryJSONField(null=True)
+    created_at = DateTimeField(default=datetime.now())
+    finished_at = DateTimeField(null=True)
+    successful = BooleanField(default=False)
+
+    def dump(self):
+        return TaskSchema(
+            **{
+                "id": self.id,
+                "pipeline": self.pipeline.id,
+                "type": self.type,
+                "metadata": self.metadata,
+                "created_at": self.created_at,
+                "finished_at": self.finished_at,
+                "successful": self.successful,
+            }
+        )
+
+    class Meta:
+        database = db
+
+
 try:
-    db.create_tables([User, Index, Task, Pipeline])
+    db.create_tables([User, Task, Pipeline])
     User.create(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
 except IntegrityError:
     pass

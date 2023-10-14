@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request
-from turbine.db import User
+from turbine.database import User
 from fastapi import HTTPException
 
 

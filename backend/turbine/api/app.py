@@ -1,7 +1,7 @@
 from .auth import get_user
 from logging import getLogger
 import logging
-from .routers import indexes, tasks, pipelines, misc
+from .routers import tasks, pipelines, misc
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -24,7 +24,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(indexes.router)
 app.include_router(tasks.router)
 app.include_router(pipelines.router)
 app.include_router(misc.router)

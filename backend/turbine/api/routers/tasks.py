@@ -1,8 +1,9 @@
 from fastapi import APIRouter
-from turbine.db import Task, User, Index
+from turbine.database import Task, User, Pipeline
 from turbine.api.auth import get_user
 from fastapi import Depends, HTTPException
 from typing import Optional
+from uuid import UUID
 
 
 router = APIRouter(
@@ -11,26 +12,39 @@ router = APIRouter(
 
 
 @router.get("/")
-async def get_tasks(index: Optional[str] = None, user=Depends(get_user)):
-    if index:
+async def get_tasks(pipeline: Optional[UUID] = None, user=Depends(get_user)):
+    if pipeline:
         tasks = (
             Task.select()
-            .join(Index)
-            .join(User)
-            .where(User.id == user.id, Index.id == index)
+            .join(Pipeline)
+            .where(
+                Pipeline.id == pipeline,
+                Pipeline.user == user,
+                Pipeline.deleted == False,
+            )
         )
     else:
-        tasks = Task.select().join(Index).join(User).where(User.id == user.id)
+        tasks = (
+            Task.select()
+            .join(Pipeline)
+            .where(
+                Pipeline.user == user,
+                Pipeline.deleted == False,
+            )
+        )
     return [task.dump() for task in tasks]
 
 
 @router.get("/{id}")
-async def get_task(id: str, user=Depends(get_user)):
+async def get_task(id: UUID, user=Depends(get_user)):
     task = (
         Task.select()
-        .join(Index)
-        .join(User)
-        .where(User.id == user.id, Task.id == id)
+        .join(Pipeline)
+        .where(
+            Task.id == id,
+            Pipeline.user == user,
+            Pipeline.deleted == False,
+        )
         .first()
     )
     if not task:
