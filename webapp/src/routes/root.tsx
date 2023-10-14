@@ -69,6 +69,13 @@ export const Root = () => {
                   <p>Create Pipeline</p>
                 </Sidebar.Item>
                 <Sidebar.Item
+                  href="/tasks"
+                  // icon={HiPlus}
+                  active={location.pathname === "/tasks"}
+                >
+                  <p>Tasks</p>
+                </Sidebar.Item>
+                <Sidebar.Item
                   href="/keys"
                   icon={HiKey}
                   active={location.pathname === "/keys"}

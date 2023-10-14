@@ -1,6 +1,7 @@
 import { QueryClient } from "react-query";
 import axios from "axios";
 import { turbineAdminApiKey, turbineApiUrl } from "./config";
+import { PipelineFromAPI } from "./utils";
 
 export const queryClient = new QueryClient();
 
@@ -19,45 +20,14 @@ export const fetchUserApiKey = async ({
 };
 
 // Fetch indexes
-export const fetchIndexes = async ({
+export const fetchPipelines = async ({
   userApiKey,
 }: {
   userApiKey?: string;
-}): Promise<
-  {
-    id: string;
-    name: string;
-    embedding_model: {
-      type: "openai" | "huggingface";
-    };
-    vector_db: {
-      type: "milvus" | "pinecone";
-    };
-  }[]
-> => {
+}): Promise<PipelineFromAPI[]> => {
   if (!userApiKey) throw new Error("User API key is required");
 
-  const result = await axios.get(`${turbineApiUrl}/indexes`, {
-    headers: { "X-Turbine-Key": userApiKey },
-  });
-  return result.data;
-};
-
-// Fetch pipelines
-export const fetchPipelines = async ({
-  userApiKey,
-  indexId,
-}: {
-  userApiKey: string;
-  indexId: string;
-}): Promise<
-  {
-    id: string;
-    name: string;
-  }[]
-> => {
   const result = await axios.get(`${turbineApiUrl}/pipelines`, {
-    params: { index: indexId },
     headers: { "X-Turbine-Key": userApiKey },
   });
   return result.data;
@@ -69,7 +39,7 @@ export const fetchTasks = async ({
   indexId,
 }: {
   userApiKey: string;
-  indexId: string;
+  indexId?: string;
 }): Promise<
   {
     id: string;

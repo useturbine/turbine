@@ -1,5 +1,5 @@
 import { CreatePipelineForm } from "../components/create-pipeline-form";
 
-export const CreatePipelinePage = () => {
+export const CreatePipeline = () => {
   return <CreatePipelineForm />;
 };

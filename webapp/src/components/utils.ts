@@ -73,3 +73,25 @@ export const createPipeline = async ({
   });
   return result.data.id;
 };
+
+// Mutation to run pipeline
+export const runPipeline = async ({
+  pipelineId,
+  userApiKey,
+}: {
+  pipelineId: string;
+  userApiKey?: string;
+}): Promise<string> => {
+  if (!userApiKey) throw new Error("User API key is required");
+
+  const result = await axios.post(
+    `${turbineApiUrl}/pipelines/${pipelineId}/run`,
+    null,
+    {
+      headers: {
+        "X-Turbine-Key": userApiKey,
+      },
+    }
+  );
+  return result.data.id;
+};

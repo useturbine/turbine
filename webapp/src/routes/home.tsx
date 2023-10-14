@@ -1,14 +1,15 @@
 import { useRootContext } from "../utils";
-import { Button, Card } from "flowbite-react";
-import { fetchIndexes } from "../queries";
+import { Button } from "flowbite-react";
+import { fetchPipelines } from "../queries";
 import { useQuery } from "react-query";
 import { HiPlus } from "react-icons/hi";
+import { PipelineCard } from "../components/pipeline-card";
 
 export const Home = () => {
   const { userApiKey, externalUserId } = useRootContext();
-  const { data: indexes } = useQuery(
-    ["indexes", externalUserId],
-    () => fetchIndexes({ userApiKey }),
+  const { data: pipelines } = useQuery(
+    ["pipelines", externalUserId],
+    () => fetchPipelines({ userApiKey }),
     { enabled: !!userApiKey }
   );
 
@@ -16,54 +17,20 @@ export const Home = () => {
     <div className="flex flex-col mt-6 flex-1">
       <div className="flex justify-between items-center">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-bold">Your indices</h1>
+          <h1 className="text-2xl font-bold">Your pipelines</h1>
           <p className="text-gray-500 dark:text-gray-400">
-            Create an index to start searching
+            Pipelines are used to sync your data to the index.
           </p>
         </div>
-        <Button color="blue">
+        <Button color="blue" href="/create-pipeline">
           <HiPlus className="mr-2 h-5 w-5" />
-          <p>Create Index</p>
+          <p>Create Pipeline</p>
         </Button>
       </div>
 
       <div className="mt-6 flex flex-col gap-6">
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {indexes?.map((index: any) => {
-          return (
-            <Card href={`/indexes/${index.id}`}>
-              <div className="flex flex-col gap-2">
-                <h1 className="text-xl font-bold">{index.name}</h1>
-                <p className="font-mono">{index.id}</p>
-                <p className="text-gray-500 dark:text-gray-400">
-                  <ul className="list-disc">
-                    <li>
-                      Uses{" "}
-                      {
-                        {
-                          openai: "OpenAI",
-                          huggingface: "Hugging Face",
-                        }[
-                          index.embedding_model.type as "openai" | "huggingface"
-                        ]
-                      }{" "}
-                      to generate embeddings.
-                    </li>
-                    <li>
-                      Uses{" "}
-                      {
-                        {
-                          milvus: "Milvus",
-                          pinecone: "Pinecone",
-                        }[index.vector_db.type as "milvus" | "pinecone"]
-                      }{" "}
-                      as the vector database.
-                    </li>
-                  </ul>
-                </p>
-              </div>
-            </Card>
-          );
+        {pipelines?.map((pipeline) => {
+          return <PipelineCard key={pipeline.id} pipeline={pipeline} />;
         })}
       </div>
     </div>
