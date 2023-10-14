@@ -2,7 +2,13 @@ import { Button, Modal } from "flowbite-react";
 import { useState } from "react";
 import { CreatePipelineForm } from "./create-pipeline-form";
 
-export default function CreatePipelineButton() {
+export default function CreatePipelineButton({
+  indexId,
+  indexName,
+}: {
+  indexId: string;
+  indexName: string;
+}) {
   const [openModal, setOpenModal] = useState<string | undefined>();
 
   return (
@@ -18,7 +24,7 @@ export default function CreatePipelineButton() {
         <Modal.Header />
         <Modal.Body>
           <div className="mt-4">
-            <CreatePipelineForm />
+            <CreatePipelineForm {...{ indexId, indexName }} />
           </div>
         </Modal.Body>
       </Modal>

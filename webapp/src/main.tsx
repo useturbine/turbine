@@ -4,17 +4,20 @@ import "./main.css";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
-
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+import { QueryClientProvider } from "react-query";
+import { queryClient } from "./queries";
+import { clerkPubKey } from "./config";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ClerkProvider
-      publishableKey={clerkPubKey}
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-    >
-      <RouterProvider router={router} />
-    </ClerkProvider>
+    <QueryClientProvider client={queryClient}>
+      <ClerkProvider
+        publishableKey={clerkPubKey}
+        signInUrl="/sign-in"
+        signUpUrl="/sign-up"
+      >
+        <RouterProvider router={router} />
+      </ClerkProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

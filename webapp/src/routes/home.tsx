@@ -1,29 +1,16 @@
-import { useEffect, useState } from "react";
 import { useRootContext } from "../utils";
-import { turbineApiUrl } from "../config";
 import { Card } from "flowbite-react";
-import CreateIndexButton from "../components/create-index-button";
+import CreateIndexButton from "../components/index/create-index-button";
+import { fetchIndexes } from "../queries";
+import { useQuery } from "react-query";
 
 export const Home = () => {
-  const [indices, setIndices] = useState([]);
-  const { userApiKey } = useRootContext();
-
-  // Fetch indices created by the user
-  useEffect(() => {
-    const fetchIndices = async () => {
-      if (!userApiKey) return;
-
-      const result = await fetch(`${turbineApiUrl}/indices`, {
-        headers: {
-          "X-Turbine-Key": userApiKey,
-        },
-      });
-      const indices = await result.json();
-      setIndices(indices);
-    };
-
-    fetchIndices();
-  }, [userApiKey]);
+  const { userApiKey, externalUserId } = useRootContext();
+  const { data: indexes } = useQuery(
+    ["indexes", externalUserId],
+    () => fetchIndexes({ userApiKey }),
+    { enabled: !!userApiKey }
+  );
 
   return (
     <div className="flex flex-col mt-6 flex-1">
@@ -39,7 +26,7 @@ export const Home = () => {
 
       <div className="mt-6 flex flex-col gap-6">
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {indices.map((index: any) => {
+        {indexes?.map((index: any) => {
           return (
             <Card href={`/indexes/${index.id}`}>
               <div className="flex flex-col gap-2">

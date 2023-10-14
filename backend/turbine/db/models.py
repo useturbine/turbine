@@ -51,7 +51,7 @@ class User(Model):
 
 class Index(Model):
     id = UUIDField(primary_key=True, default=uuid.uuid4)
-    user = ForeignKeyField(User, backref="indices")
+    user = ForeignKeyField(User, backref="indexes")
     created_at = DateTimeField(default=datetime.now())
     updated_at = DateTimeField(default=datetime.now())
     name = CharField()

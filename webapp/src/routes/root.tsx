@@ -6,43 +6,28 @@ import {
   useUser,
 } from "@clerk/clerk-react";
 import { Sidebar } from "flowbite-react";
-import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { turbineAdminApiKey, turbineApiUrl } from "../config";
 import { HiDatabase, HiKey } from "react-icons/hi";
+import { ReactQueryDevtools } from "react-query/devtools";
+import { useQuery } from "react-query";
+import { fetchUserApiKey } from "../queries";
 
 export const Root = () => {
   const { user } = useUser();
-  const [userApiKey, setUserApiKey] = useState<string | null>(null);
+  const externalUserId = user?.id;
+
   const location = useLocation();
-
-  // Fetch user's API key, keep retrying until it's available
-  useEffect(() => {
-    const fetchUserApiKey = async () => {
-      if (!user) return;
-
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const result = await fetch(`${turbineApiUrl}/users/${user?.id}`, {
-          headers: {
-            "X-Turbine-Key": turbineAdminApiKey,
-          },
-        });
-        if (!result.ok) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          continue;
-        }
-        const userDetails = await result.json();
-        setUserApiKey(userDetails.api_key);
-        break;
-      }
-    };
-
-    fetchUserApiKey();
-  }, [user]);
+  const { data: userApiKey } = useQuery(
+    ["userApiKey", externalUserId],
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    () => fetchUserApiKey({ externalUserId }),
+    { enabled: !!externalUserId }
+  );
 
   return (
     <>
+      <ReactQueryDevtools initialIsOpen={false} />
       <SignedIn>
         <div className="flex">
           <Sidebar className="h-screen sticky top-0">
@@ -77,7 +62,7 @@ export const Root = () => {
               <UserButton afterSignOutUrl="/sign-in" />
             </div>
             <div className="flex flex-1 items-start ml-6">
-              <Outlet context={{ userApiKey }} />
+              <Outlet context={{ userApiKey: userApiKey, externalUserId }} />
             </div>
           </main>
         </div>

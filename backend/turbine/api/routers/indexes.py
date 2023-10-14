@@ -8,11 +8,11 @@ from uuid import UUID
 from turbine.vector_db import VectorDB
 
 logger = getLogger(__name__)
-router = APIRouter(prefix="/indices")
+router = APIRouter(prefix="/indexes")
 
 
 @router.get("/")
-def get_indices(user=Depends(get_user)):
+def get_indexes(user=Depends(get_user)):
     return [
         index.dump()
         for index in Index.select().where(Index.user == user, Index.deleted == False)
