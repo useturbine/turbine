@@ -73,9 +73,9 @@ export const fetchTasks = async ({
 }): Promise<
   {
     id: string;
-    name: string;
-    status: string;
-    progress: number;
+    successful: boolean;
+    created_at: string;
+    finished_at?: string;
   }[]
 > => {
   const result = await axios.get(`${turbineApiUrl}/tasks`, {

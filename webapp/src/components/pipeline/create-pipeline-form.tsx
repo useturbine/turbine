@@ -10,6 +10,8 @@ import { turbineApiUrl } from "../../config";
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { fetchIndexes } from "../../queries";
+import { Dispatch, SetStateAction } from "react";
+import { toast } from "react-toastify";
 
 type S3Text = {
   url: string;
@@ -102,7 +104,13 @@ const S3TextForm = () => {
   );
 };
 
-export const CreatePipelineForm = ({ indexId }: { indexId: string }) => {
+export const CreatePipelineForm = ({
+  indexId,
+  setModalOpen,
+}: {
+  indexId: string;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
   const { userApiKey, externalUserId } = useRootContext();
   const methods = useForm<Pipeline>();
 
@@ -116,6 +124,10 @@ export const CreatePipelineForm = ({ indexId }: { indexId: string }) => {
       queryClient.invalidateQueries({
         queryKey: ["pipelines", indexId],
       });
+
+      // Close modal and show success toast
+      setModalOpen(false);
+      toast.success("Pipeline created");
     },
   });
 

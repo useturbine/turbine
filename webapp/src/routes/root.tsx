@@ -9,8 +9,10 @@ import { Sidebar } from "flowbite-react";
 import { Outlet, useLocation } from "react-router-dom";
 import { HiDatabase, HiKey } from "react-icons/hi";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { ToastContainer } from "react-toastify";
 import { useQuery } from "react-query";
 import { fetchUserApiKey } from "../queries";
+import "react-toastify/dist/ReactToastify.css";
 
 export const Root = () => {
   const { user } = useUser();
@@ -29,6 +31,18 @@ export const Root = () => {
     <>
       <ReactQueryDevtools initialIsOpen={false} />
       <SignedIn>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <div className="flex">
           <Sidebar className="h-screen sticky top-0">
             <Sidebar.Logo

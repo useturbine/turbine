@@ -7,6 +7,7 @@ import { MilvusForm, PineconeForm } from "./vector-dbs";
 import { OpenAIForm, HuggingFaceForm } from "./embedding-models";
 import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 // Mutation to create index
 const createIndex = async ({
@@ -55,7 +56,11 @@ const createIndex = async ({
   return result.data.id;
 };
 
-export const CreateIndexForm = () => {
+export const CreateIndexForm = ({
+  setModalOpen,
+}: {
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const { userApiKey, externalUserId } = useRootContext();
 
   // React Query
@@ -67,6 +72,10 @@ export const CreateIndexForm = () => {
       queryClient.invalidateQueries({
         queryKey: ["indexes", externalUserId],
       });
+
+      // Close modal and show success toast
+      setModalOpen(false);
+      toast.success("Index created");
     },
   });
 

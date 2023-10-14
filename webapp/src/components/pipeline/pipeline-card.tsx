@@ -5,6 +5,7 @@ import { turbineApiUrl } from "../../config";
 import { useMutation, useQueryClient } from "react-query";
 import { useRootContext } from "../../utils";
 import { HiPlay } from "react-icons/hi";
+import { toast } from "react-toastify";
 
 export type Pipeline = {
   id: string;
@@ -53,6 +54,9 @@ export const PipelineCard = ({ pipeline }: { pipeline: Pipeline }) => {
       queryClient.invalidateQueries({
         queryKey: ["tasks", pipeline.index],
       });
+
+      // Show toast
+      toast.success("Pipeline started");
     },
   });
 
