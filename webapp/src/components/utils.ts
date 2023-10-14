@@ -95,3 +95,19 @@ export const runPipeline = async ({
   );
   return result.data.id;
 };
+
+export const deletePipeline = async ({
+  pipelineId,
+  userApiKey,
+}: {
+  pipelineId: string;
+  userApiKey?: string;
+}) => {
+  if (!userApiKey) throw new Error("User API key is required");
+
+  await axios.delete(`${turbineApiUrl}/pipelines/${pipelineId}`, {
+    headers: {
+      "X-Turbine-Key": userApiKey,
+    },
+  });
+};

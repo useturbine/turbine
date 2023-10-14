@@ -144,12 +144,12 @@ export const CreatePipelineForm = () => {
             id="pipelineName"
             required
             {...register("name")}
-            helperText="Give a name to your index"
+            helperText="Give a name to your pipeline"
           />
         </div>
 
         <Button type="submit" isProcessing={isLoading}>
-          Create Index
+          Create Pipeline
         </Button>
         {isError && (
           <p className="text-red-500 dark:text-red-400 mx-auto">

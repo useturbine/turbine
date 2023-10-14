@@ -19,7 +19,7 @@ export const Home = () => {
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold">Your pipelines</h1>
           <p className="text-gray-500 dark:text-gray-400">
-            Pipelines are used to sync your data to the index.
+            Pipelines are used to sync your data.
           </p>
         </div>
         <Button color="blue" href="/create-pipeline">

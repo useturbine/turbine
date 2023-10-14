@@ -19,7 +19,7 @@ export const fetchUserApiKey = async ({
   return result.data.api_key;
 };
 
-// Fetch indexes
+// Fetch pipelines
 export const fetchPipelines = async ({
   userApiKey,
 }: {
@@ -36,10 +36,10 @@ export const fetchPipelines = async ({
 // Fetch tasks
 export const fetchTasks = async ({
   userApiKey,
-  indexId,
+  pipelineId,
 }: {
   userApiKey: string;
-  indexId?: string;
+  pipelineId?: string;
 }): Promise<
   {
     id: string;
@@ -49,7 +49,7 @@ export const fetchTasks = async ({
   }[]
 > => {
   const result = await axios.get(`${turbineApiUrl}/tasks`, {
-    params: { index: indexId },
+    params: { pipeline: pipelineId },
     headers: { "X-Turbine-Key": userApiKey },
   });
   return result.data;

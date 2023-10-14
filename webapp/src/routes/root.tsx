@@ -7,7 +7,9 @@ import {
 } from "@clerk/clerk-react";
 import { Sidebar } from "flowbite-react";
 import { Outlet, useLocation } from "react-router-dom";
-import { HiDatabase, HiKey, HiPlus } from "react-icons/hi";
+import { HiOutlineKey, HiOutlinePlusCircle } from "react-icons/hi";
+import { FaTasks } from "react-icons/fa";
+import { AiOutlineFire } from "react-icons/ai";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ToastContainer } from "react-toastify";
 import { useQuery } from "react-query";
@@ -56,28 +58,28 @@ export const Root = () => {
               <Sidebar.ItemGroup>
                 <Sidebar.Item
                   href="/"
-                  icon={HiDatabase}
+                  icon={AiOutlineFire}
                   active={location.pathname === "/"}
                 >
                   <p>Pipelines</p>
                 </Sidebar.Item>
                 <Sidebar.Item
                   href="/create-pipeline"
-                  icon={HiPlus}
+                  icon={HiOutlinePlusCircle}
                   active={location.pathname === "/create-pipeline"}
                 >
                   <p>Create Pipeline</p>
                 </Sidebar.Item>
                 <Sidebar.Item
                   href="/tasks"
-                  // icon={HiPlus}
+                  icon={FaTasks}
                   active={location.pathname === "/tasks"}
                 >
                   <p>Tasks</p>
                 </Sidebar.Item>
                 <Sidebar.Item
                   href="/keys"
-                  icon={HiKey}
+                  icon={HiOutlineKey}
                   active={location.pathname === "/keys"}
                 >
                   <p>API Keys</p>

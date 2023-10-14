@@ -20,7 +20,7 @@ export const Tasks = () => {
       <div className="flex flex-col gap-2">
         <h1 className="text-xl font-bold">Tasks</h1>
         <p className="text-gray-500 dark:text-gray-400">
-          Tasks are used to sync your data to the index.
+          Tasks are used to sync your data.
         </p>
       </div>
       {tasks?.map((task) => {
