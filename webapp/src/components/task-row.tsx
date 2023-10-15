@@ -1,8 +1,6 @@
 import { Badge, Table } from "flowbite-react";
 import { ClickToCopy } from "./click-to-copy";
-import { useQuery } from "react-query";
-import { TaskFromAPI, useRootContext } from "../utils";
-import { fetchPipelines } from "../queries";
+import { TaskFromAPI } from "../utils";
 import { HiCheck } from "react-icons/hi";
 import { BiLoader } from "react-icons/bi";
 import { FiAlertCircle } from "react-icons/fi";
@@ -13,14 +11,6 @@ const formatDate = (timestamp: string) => {
 };
 
 export const TaskRow = ({ task }: { task: TaskFromAPI }) => {
-  const { externalUserId, userApiKey } = useRootContext();
-
-  const { data: pipelines } = useQuery(
-    ["pipelines", externalUserId],
-    () => fetchPipelines({ userApiKey }),
-    { enabled: !!userApiKey }
-  );
-  const pipeline = pipelines?.find((pipeline) => pipeline.id === task.pipeline);
   const taskStatus = task.successful
     ? "successful"
     : task.finished_at
@@ -51,12 +41,9 @@ export const TaskRow = ({ task }: { task: TaskFromAPI }) => {
       <Table.Cell>
         <ClickToCopy text={task.id} />
       </Table.Cell>
-      <Table.Cell>
-        Running pipeline <b>{pipeline?.name}</b>
-      </Table.Cell>
       <Table.Cell>{formatDate(task.created_at)}</Table.Cell>
       <Table.Cell>
-        {task.finished_at ? formatDate(task.finished_at) : null}
+        {task.finished_at && formatDate(task.finished_at)}
       </Table.Cell>
     </Table.Row>
   );

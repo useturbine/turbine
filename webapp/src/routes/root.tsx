@@ -5,16 +5,17 @@ import {
   UserButton,
   useUser,
 } from "@clerk/clerk-react";
-import { Sidebar } from "flowbite-react";
+import { Button, Sidebar } from "flowbite-react";
 import { Outlet, useLocation } from "react-router-dom";
 import { HiOutlineKey, HiOutlinePlusCircle } from "react-icons/hi";
-import { FaTasks } from "react-icons/fa";
 import { AiOutlineFire } from "react-icons/ai";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ToastContainer } from "react-toastify";
 import { useQuery } from "react-query";
 import { fetchUserApiKey } from "../queries";
 import "react-toastify/dist/ReactToastify.css";
+import { FaDiscord } from "react-icons/fa";
+import { TbApi } from "react-icons/tb";
 
 export const Root = () => {
   const { user } = useUser();
@@ -52,7 +53,7 @@ export const Root = () => {
               img="/images/turbine-transparent.png"
               imgAlt="Turbine Logo"
             >
-              <p>Turbine App</p>
+              <p>Turbine Console</p>
             </Sidebar.Logo>
             <Sidebar.Items>
               <Sidebar.ItemGroup>
@@ -71,13 +72,6 @@ export const Root = () => {
                   <p>Create Pipeline</p>
                 </Sidebar.Item>
                 <Sidebar.Item
-                  href="/tasks"
-                  icon={FaTasks}
-                  active={location.pathname === "/tasks"}
-                >
-                  <p>Tasks</p>
-                </Sidebar.Item>
-                <Sidebar.Item
                   href="/keys"
                   icon={HiOutlineKey}
                   active={location.pathname === "/keys"}
@@ -88,7 +82,23 @@ export const Root = () => {
             </Sidebar.Items>
           </Sidebar>
           <main className="flex flex-col flex-1 pr-10">
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-4 items-center gap-4">
+              <Button
+                color="light"
+                href="https://api.useturbine.com/docs"
+                target="_blank"
+              >
+                <TbApi className="h-6 w-6 mr-2" />
+                Visit API Docs
+              </Button>
+              <Button
+                color="light"
+                href="https://discord.gg/2Vtgedg8S"
+                target="_blank"
+              >
+                <FaDiscord className="h-6 w-6 mr-2" />
+                Join Discord
+              </Button>
               <UserButton afterSignOutUrl="/sign-in" />
             </div>
             <div className="flex flex-1 items-start ml-6">

@@ -6,7 +6,7 @@ from fastapi import HTTPException
 router = APIRouter()
 
 
-@router.post("/webhooks/clerk")
+@router.post("/webhooks/clerk", include_in_schema=False)
 async def clerk_webhook(request: Request):
     request_body = await request.json()
 
@@ -26,7 +26,7 @@ async def clerk_webhook(request: Request):
     return {"message": "Webhook processed"}
 
 
-@router.get("/users/{external_id}")
+@router.get("/users/{external_id}", include_in_schema=False)
 async def get_user(external_id: str):
     user = User.get_or_none(User.external_id == external_id, User.deleted == False)
     if not user:

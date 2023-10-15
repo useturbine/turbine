@@ -9,7 +9,7 @@ export const createPipeline = async ({
 }: {
   pipeline: Pipeline;
   userApiKey?: string;
-}) => {
+}): Promise<string> => {
   if (!userApiKey) throw new Error("User API key is required");
 
   const vectorDatabaseOptions = {

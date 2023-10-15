@@ -6,7 +6,7 @@ import { SignInPage } from "./routes/sign-in";
 import { SignUpPage } from "./routes/sign-up";
 import { Keys } from "./routes/keys";
 import { CreatePipeline } from "./routes/create-pipeline";
-import { Tasks } from "./routes/tasks";
+import { Pipeline } from "./routes/pipeline";
 
 export const router = createBrowserRouter([
   {
@@ -29,9 +29,10 @@ export const router = createBrowserRouter([
         element: <Keys />,
         errorElement: <ErrorPage />,
       },
+
       {
-        path: "/tasks",
-        element: <Tasks />,
+        path: "/pipelines/:pipelineId",
+        element: <Pipeline />,
         errorElement: <ErrorPage />,
       },
     ],

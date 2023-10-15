@@ -1,9 +1,10 @@
 from fastapi import APIRouter
-from turbine.database import Task, User, Pipeline
+from turbine.database import Task, Pipeline
 from turbine.api.auth import get_user
 from fastapi import Depends, HTTPException
 from typing import Optional
 from uuid import UUID
+from turbine.schema import TaskSchema
 
 
 router = APIRouter(
@@ -11,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("", response_model=list[TaskSchema])
 async def get_tasks(pipeline: Optional[UUID] = None, user=Depends(get_user)):
     if pipeline:
         tasks = (
@@ -35,7 +36,7 @@ async def get_tasks(pipeline: Optional[UUID] = None, user=Depends(get_user)):
     return [task.dump() for task in tasks]
 
 
-@router.get("/{id}")
+@router.get("/{id}", response_model=TaskSchema)
 async def get_task(id: UUID, user=Depends(get_user)):
     task = (
         Task.select()
