@@ -12,5 +12,9 @@ class DataSourceDocument(BaseModel):
 
 class DataSource:
     @abstractmethod
-    def get_documents(self) -> list[DataSourceDocument]:
+    def get_keys(self) -> list[str]:
+        ...
+
+    @abstractmethod
+    def get_documents(self, key: str) -> list[DataSourceDocument]:
         ...

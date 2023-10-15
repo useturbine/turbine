@@ -20,21 +20,42 @@ logger = getLogger(__name__)
 @app.task
 def run_pipeline(pipeline_id: str, task_id: str):
     pipeline: ExistingPipelineSchema = Pipeline.get_by_id(pipeline_id).dump()
-    documents = [
-        document.model_dump() for document in pipeline.data_source.get_documents()
-    ]
+    keys = pipeline.data_source.get_keys()
+    chains = group(
+        (get_documents.s(pipeline_id, key) | process_documents.s(pipeline_id))
+        for key in keys
+    ) | on_task_success.si(task_id).on_error(on_task_error.s(task_id))
+    chains.delay()
+
+
+@app.task
+def process_documents(documents: list[dict], pipeline_id: str):
     chains = group(
         (
             create_embedding.s(pipeline_id, document)
             | store_embedding.s(pipeline_id, document["id"])
         )
         for document in documents
-    ) | on_task_success.si(task_id).on_error(on_task_error.s(task_id))
+    )
     chains.delay()
 
 
 @app.task
-def create_embedding(pipeline_id: str, document: dict):
+def get_keys(pipeline_id: str) -> list[str]:
+    pipeline: ExistingPipelineSchema = Pipeline.get_by_id(pipeline_id).dump()
+    return pipeline.data_source.get_keys()
+
+
+@app.task
+def get_documents(pipeline_id: str, key: str) -> list[dict]:
+    pipeline: ExistingPipelineSchema = Pipeline.get_by_id(pipeline_id).dump()
+    return [
+        document.model_dump() for document in pipeline.data_source.get_documents(key)
+    ]
+
+
+@app.task
+def create_embedding(pipeline_id: str, document: dict) -> list[float]:
     document_parsed = DataSourceDocument(**document)
     pipeline: ExistingPipelineSchema = Pipeline.get_by_id(pipeline_id).dump()
     embedding = pipeline.embedding_model.get_embedding(document_parsed.text)
@@ -46,7 +67,7 @@ def store_embedding(
     embedding: list[float],
     pipeline_id: str,
     document_id: str,
-):
+) -> None:
     pipeline: ExistingPipelineSchema = Pipeline.get_by_id(pipeline_id).dump()
     pipeline.vector_database.insert([VectorItem(id=document_id, vector=embedding)])
 

@@ -13,22 +13,49 @@ class S3TextDataSource(DataSource, BaseModel):
     url: str
     splitter: RecursiveSplitter
     _s3: Any
+    _bucket: str
+    _prefix: str
 
     def __init__(self, **data):
         super().__init__(**data)
-        self._s3 = boto3.resource(
+        self._s3 = boto3.client(
             "s3",
             aws_access_key_id=Config.aws_access_key_id,
             aws_secret_access_key=Config.aws_secret_access_key,
         )
-
-    def get_documents(self) -> list[DataSourceDocument]:
         parsed = urlparse(self.url)
-        bucket = parsed.netloc
-        key = parsed.path.lstrip("/")
+        self._bucket = parsed.netloc
+        self._prefix = parsed.path.lstrip("/")
 
-        obj = self._s3.Object(bucket, key)
-        text = obj.get()["Body"].read().decode("utf-8")
+    def get_keys(self) -> list[str]:
+        keys = []
+        continuation_token = None
+
+        while True:
+            if continuation_token is None:
+                response = self._s3.list_objects_v2(
+                    Bucket=self._bucket, Prefix=self._prefix
+                )
+            else:
+                response = self._s3.list_objects_v2(
+                    Bucket=self._bucket,
+                    Prefix=self._prefix,
+                    ContinuationToken=continuation_token,
+                )
+
+            if "Contents" in response:
+                for obj in response["Contents"]:
+                    keys.append(obj["Key"])
+
+            if not response["IsTruncated"]:
+                break
+            continuation_token = response["NextContinuationToken"]
+
+        return keys
+
+    def get_documents(self, key: str) -> list[DataSourceDocument]:
+        response = self._s3.get_object(Bucket=self._bucket, Key=key)
+        text = response["Body"].read().decode("utf-8")
         return [
             DataSourceDocument(
                 id=hashlib.sha256(document.text.encode("utf-8")).hexdigest(),
