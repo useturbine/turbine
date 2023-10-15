@@ -1,7 +1,8 @@
 import { useRootContext } from "../utils";
 import { useQuery } from "react-query";
 import { fetchTasks } from "../queries";
-import { TaskCard } from "../components/task-card";
+import { TaskRow } from "../components/task-row";
+import { Table } from "flowbite-react";
 
 export const Tasks = () => {
   const { userApiKey, externalUserId } = useRootContext();
@@ -14,6 +15,9 @@ export const Tasks = () => {
     () => fetchTasks({ userApiKey }),
     { enabled: !!userApiKey, refetchInterval: 1000 }
   );
+  const sortedTasks = tasks?.sort((a, b) => {
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
 
   return (
     <div className="flex flex-col gap-6 flex-1">
@@ -23,9 +27,20 @@ export const Tasks = () => {
           Tasks are used to sync your data.
         </p>
       </div>
-      {tasks?.map((task) => {
-        return <TaskCard task={task} />;
-      })}
+      <Table hoverable>
+        <Table.Head>
+          <Table.HeadCell>Status</Table.HeadCell>
+          <Table.HeadCell>ID</Table.HeadCell>
+          <Table.HeadCell>Description</Table.HeadCell>
+          <Table.HeadCell>Started at</Table.HeadCell>
+          <Table.HeadCell>Finished at</Table.HeadCell>
+        </Table.Head>
+        <Table.Body className="divide-y">
+          {sortedTasks?.map((task) => {
+            return <TaskRow task={task} />;
+          })}
+        </Table.Body>
+      </Table>
     </div>
   );
 };

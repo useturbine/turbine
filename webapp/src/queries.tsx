@@ -1,7 +1,7 @@
 import { QueryClient } from "react-query";
 import axios from "axios";
 import { turbineAdminApiKey, turbineApiUrl } from "./config";
-import { PipelineFromAPI } from "./utils";
+import { PipelineFromAPI, TaskFromAPI } from "./utils";
 
 export const queryClient = new QueryClient();
 
@@ -40,14 +40,7 @@ export const fetchTasks = async ({
 }: {
   userApiKey: string;
   pipelineId?: string;
-}): Promise<
-  {
-    id: string;
-    successful: boolean;
-    created_at: string;
-    finished_at?: string;
-  }[]
-> => {
+}): Promise<TaskFromAPI[]> => {
   const result = await axios.get(`${turbineApiUrl}/tasks`, {
     params: { pipeline: pipelineId },
     headers: { "X-Turbine-Key": userApiKey },

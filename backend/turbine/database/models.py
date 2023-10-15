@@ -50,8 +50,8 @@ class User(Model):
 
 class Pipeline(Model):
     id = UUIDField(primary_key=True, default=uuid.uuid4)
-    created_at = DateTimeField(default=datetime.now())
-    updated_at = DateTimeField(default=datetime.now())
+    created_at = DateTimeField(default=datetime.now)
+    updated_at = DateTimeField(default=datetime.now)
     name = CharField()
     description = CharField(null=True)
     user = ForeignKeyField(User, backref="pipelines")
@@ -85,7 +85,7 @@ class Task(Model):
     pipeline = ForeignKeyField(Pipeline, backref="tasks")
     type = CharField()
     metadata = BinaryJSONField(null=True)
-    created_at = DateTimeField(default=datetime.now())
+    created_at = DateTimeField(default=datetime.now)
     finished_at = DateTimeField(null=True)
     successful = BooleanField(default=False)
 

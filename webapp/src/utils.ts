@@ -24,3 +24,11 @@ export type PipelineFromAPI = {
     };
   };
 };
+
+export type TaskFromAPI = {
+  id: string;
+  created_at: string;
+  finished_at?: string;
+  successful: boolean;
+  pipeline: string;
+};
