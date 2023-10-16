@@ -1,14 +1,14 @@
 ---
 import Link from "@components/ui/link.astro";
 
-const title = "Automated data pipeline for your AI apps";
+const title = "Automated Pipeline for Vector Embeddings";
+// const subtitle =
+// 	"Elevate your business by using your data to create AI bots. Add long-term memory and provide rich context to your LLM apps using our fully-managed vector database and continuous data pipeline.";
 const subtitle =
-	"Elevate your business by using your data to create AI bots. Add long-term memory and provide rich context to your LLM apps using our fully-managed vector database and continuous data pipeline.";
-const mainButtonText = "Book a Call";
-const secondaryButtonText = "Go to Documentation";
+	"Elevate your business by using your data to power AI bots. Provide rich and up-to-date context to your LLM apps using our fully-managed data pipeline.";
 ---
 
-<div class="relative isolate pt-10 dark:bg-stone-950">
+<div class="relative isolate pt-10 dark:bg-stone-950 flex justify-center">
 	<!-- Gradient animations -->
 	<div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
 		<svg
@@ -62,32 +62,24 @@ const secondaryButtonText = "Go to Documentation";
 	</div>
 
 	<!-- Hero content -->
-	<div class="flex flex-wrap">
-		<div class="flex items-center w-full lg:w-1/2">
-			<div class="max-w-2xl mb-8">
-				<h1 class="text-4xl font-bold tracking-tight text-black dark:text-white sm:text-6xl">
-					{title}
-				</h1>
-				<p class="mt-6 mb-4 text-xl leading-normal text-gray-900 dark:text-gray-100">
-					{subtitle}
-				</p>
+	<div class="flex flex-col items-center justify-center max-w-3xl text-center mt-20">
+		<h1 class="text-4xl font-bold tracking-tight text-black dark:text-white sm:text-6xl">
+			{title}
+		</h1>
+		<p class="mt-6 mb-4 text-xl leading-normal text-gray-900 dark:text-gray-100">
+			{subtitle}
+		</p>
 
-				<div class="flex flex-col items-start space-y-3 sm:space-x-4 sm:space-y-0 sm:items-center sm:flex-row">
-					<Link href="https://calendly.com/sumit-turbine/30min" target="_blank" size="lg">{mainButtonText}</Link>
-					<Link href="https://docs.useturbine.com" style="outline" size="lg">
-						{secondaryButtonText}
-						<span aria-hidden="true" class="pl-1 text-black dark:text-white">→</span>
-					</Link>
-				</div>
-			</div>
-		</div>
-		<div class="flex items-center justify-center w-full lg:w-1/2">
-			<img alt="Turbine code sample for Python" class="relative dark:hidden" src="/images/turbine-diagram-light.svg" />
-			<img alt="Turbine code sample for Python" class="relative hidden dark:block" src="/images/turbine-diagram-dark.svg" />
+		<div class="flex items-center mt-8 sm:space-x-4 sm:space-y-0 sm:flex-row">
+			<Link href="https://app.useturbine.com" target="_blank" size="lg" class="text-xl">
+				Try For Free <span class="pl-1 text-white dark:text-black">→</span>
+			</Link>
+			<Link href="https://api.useturbine.com/docs" target="_blank" style="outline" size-="lg" class="text-xl">Visit API Docs</Link>
 		</div>
 	</div>
 </div>
 
+<!-- CSS for gradient animations -->
 <style>
 	@keyframes slide {
 		0% {

@@ -1,7 +1,7 @@
 ---
 import { SEO } from "astro-seo";
 import Footer from "@components/footer.astro";
-import Navbar from "@components/navbar/navbar.astro";
+import Navbar from "@components/Navbar.astro";
 import "@fontsource-variable/inter";
 import { ViewTransitions } from "astro:transitions";
 
@@ -64,6 +64,17 @@ const makeTitle = title ? title + " | " + "Turbine" : "Turbine | Automated data 
 
 			gtag("config", "G-E3T4EWSZQS");
 		</script>
+
+		<script>
+			if (
+				localStorage.getItem("color-theme") === "dark" ||
+				(!("color-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
+			) {
+				document.documentElement.classList.add("dark");
+			} else {
+				document.documentElement.classList.remove("dark");
+			}
+		</script>
 	</head>
 
 	<body class="dark:bg-stone-950">
@@ -77,5 +88,6 @@ const makeTitle = title ? title + " | " + "Turbine" : "Turbine | Automated data 
 				content-visibility: auto;
 			}
 		</style>
+		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
 	</body>
 </html>
