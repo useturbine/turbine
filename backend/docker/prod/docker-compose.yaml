@@ -13,7 +13,6 @@ services:
     restart: always
 
   worker:
-    container_name: turbine-worker
     image: turbine/worker
     build:
       context: ../..
@@ -23,6 +22,8 @@ services:
       - redis
     env_file: .env
     restart: always
+    deploy:
+      replicas: 10
 
   flower:
     container_name: turbine-flower

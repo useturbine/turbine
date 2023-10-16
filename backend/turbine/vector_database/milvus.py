@@ -18,9 +18,7 @@ class MilvusVectorDB(VectorDB, BaseModel):
 
     def insert(self, data: List[VectorItem]) -> None:
         collection = Collection(self.collection_name)
-        collection.insert(
-            data=[[item.id for item in data], [item.vector for item in data]]
-        )
+        collection.insert(data=[[item.vector for item in data]])
         collection.flush()
 
     def search(self, data: List[float], limit: int) -> List[VectorSearchResult]:
