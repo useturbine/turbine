@@ -23,11 +23,3 @@ tasks:
       - docker:clean:prod
     cmds:
       - cd docker/prod && docker compose up --remove-orphans --build -d
-  api:
-    desc: Run Turbine API locally.
-    cmds:
-      - uvicorn src.api.app:app --reload --host 0.0.0.0 --port 80
-  daemon:
-    desc: Run Turbine daemon locally.
-    cmds:
-      - python3 daemon.py

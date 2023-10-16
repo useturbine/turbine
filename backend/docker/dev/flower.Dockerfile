@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-WORKDIR /turbine-api
+WORKDIR /app
 
 COPY pyproject.toml .
 COPY poetry.lock .

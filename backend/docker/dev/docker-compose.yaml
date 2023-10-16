@@ -1,12 +1,12 @@
 version: "3"
 
 services:
-  turbine-api:
+  api:
     container_name: turbine-api
     image: turbine/api
     build:
       context: ../..
-      dockerfile: docker/dev/turbine-api.Dockerfile
+      dockerfile: docker/dev/api.Dockerfile
     ports:
       - "80:80"
     depends_on:
@@ -14,11 +14,11 @@ services:
     env_file: .env
     command: uvicorn turbine.api.app:app --reload --host 0.0.0.0 --port 80
     volumes:
-      - ../..:/turbine-api
+      - ../..:/app
     restart: always
 
   ngrok:
-    container_name: ngrok
+    container_name: turbine-ngrok
     image: ngrok/ngrok:latest
     restart: unless-stopped
     command:
@@ -30,8 +30,8 @@ services:
       - "4040:4040"
 
   postgres:
-    image: postgres:latest
     container_name: turbine-postgres
+    image: postgres:latest
     environment:
       POSTGRES_DB: turbine
       POSTGRES_USER: admin
@@ -39,27 +39,40 @@ services:
     ports:
       - "5432:5432"
 
-  turbine-worker:
+  worker:
     container_name: turbine-worker
     image: turbine/worker
     build:
       context: ../..
-      dockerfile: docker/dev/turbine-worker.Dockerfile
+      dockerfile: docker/dev/worker.Dockerfile
     env_file: .env
     command: celery --app turbine.worker.worker worker --loglevel=INFO
     volumes:
-      - ../..:/turbine-worker
+      - ../..:/app
+    restart: always
+
+  flower:
+    container_name: turbine-flower
+    image: turbine/flower
+    build:
+      context: ../..
+      dockerfile: docker/dev/flower.Dockerfile
+    env_file: .env
+    ports:
+      - "5555:5555"
+    command: celery --app turbine.worker.worker flower
+    volumes:
+      - ../..:/app
     restart: always
 
   rabbitmq:
-    container_name: rabbitmq
+    container_name: turbine-rabbitmq
     image: "rabbitmq:management"
     ports:
-      - "5672:5672"
       - "15672:15672"
 
   redis:
-    container_name: redis
+    container_name: turbine-redis
     image: "bitnami/redis:latest"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes

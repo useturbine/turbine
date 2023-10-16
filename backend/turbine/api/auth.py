@@ -9,7 +9,7 @@ from peewee import DataError
 auth_scheme = APIKeyHeader(name="X-Turbine-Key", auto_error=False)
 
 
-def get_user(turbine_key: Annotated[UUID, Depends(auth_scheme)]) -> User:
+async def get_user(turbine_key: Annotated[UUID, Depends(auth_scheme)]) -> User:
     if not turbine_key:
         raise HTTPException(status_code=401, detail="Missing API key")
     try:

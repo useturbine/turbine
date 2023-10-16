@@ -1,68 +1,60 @@
 version: "3"
 
 services:
-  turbine-api:
+  api:
     container_name: turbine-api
     image: turbine/api
     build:
       context: ../..
-      dockerfile: docker/prod/turbine-api.Dockerfile
+      dockerfile: docker/prod/api.Dockerfile
     ports:
       - "80:80"
-    depends_on:
-      - redpanda
-      - debezium
     env_file: .env
     restart: always
 
-  turbine-worker:
+  worker:
     container_name: turbine-worker
     image: turbine/worker
     build:
       context: ../..
-      dockerfile: docker/prod/turbine-daemon.Dockerfile
+      dockerfile: docker/prod/worker.Dockerfile
     depends_on:
-      - redpanda
-      - debezium
+      - rabbitmq
+      - redis
     env_file: .env
     restart: always
 
-  turbine-daemon:
-    container_name: turbine-daemon
-    image: turbine/daemon
+  flower:
+    container_name: turbine-flower
+    image: turbine/flower
     build:
       context: ../..
-      dockerfile: docker/prod/turbine-daemon.Dockerfile
+      dockerfile: docker/prod/flower.Dockerfile
+    restart: always
+    ports:
+      - "5555:5555"
     depends_on:
-      - redpanda
-      - debezium
+      - rabbitmq
     env_file: .env
-    restart: always
 
-  redpanda:
-    container_name: redpanda
-    image: redpandadata/redpanda
-    command:
-      - redpanda start
-      - --smp 1
-      - --overprovisioned
-      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
-      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
-    ports:
-      - "19092:19092"
+  rabbitmq:
+    container_name: turbine-rabbitmq
+    image: "rabbitmq:management"
     restart: always
-
-  debezium:
-    image: debezium/connect
-    container_name: debezium
-    depends_on:
-      - redpanda
-    ports:
-      - "8083:8083"
     environment:
-      BOOTSTRAP_SERVERS: "redpanda:9092"
-      GROUP_ID: "1"
-      CONFIG_STORAGE_TOPIC: "inventory.configs"
-      OFFSET_STORAGE_TOPIC: "inventory.offset"
-      STATUS_STORAGE_TOPIC: "inventory.status"
+      RABBITMQ_DEFAULT_USER: turbine
+      RABBITMQ_DEFAULT_PASS: tHeOUroUStOl
+    ports:
+      - "15672:15672"
+    volumes:
+      - ./volumes/rabbitmq/data:/var/lib/rabbitmq
+      - ./volumes/rabbitmq/config:/etc/rabbitmq
+
+  redis:
+    container_name: turbine-redis
+    image: "redis:latest"
     restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - ./volumes/redis/data:/data

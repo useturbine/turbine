@@ -4,38 +4,29 @@ from peewee import (
     DateTimeField,
     ForeignKeyField,
     Model,
-    PostgresqlDatabase,
     UUIDField,
     IntegrityError,
     BooleanField,
 )
 from playhouse.postgres_ext import BinaryJSONField
+from playhouse.pool import PooledPostgresqlExtDatabase
 from datetime import datetime
 from config import Config
 import uuid
 from turbine.schema import ExistingPipelineSchema, TaskSchema
-import uuid
+from turbine.utils import parse_postgres_url
 
 
-def create_postgres_connection(connection_string: str):
-    """
-    Create a Postgres database connection from a connection string.
-
-    Args:
-        connection_string (str): A connection string in the format postgres://username:password@host:port/database_name
-    """
-    parts = connection_string.split("//")[1].split("@")
-    credentials, db_info = parts[0], parts[1].split("/")
-    username, password = credentials.split(":")
-    host, port = db_info[0].split(":")
-    database_name = db_info[1]
-
-    return PostgresqlDatabase(
-        database=database_name, user=username, password=password, host=host, port=port
-    )
-
-
-db = create_postgres_connection(Config.postgres_url)
+postgres_params = parse_postgres_url(Config.postgres_url)
+db = PooledPostgresqlExtDatabase(
+    database=postgres_params.database,
+    user=postgres_params.user,
+    password=postgres_params.password,
+    host=postgres_params.host,
+    port=postgres_params.port,
+    max_connections=32,
+    autoconnect=False,
+)
 
 
 class User(Model):
@@ -106,8 +97,11 @@ class Task(Model):
         database = db
 
 
-try:
-    db.create_tables([User, Task, Pipeline])
-    User.create(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
-except IntegrityError:
-    pass
+with db:
+    if db.is_closed():
+        db.connect()
+    try:
+        db.create_tables([User, Task, Pipeline])
+        User.create(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
+    except IntegrityError:
+        pass

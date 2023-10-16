@@ -79,8 +79,9 @@ async def run_pipeline(id: UUID, user=Depends(get_user)):
         pipeline=pipeline,
         type="manual_pipeline_run",
     )
+
     try:
-        run_pipeline_task.delay(id, task.id)
+        run_pipeline_task.delay(pipeline.dump().model_dump(), task.id)
     except Exception as e:
         task.delete_instance()
         raise HTTPException(status_code=500, detail=str(e))
@@ -89,7 +90,7 @@ async def run_pipeline(id: UUID, user=Depends(get_user)):
 
 
 @router.get("/{id}/search", response_model=list[VectorSearchResult])
-def search(id: UUID, query: str, limit: int = 10, user=Depends(get_user)):
+async def search(id: UUID, query: str, limit: int = 10, user=Depends(get_user)):
     pipeline_instance = Pipeline.get_or_none(
         Pipeline.id == id, Pipeline.user == user, Pipeline.deleted == False
     )

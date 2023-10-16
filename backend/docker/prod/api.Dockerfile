@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-WORKDIR /turbine-api
+WORKDIR /app
 
 COPY pyproject.toml .
 COPY poetry.lock .
@@ -11,4 +11,4 @@ RUN poetry install --no-dev
 
 COPY . .
 
-CMD uvicorn src.api.app:app --host 0.0.0.0 --port 80
+CMD uvicorn turbine.api.app:app --host 0.0.0.0 --port 80

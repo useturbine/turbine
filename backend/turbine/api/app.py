@@ -4,6 +4,8 @@ import logging
 from .routers import tasks, pipelines, misc
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from turbine.database import db
+from contextlib import asynccontextmanager
 
 
 logger = getLogger(__name__)
@@ -12,8 +14,16 @@ logging.basicConfig(
 )
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    db.connect()
+    yield
+    db.close()
+
+
 app = FastAPI(
     dependencies=[Depends(get_user)],
+    lifespan=lifespan,
 )
 
 app.add_middleware(
