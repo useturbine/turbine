@@ -1,12 +1,13 @@
-from turbine.vector_database import VectorDB, VectorItem, VectorSearchResult
+from turbine.vector_database import VectorDatabase, VectorItem, VectorSearchResult
 import pinecone
 from pinecone import Vector
 from typing import List
 from pydantic import BaseModel
 from typing import Literal
+from urllib3.exceptions import MaxRetryError
 
 
-class PineconeVectorDB(VectorDB, BaseModel):
+class PineconeVectorDB(VectorDatabase, BaseModel):
     type: Literal["pinecone"]
     api_key: str
     environment: str
@@ -15,6 +16,18 @@ class PineconeVectorDB(VectorDB, BaseModel):
     def __init__(self, **data) -> None:
         super().__init__(**data)
         pinecone.init(api_key=self.api_key, environment=self.environment)
+
+    def validate(self) -> None:
+        try:
+            pinecone.list_indexes()
+        except pinecone.PineconeException:
+            raise ValueError("Invalid Pinecone API key")
+        except MaxRetryError:
+            raise ValueError("Invalid Pinecone environment")
+        try:
+            pinecone.describe_index("example-index")
+        except pinecone.PineconeException:
+            raise ValueError("Invalid Pinecone collection name")
 
     def insert(self, data: List[VectorItem]) -> None:
         index = pinecone.Index(self.index_name)

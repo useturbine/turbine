@@ -8,14 +8,14 @@ from pymilvus import (
     utility,
 )
 from typing import List
-from turbine.vector_database import VectorDB, VectorItem, VectorSearchResult
+from turbine.vector_database import VectorDatabase, VectorItem, VectorSearchResult
 from .types import SimilarityMetric
 from uuid import UUID
 from pydantic import BaseModel
 from typing import Literal
 
 
-class MilvusVectorDB(VectorDB, BaseModel):
+class MilvusVectorDB(VectorDatabase, BaseModel):
     type: Literal["milvus"]
     url: str
     token: str

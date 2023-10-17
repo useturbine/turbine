@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Optional
 from pydantic import BaseModel
 from typing import Any
 
@@ -11,6 +10,10 @@ class DataSourceDocument(BaseModel):
 
 
 class DataSource:
+    @abstractmethod
+    def validate(self) -> None:
+        ...
+
     @abstractmethod
     def get_keys(self) -> list[str]:
         ...

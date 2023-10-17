@@ -1,12 +1,12 @@
 from pymilvus import Collection
 from pymilvus import connections, Collection
 from typing import List
-from turbine.vector_database import VectorDB, VectorItem, VectorSearchResult
+from turbine.vector_database import VectorDatabase, VectorItem, VectorSearchResult
 from pydantic import BaseModel
 from typing import Literal
 
 
-class MilvusVectorDB(VectorDB, BaseModel):
+class MilvusVectorDB(VectorDatabase, BaseModel):
     type: Literal["milvus"]
     url: str
     token: str

@@ -24,6 +24,13 @@ class GenericResponseSchema(BaseModel):
 
 @router.post("", status_code=201, response_model=CreateResponseSchema)
 async def create_pipeline(pipeline: PipelineSchema, user=Depends(get_user)):
+    try:
+        pipeline.data_source.validate()
+        pipeline.embedding_model.validate()
+        pipeline.vector_database.validate()
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     pipeline_instance = Pipeline.create(
         name=pipeline.name,
         description=pipeline.description,

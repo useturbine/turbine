@@ -6,6 +6,7 @@ import boto3
 from urllib.parse import urlparse
 from config import config
 import hashlib
+from botocore.exceptions import ParamValidationError
 
 
 class S3TextDataSource(DataSource, BaseModel):
@@ -26,6 +27,16 @@ class S3TextDataSource(DataSource, BaseModel):
         parsed = urlparse(self.url)
         self._bucket = parsed.netloc
         self._prefix = parsed.path.lstrip("/")
+
+    def validate(self) -> None:
+        if self._bucket is None:
+            raise ValueError("Missing bucket in S3 URL")
+        if self._prefix is None:
+            raise ValueError("Missing prefix in S3 URL")
+        try:
+            self._s3.head_bucket(Bucket=self._bucket)
+        except (self._s3.exceptions.ClientError, ParamValidationError):
+            raise ValueError("Invalid or inaccessible S3 URL")
 
     def get_keys(self) -> list[str]:
         keys = []

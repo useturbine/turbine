@@ -16,7 +16,11 @@ class VectorSearchResult(BaseModel):
     metadata: dict[str, Any]
 
 
-class VectorDB:
+class VectorDatabase:
+    @abstractmethod
+    def validate(self) -> None:
+        ...
+
     @abstractmethod
     def insert(self, data: List[VectorItem]) -> None:
         ...
