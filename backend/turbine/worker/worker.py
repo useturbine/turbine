@@ -8,12 +8,14 @@ from datetime import datetime
 from uuid import UUID
 from types import TracebackType
 from logging import getLogger
+import logging
 
 
 app = Celery(
     "turbine", backend=config.celery_backend_url, broker=config.celery_broker_url
 )
 logger = getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 
 @app.task

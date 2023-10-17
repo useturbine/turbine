@@ -9,9 +9,7 @@ from contextlib import asynccontextmanager
 
 
 logger = getLogger(__name__)
-logging.basicConfig(
-    level=logging.DEBUG,
-)
+logging.basicConfig(level=logging.DEBUG)
 
 
 @asynccontextmanager
