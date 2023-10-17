@@ -2,7 +2,6 @@ version: "3"
 
 services:
   api:
-    container_name: turbine-api
     image: turbine/api
     build:
       context: ../..
@@ -39,7 +38,6 @@ services:
     env_file: .env
 
   rabbitmq:
-    container_name: turbine-rabbitmq
     image: "rabbitmq:management"
     restart: always
     environment:
@@ -52,7 +50,6 @@ services:
       - ./volumes/rabbitmq/config:/etc/rabbitmq
 
   redis:
-    container_name: turbine-redis
     image: "redis:latest"
     restart: always
     environment:
