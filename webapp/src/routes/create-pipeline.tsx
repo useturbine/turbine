@@ -234,6 +234,8 @@ export const CreatePipeline = () => {
           {isError && (
             <div className="text-red-500 dark:text-red-400 mx-auto text-center">
               <p>Something went wrong</p>
+              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+              {/* @ts-expect-error */}
               <p>{error.response?.data.detail}</p>
             </div>
           )}

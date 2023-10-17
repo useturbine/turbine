@@ -15,8 +15,11 @@ logging.basicConfig(level=logging.DEBUG)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    if db.is_closed():
+    try:
         db.connect()
+    except Exception as e:
+        logger.error("Error connecting to database: %s", e)
+
     try:
         db.create_tables([User, Task, Pipeline])
         User.create(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
@@ -25,8 +28,10 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    if not db.is_closed():
+    try:
         db.close()
+    except Exception as e:
+        logger.error("Error closing database: %s", e)
 
 
 app = FastAPI(
