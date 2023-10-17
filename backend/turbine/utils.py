@@ -20,7 +20,7 @@ def parse_postgres_url(url: str) -> PostgresConnectionParams:
     """
     parsed_url = urlparse(url)
     if (
-        parsed_url.scheme != "postgres"
+        parsed_url.scheme != "postgresql"
         or not parsed_url.hostname
         or not parsed_url.username
         or not parsed_url.password
