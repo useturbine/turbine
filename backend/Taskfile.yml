@@ -1,25 +1,29 @@
 version: "3"
 
 tasks:
-  docker:clean:dev:
+  clean:dev:
     desc: Clean local development stack on Docker Compose.
     cmds:
       - cd docker/dev && docker compose down
-  docker:clean:prod:
+  clean:prod:
     desc: Clean production stack on Docker Compose.
     cmds:
       - cd docker/prod && docker compose down
-  docker:run:dev:
+  run:dev:
     desc: Run local development setup using Docker Compose.
     deps:
-      - docker:clean:dev
-      - docker:clean:prod
+      - clean:dev
+      - clean:prod
     cmds:
       - cd docker/dev && docker compose up -V --remove-orphans --build
-  docker:run:prod:
+  run:prod:
     desc: Run production setup using Docker Compose.
     deps:
-      - docker:clean:dev
-      - docker:clean:prod
+      - clean:dev
+      - clean:prod
     cmds:
       - cd docker/prod && docker compose up --remove-orphans --build -d
+  logs:prod:
+    desc: Show logs for production setup.
+    cmds:
+      - cd docker/prod && docker compose logs -f
