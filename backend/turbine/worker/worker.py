@@ -29,10 +29,7 @@ def run_pipeline(pipeline: dict, task_id: str):
 @app.task
 def process_documents(documents: list[dict], pipeline: dict):
     chains = group(
-        (
-            create_embedding.s(pipeline, document)
-            | store_embedding.s(pipeline, document["id"])
-        )
+        (create_embedding.s(pipeline, document) | store_embedding.s(pipeline, document))
         for document in documents
     )
     chains.delay()
@@ -64,11 +61,17 @@ def create_embedding(pipeline: dict, document: dict) -> list[float]:
 def store_embedding(
     embedding: list[float],
     pipeline: dict,
-    document_id: str,
+    document: dict,
 ) -> None:
     pipeline_parsed = ExistingPipelineSchema(**pipeline)
     pipeline_parsed.vector_database.insert(
-        [VectorItem(id=document_id, vector=embedding)]
+        [
+            VectorItem(
+                id=document["id"],
+                vector=embedding,
+                metadata=dict(text=document["text"], **document["metadata"]),
+            )
+        ]
     )
 
 

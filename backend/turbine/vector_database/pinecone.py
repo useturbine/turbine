@@ -21,8 +21,9 @@ class PineconeVectorDB(VectorDB, BaseModel):
         index.upsert(
             vectors=[
                 Vector(
-                    values=vector.vector,
                     id=vector.id,
+                    values=vector.vector,
+                    metadata=vector.metadata,
                 )
                 for vector in data
             ]
@@ -30,12 +31,11 @@ class PineconeVectorDB(VectorDB, BaseModel):
 
     def search(self, data: List[float], limit: int) -> List[VectorSearchResult]:
         index = pinecone.Index(self.index_name)
-        results = index.query(
-            vector=data,
-            top_k=limit,
-        )
+        results = index.query(vector=data, top_k=limit, include_metadata=True)
         return [
-            VectorSearchResult(id=result.id, score=result.score)
+            VectorSearchResult(
+                id=result.id, score=result.score, metadata=result.metadata
+            )
             for result in results["matches"]
         ]
 

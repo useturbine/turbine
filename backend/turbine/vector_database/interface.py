@@ -1,16 +1,19 @@
 from typing import List
 from abc import abstractmethod
 from pydantic import BaseModel
+from typing import Any
 
 
 class VectorItem(BaseModel):
     id: str
     vector: List[float]
+    metadata: dict[str, Any]
 
 
 class VectorSearchResult(BaseModel):
     id: str
     score: float
+    metadata: dict[str, Any]
 
 
 class VectorDB:

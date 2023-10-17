@@ -6,7 +6,7 @@ from typing import Any
 
 class SplitterOutput(BaseModel):
     text: str
-    metadata: Optional[dict[str, Any]] = None
+    metadata: dict[str, Any]
 
 
 class Splitter:

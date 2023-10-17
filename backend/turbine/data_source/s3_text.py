@@ -60,7 +60,7 @@ class S3TextDataSource(DataSource, BaseModel):
             DataSourceDocument(
                 id=hashlib.sha256(document.text.encode("utf-8")).hexdigest(),
                 text=document.text,
-                metadata=document.metadata,
+                metadata=dict(**document.metadata, s3_key=key),
             )
             for document in self.splitter.split(text)
         ]
