@@ -2,7 +2,6 @@ version: "3"
 
 services:
   api:
-    container_name: turbine-api
     image: turbine/api
     build:
       context: ../..
@@ -18,7 +17,6 @@ services:
     restart: always
 
   ngrok:
-    container_name: turbine-ngrok
     image: ngrok/ngrok:latest
     restart: unless-stopped
     command:
@@ -30,7 +28,6 @@ services:
       - "4040:4040"
 
   postgres:
-    container_name: turbine-postgres
     image: postgres:latest
     environment:
       POSTGRES_DB: turbine
@@ -40,7 +37,6 @@ services:
       - "5432:5432"
 
   worker:
-    container_name: turbine-worker
     image: turbine/worker
     build:
       context: ../..
@@ -52,7 +48,6 @@ services:
     restart: always
 
   flower:
-    container_name: turbine-flower
     image: turbine/flower
     build:
       context: ../..
@@ -66,13 +61,11 @@ services:
     restart: always
 
   rabbitmq:
-    container_name: turbine-rabbitmq
     image: "rabbitmq:management"
     ports:
       - "15672:15672"
 
   redis:
-    container_name: turbine-redis
     image: "bitnami/redis:latest"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes

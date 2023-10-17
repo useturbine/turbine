@@ -16,9 +16,11 @@ import uuid
 from turbine.schema import ExistingPipelineSchema, TaskSchema
 from turbine.utils import parse_postgres_url
 from logging import getLogger
+import logging
 
 
 logger = getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 logger.info(f"Connecting to Postgres @ {config.postgres_url}")
