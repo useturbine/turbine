@@ -20,7 +20,6 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 
-logger.info(f"Connecting to Postgres @ {config.postgres_url}")
 postgres_params = parse_postgres_url(config.postgres_url)
 db = PooledPostgresqlExtDatabase(
     database=postgres_params.database,
