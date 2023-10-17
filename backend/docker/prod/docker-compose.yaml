@@ -25,7 +25,6 @@ services:
       replicas: 10
 
   flower:
-    container_name: turbine-flower
     image: turbine/flower
     build:
       context: ../..
