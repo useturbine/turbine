@@ -2,13 +2,38 @@ import { Button, Select, Label, TextInput } from "flowbite-react";
 import { SubmitHandler, useForm, FormProvider } from "react-hook-form";
 import { useRootContext } from "../utils";
 import { Pipeline } from "../components/types";
-import { MilvusForm, PineconeForm } from "../components/vector-dbs";
-import { OpenAIForm, HuggingFaceForm } from "../components/embedding-models";
+import { PineconeForm } from "../components/vector-dbs";
+import { OpenAIForm } from "../components/embedding-models";
 import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import { S3TextForm } from "../components/data-sources";
 import { createPipeline, runPipeline } from "../components/utils";
 import { useNavigate } from "react-router-dom";
+
+const PrivateBetaNotice = () => {
+  return (
+    <p className="text-md mt-4 text-red-500">
+      This feature is currently in private beta. If you would like to try it
+      out, please reach out to us on{" "}
+      <a
+        href="https://discord.gg/5vGGDKV6x"
+        target="_blank"
+        className="text-blue-500 hover:text-blue-700"
+      >
+        Discord
+      </a>{" "}
+      or email us at{" "}
+      <a
+        href="mailto:hello@useturbine.com"
+        target="_blank"
+        className="text-blue-500 hover:text-blue-700"
+      >
+        hello@useturbine.com
+      </a>
+      .
+    </p>
+  );
+};
 
 export const CreatePipeline = () => {
   const { userApiKey, externalUserId } = useRootContext();
@@ -78,14 +103,22 @@ export const CreatePipeline = () => {
 
   const VectorDatabaseFormOptions = {
     pinecone: PineconeForm,
-    milvus: MilvusForm,
+    // milvus: MilvusForm,
+    milvus: PrivateBetaNotice,
+    weaviate: PrivateBetaNotice,
+    chroma: PrivateBetaNotice,
   };
   const EmbeddingModelFormOptions = {
     openai: OpenAIForm,
-    huggingface: HuggingFaceForm,
+    // huggingface: HuggingFaceForm,
+    huggingface: PrivateBetaNotice,
   };
   const DataSourceFormOptions = {
     s3_text: S3TextForm,
+    s3_pdf: PrivateBetaNotice,
+    postgres: PrivateBetaNotice,
+    mongo: PrivateBetaNotice,
+    notion: PrivateBetaNotice,
   };
   const VectorDatabaseForm =
     VectorDatabaseFormOptions[watch("vectorDatabaseType")];
@@ -127,6 +160,10 @@ export const CreatePipeline = () => {
                   {...register("dataSourceType")}
                 >
                   <option value="s3_text">Text files stored on S3</option>
+                  <option value="s3_pdf">PDF files stored on S3</option>
+                  <option value="postgres">Postgres</option>
+                  <option value="mongo">MongoDB</option>
+                  <option value="notion">Notion</option>
                 </Select>
               </div>
 
@@ -169,6 +206,8 @@ export const CreatePipeline = () => {
                 >
                   <option value="pinecone">Pinecone</option>
                   <option value="milvus">Milvus</option>
+                  <option value="weaviate">Weaviate</option>
+                  <option value="chroma">Chroma</option>
                 </Select>
               </div>
 

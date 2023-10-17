@@ -30,7 +30,7 @@ export type Pipeline = {
   name: string;
 
   // Data source
-  dataSourceType: "s3_text";
+  dataSourceType: "s3_text" | "s3_pdf" | "postgres" | "mongo" | "notion";
   s3TextConfig?: S3Text;
 
   // Embedding model
@@ -39,7 +39,7 @@ export type Pipeline = {
   huggingfaceConfig?: HuggingFace;
 
   // Vector database
-  vectorDatabaseType: "milvus" | "pinecone";
+  vectorDatabaseType: "milvus" | "pinecone" | "weaviate" | "chroma";
   milvusConfig?: Milvus;
   pineconeConfig?: Pinecone;
 };

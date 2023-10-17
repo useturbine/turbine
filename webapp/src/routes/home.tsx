@@ -29,7 +29,7 @@ export const Home = () => {
           view its details and run it. If you're new here, start by{" "}
           <Link
             to="/create-pipeline"
-            className="text-blue-500 hover:text-blue-700 underline"
+            className="text-blue-500 hover:text-blue-700"
           >
             creating a pipeline
           </Link>

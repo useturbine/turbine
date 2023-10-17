@@ -1,8 +1,6 @@
 from typing import List
 from abc import abstractmethod
-from .types import SimilarityMetric
 from pydantic import BaseModel
-from uuid import UUID
 
 
 class VectorItem(BaseModel):
