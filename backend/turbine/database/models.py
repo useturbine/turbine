@@ -1,65 +1,56 @@
-from peewee import (
-    AutoField,
-    CharField,
-    DateTimeField,
-    ForeignKeyField,
-    Model,
-    UUIDField,
-    BooleanField,
-)
-from playhouse.postgres_ext import BinaryJSONField
-from playhouse.pool import PooledPostgresqlExtDatabase
 from datetime import datetime
 from config import config
 import uuid
 from turbine.schema import ExistingPipelineSchema, TaskSchema
-from turbine.utils import parse_postgres_url
 from logging import getLogger
+from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, sessionmaker
+from sqlalchemy import ForeignKey, create_engine
+from sqlalchemy.types import UUID
+from sqlalchemy.dialects.postgresql import JSONB
+from typing import Optional
 
 
 logger = getLogger(__name__)
+engine = create_engine(config.postgres_url)
+Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-postgres_params = parse_postgres_url(config.postgres_url)
-db = PooledPostgresqlExtDatabase(
-    database=postgres_params.database,
-    user=postgres_params.user,
-    password=postgres_params.password,
-    host=postgres_params.host,
-    port=postgres_params.port,
-    max_connections=32,
-    autoconnect=False,
-)
+def get_db():
+    db = Session()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-class User(Model):
-    id = AutoField()
-    external_id = CharField(unique=True, null=True)
-    api_key = UUIDField(unique=True, default=uuid.uuid4)
-    deleted = BooleanField(default=False)
-
-    class Meta:
-        database = db
+class Base(DeclarativeBase):
+    pass
 
 
-class Pipeline(Model):
-    id = UUIDField(primary_key=True, default=uuid.uuid4)
-    created_at = DateTimeField(default=datetime.now)
-    updated_at = DateTimeField(default=datetime.now)
-    name = CharField()
-    description = CharField(null=True)
-    user = ForeignKeyField(User, backref="pipelines")
-    data_source = BinaryJSONField()
-    embedding_model = BinaryJSONField()
-    vector_database = BinaryJSONField()
-    deleted = BooleanField(default=False)
+class User(Base):
+    __tablename__ = "users"
 
-    def save(self, *args, **kwargs):
-        self.updated_at = datetime.now()
-        return super().save(*args, **kwargs)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    external_id: Mapped[Optional[str]] = mapped_column(unique=True)
+    api_key: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID, unique=True, default=uuid.uuid4
+    )
+    deleted: Mapped[bool] = mapped_column(default=False)
 
-    class Meta:
-        database = db
+
+class Pipeline(Base):
+    __tablename__ = "pipelines"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    name: Mapped[str]
+    description: Mapped[Optional[str]]
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    data_source: Mapped[dict] = mapped_column(JSONB)
+    embedding_model: Mapped[dict] = mapped_column(JSONB)
+    vector_database: Mapped[dict] = mapped_column(JSONB)
+    deleted: Mapped[bool] = mapped_column(default=False)
 
     def dump(self):
         return ExistingPipelineSchema(
@@ -74,27 +65,29 @@ class Pipeline(Model):
         )
 
 
-class Task(Model):
-    id = UUIDField(primary_key=True, default=uuid.uuid4)
-    pipeline = ForeignKeyField(Pipeline, backref="tasks")
-    type = CharField()
-    metadata = BinaryJSONField(null=True)
-    created_at = DateTimeField(default=datetime.now)
-    finished_at = DateTimeField(null=True)
-    successful = BooleanField(default=False)
+class Task(Base):
+    __tablename__ = "tasks"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    pipeline_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("pipelines.id"))
+    type: Mapped[str]
+    _metadata: Mapped[Optional[dict]] = mapped_column(JSONB, name="metadata")
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    finished_at: Mapped[Optional[datetime]]
+    successful: Mapped[bool] = mapped_column(default=False)
 
     def dump(self):
         return TaskSchema(
             **{
                 "id": self.id,
-                "pipeline": self.pipeline.id,
+                "pipeline": self.pipeline_id,
                 "type": self.type,
-                "metadata": self.metadata,
+                "metadata": self._metadata,
                 "created_at": self.created_at,
                 "finished_at": self.finished_at,
                 "successful": self.successful,
             }
         )
 
-    class Meta:
-        database = db
+
+Base.metadata.create_all(engine)

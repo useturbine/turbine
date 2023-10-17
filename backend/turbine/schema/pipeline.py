@@ -18,6 +18,11 @@ class PipelineSchema(BaseModel):
     embedding_model: EmbeddingModel
     data_source: DataSource
 
+    def validate(self) -> None:
+        self.data_source.validate()
+        self.embedding_model.validate()
+        self.vector_database.validate()
+
 
 class ExistingPipelineSchema(PipelineSchema):
     id: UUID

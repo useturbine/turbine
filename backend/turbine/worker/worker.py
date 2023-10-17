@@ -1,7 +1,7 @@
 from celery import Celery, group
 from celery.app.task import Context
 from config import config
-from turbine.database import Task, db
+from turbine.database import Task, Session
 from turbine.schema import ExistingPipelineSchema
 from turbine.vector_database import VectorItem
 from datetime import datetime
@@ -9,6 +9,7 @@ from uuid import UUID
 from types import TracebackType
 from logging import getLogger
 import logging
+from sqlalchemy import select
 
 
 app = Celery(
@@ -79,14 +80,13 @@ def store_embedding(
 
 @app.task
 def on_task_success(task_id: str, *args):
-    with db:
-        if db.is_closed():
-            db.connect()
+    with Session() as db:
         try:
-            task = Task.get_by_id(task_id)
+            stmt = select(Task).filter(Task.id == task_id)
+            task = db.scalars(stmt).one()
             task.finished_at = datetime.now()
             task.successful = True
-            task.save()
+            db.commit()
         except Exception as e:
             logger.error("Error while saving task details after task success", e)
 
@@ -95,13 +95,12 @@ def on_task_success(task_id: str, *args):
 def on_task_error(
     context: Context, error: Exception, traceback: TracebackType, task_id: UUID, *args
 ):
-    with db:
-        if db.is_closed():
-            db.connect()
+    with Session() as db:
         try:
-            task = Task.get_by_id(task_id)
+            stmt = select(Task).filter(Task.id == task_id)
+            task = db.scalars(stmt).one()
             task.finished_at = datetime.now()
             task.successful = False
-            task.save()
+            db.commit()
         except Exception as e:
             logger.error("Error while saving task details after task error", e)

@@ -25,9 +25,9 @@ class PineconeVectorDB(VectorDatabase, BaseModel):
         except MaxRetryError:
             raise ValueError("Invalid Pinecone environment")
         try:
-            pinecone.describe_index("example-index")
+            pinecone.describe_index(self.index_name)
         except pinecone.PineconeException:
-            raise ValueError("Invalid Pinecone collection name")
+            raise ValueError("Invalid Pinecone index name")
 
     def insert(self, data: List[VectorItem]) -> None:
         index = pinecone.Index(self.index_name)

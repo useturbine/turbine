@@ -4,10 +4,9 @@ import logging
 from .routers import tasks, pipelines, misc
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from turbine.database import db, User, Task, Pipeline
-from peewee import IntegrityError
+from turbine.database import Session, User
 from contextlib import asynccontextmanager
-from fastapi import Request, HTTPException
+from sqlalchemy.exc import IntegrityError
 
 
 logger = getLogger(__name__)
@@ -16,42 +15,20 @@ logging.basicConfig(level=logging.DEBUG)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    try:
-        db.connect()
-        db.create_tables([User, Task, Pipeline])
-        User.create(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
-    except IntegrityError:
-        pass
-
-    yield
-    db.close()
+    with Session() as db:
+        user = User(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
+        db.add(user)
+        try:
+            db.commit()
+        except IntegrityError:
+            pass
+        yield
 
 
 app = FastAPI(
     dependencies=[Depends(get_user)],
     lifespan=lifespan,
 )
-
-
-@app.middleware("http")
-async def db_middleware(request: Request, call_next):
-    try:
-        if db.is_closed():
-            db.connect()
-    except Exception as e:
-        logger.error(f"Error while connecting to database: {e}")
-        raise HTTPException(status_code=500, detail="Database error")
-
-    response = await call_next(request)
-
-    try:
-        if not db.is_closed():
-            db.close()
-    except Exception as e:
-        logger.error(f"Error while closing database: {e}")
-        raise HTTPException(status_code=500, detail="Database error")
-
-    return response
 
 
 app.add_middleware(
