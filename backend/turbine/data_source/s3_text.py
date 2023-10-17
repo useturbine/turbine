@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Literal, Any
 import boto3
 from urllib.parse import urlparse
-from config import Config
+from config import config
 import hashlib
 
 
@@ -20,8 +20,8 @@ class S3TextDataSource(DataSource, BaseModel):
         super().__init__(**data)
         self._s3 = boto3.client(
             "s3",
-            aws_access_key_id=Config.aws_access_key_id,
-            aws_secret_access_key=Config.aws_secret_access_key,
+            aws_access_key_id=config.aws_access_key_id,
+            aws_secret_access_key=config.aws_secret_access_key,
         )
         parsed = urlparse(self.url)
         self._bucket = parsed.netloc

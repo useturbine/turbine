@@ -1,6 +1,6 @@
 from celery import Celery, group
 from celery.app.task import Context
-from config import Config
+from config import config
 from turbine.database import Task, db
 from turbine.schema import ExistingPipelineSchema
 from turbine.vector_database import VectorItem
@@ -11,7 +11,7 @@ from logging import getLogger
 
 
 app = Celery(
-    "turbine", backend=Config.celery_backend_url, broker=Config.celery_broker_url
+    "turbine", backend=config.celery_backend_url, broker=config.celery_broker_url
 )
 logger = getLogger(__name__)
 

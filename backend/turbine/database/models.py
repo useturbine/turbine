@@ -11,13 +11,18 @@ from peewee import (
 from playhouse.postgres_ext import BinaryJSONField
 from playhouse.pool import PooledPostgresqlExtDatabase
 from datetime import datetime
-from config import Config
+from config import config
 import uuid
 from turbine.schema import ExistingPipelineSchema, TaskSchema
 from turbine.utils import parse_postgres_url
+from logging import getLogger
 
 
-postgres_params = parse_postgres_url(Config.postgres_url)
+logger = getLogger(__name__)
+
+
+logger.info(f"Connecting to Postgres @ {config.postgres_url}")
+postgres_params = parse_postgres_url(config.postgres_url)
 db = PooledPostgresqlExtDatabase(
     database=postgres_params.database,
     user=postgres_params.user,
