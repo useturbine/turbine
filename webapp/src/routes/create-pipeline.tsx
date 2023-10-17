@@ -57,6 +57,7 @@ export const CreatePipeline = () => {
     mutate: createPipelineMutate,
     isLoading,
     isError,
+    error,
   } = useMutation({
     mutationFn: (pipeline: Pipeline) =>
       createPipeline({ pipeline, userApiKey }),
@@ -231,9 +232,10 @@ export const CreatePipeline = () => {
             Create Pipeline
           </Button>
           {isError && (
-            <p className="text-red-500 dark:text-red-400 mx-auto">
-              Something went wrong
-            </p>
+            <div className="text-red-500 dark:text-red-400 mx-auto text-center">
+              <p>Something went wrong</p>
+              <p>{error.response?.data.detail}</p>
+            </div>
           )}
         </form>
       </FormProvider>
