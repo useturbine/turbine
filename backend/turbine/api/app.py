@@ -16,9 +16,10 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db.connect()
-    yield
-    db.close()
+    with db:
+        if db.is_closed():
+            db.connect()
+        yield
 
 
 app = FastAPI(
