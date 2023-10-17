@@ -4,7 +4,8 @@ import logging
 from .routers import tasks, pipelines, misc
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from turbine.database import db
+from turbine.database import db, User, Task, Pipeline
+from peewee import IntegrityError
 from contextlib import asynccontextmanager
 
 
@@ -14,10 +15,18 @@ logging.basicConfig(level=logging.DEBUG)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    with db:
-        if db.is_closed():
-            db.connect()
-        yield
+    if db.is_closed():
+        db.connect()
+    try:
+        db.create_tables([User, Task, Pipeline])
+        User.create(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
+    except IntegrityError:
+        pass
+
+    yield
+
+    if not db.is_closed():
+        db.close()
 
 
 app = FastAPI(

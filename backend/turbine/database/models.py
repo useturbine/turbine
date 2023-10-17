@@ -5,7 +5,6 @@ from peewee import (
     ForeignKeyField,
     Model,
     UUIDField,
-    IntegrityError,
     BooleanField,
 )
 from playhouse.postgres_ext import BinaryJSONField
@@ -100,13 +99,3 @@ class Task(Model):
 
     class Meta:
         database = db
-
-
-with db:
-    if db.is_closed():
-        db.connect()
-    try:
-        db.create_tables([User, Task, Pipeline])
-        User.create(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
-    except IntegrityError:
-        pass
