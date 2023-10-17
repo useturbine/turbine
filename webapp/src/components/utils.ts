@@ -24,6 +24,8 @@ export const createPipeline = async ({
       collection_name: pipeline.milvusConfig?.collectionName,
     },
   };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const vectorDatabase = vectorDatabaseOptions[pipeline.vectorDatabaseType];
 
   const embeddingModelOptions = {
@@ -48,6 +50,8 @@ export const createPipeline = async ({
       },
     },
   };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const dataSource = dataSourceOptions[pipeline.dataSourceType];
 
   const payload = {
