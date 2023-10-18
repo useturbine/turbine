@@ -10,6 +10,8 @@ from types import TracebackType
 from logging import getLogger
 import logging
 from sqlalchemy import select
+import sentry_sdk
+from celery import signals
 
 
 app = Celery(
@@ -104,3 +106,8 @@ def on_task_error(
             db.commit()
         except Exception as e:
             logger.error("Error while saving task details after task error", e)
+
+
+@signals.celeryd_init.connect
+def init_sentry(**_kwargs):
+    sentry_sdk.init(dsn=config.sentry_dsn, traces_sample_rate=1.0, debug=True)

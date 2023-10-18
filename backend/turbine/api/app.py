@@ -7,10 +7,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from turbine.database import Session, User
 from contextlib import asynccontextmanager
 from sqlalchemy.exc import IntegrityError
+import sentry_sdk
+from config import config
 
 
 logger = getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
+
+sentry_sdk.init(
+    dsn=config.sentry_dsn,
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 
 @asynccontextmanager

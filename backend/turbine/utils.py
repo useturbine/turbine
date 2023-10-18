@@ -16,7 +16,7 @@ def parse_postgres_url(url: str) -> PostgresConnectionParams:
     Parse Postgres connection params from a connection string URL.
 
     Args:
-        url (str): A connection string in the format postgres://username:password@host:port/database_name
+        url (str): A connection string in the format postgresql://username:password@host:port/database_name
     """
     parsed_url = urlparse(url)
     if (
