@@ -34,6 +34,7 @@ services:
       - "5555:5555"
     depends_on:
       - rabbitmq
+      - redis
     env_file: .env
 
   rabbitmq:
