@@ -11,7 +11,7 @@ from typing import Optional
 
 
 logger = getLogger(__name__)
-engine = create_engine(config.postgres_url, echo=True)
+engine = create_engine(config.postgres_url, echo=True, pool_pre_ping=True)
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
