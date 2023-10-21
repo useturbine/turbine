@@ -1,0 +1,17 @@
+{
+  "python-docs": {
+    "title": "Python",
+    "href": "/python/",
+    "newWindow": true
+  },
+  "typescript-docs": {
+    "title": "TypeScript",
+    "href": "/typescript/",
+    "newWindow": true
+  },
+  "rest-api-docs": {
+    "title": "HTTP REST",
+    "href": "https://api.useturbine.com/docs",
+    "newWindow": true
+  }
+}

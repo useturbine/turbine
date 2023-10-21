@@ -1,0 +1,40 @@
+site_name: turbine-sdk docs
+site_url: https://docs.useturbine.com/python/
+repo_url: https://github.com/useturbine/turbine
+repo_name: useturbine/turbine
+
+theme:
+  name: "material"
+  logo: images/turbine.svg
+  favicon: images/favicon.png
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - search.suggest
+    - search.highlight
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            merge_init_into_class: true
+            show_source: false
+  - search
+  - autorefs
+
+site_dir: ../../docs/dist/python/

@@ -1,0 +1,32 @@
+{
+  "name": "@useturbine/turbine",
+  "version": "0.0.5",
+  "description": "TypeScript SDK for Turbine",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "docs": "yarn typedoc --plugin typedoc-plugin-extras --favicon https://useturbine.com/images/favicon-32x32.png",
+    "p": "yarn build && yarn publish --access public"
+  },
+  "dependencies": {
+    "axios": "^1.5.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.197",
+    "@useturbine/turbine": "^0.0.2",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.25.1",
+    "typedoc-plugin-extras": "^3.0.0",
+    "typescript": "^5.2.2"
+  }
+}

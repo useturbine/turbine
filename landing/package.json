@@ -7,7 +7,7 @@
 		"start": "astro dev",
 		"build": "astro build",
 		"preview": "astro preview",
-		"deploy": "yarn wrangler pages deploy dist --project-name turbine-landing --commit-dirty=true"
+		"deploy": "yarn build && yarn wrangler pages deploy dist --project-name turbine-landing --commit-dirty=true"
 	},
 	"dependencies": {
 		"@astrojs/alpinejs": "^0.3.0",

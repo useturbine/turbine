@@ -1,0 +1,105 @@
+import { Tabs, Tab, Steps } from "nextra/components";
+
+# Quick Start
+
+In this guide, we will create a Turbine project and get it up and running in a few minutes. To follow this guide, you'll need a Turbine API key. You can get one by signing up for a [free account](https://useturbine.com).
+
+<Steps>
+
+### Install the Turbine SDK
+
+<Tabs items={["Python", "TypeScript"]}>
+  <Tab>
+  ```bash
+  pip install turbine-sdk
+  ```
+  </Tab>
+  <Tab>
+  ```bash
+  npm install @useturbine/turbine
+  ```
+  </Tab>
+</Tabs>
+
+### Create a Turbine project
+
+To create a project, you have to provide details of
+- The data source you want to index. Currently, we support Postgres and Elasticsearch.
+- The vector database you want to use. Currently, we support Pinecone and Milvus.
+- The embedding model you want to use. Currently, we support OpenAI's `text-embedding-ada-002`, and `all-MiniLM-L6-v2`.
+
+For example, to create a project for indexing data from a Postgres database, using `text-embedding-ada-002` for creating embeddings, and Pinecone for storing the embeddings, you can use the following code:
+
+<Tabs items={["Python", "TypeScript"]}>
+  <Tab>
+  ```python
+  from turbine import Turbine, ProjectConfig, DataSource, PostgresConfig
+
+  turbine = Turbine("your-api-key")
+
+  project_id = turbine.create_project(
+      ProjectConfig(
+          data_source=DataSource(
+              type="postgres",
+              config=PostgresConfig(
+                  url="postgres://user:pass@hostname:5432/postgres",
+                  table="table-name",
+              ),
+              fields=["column-1", "column-2"],
+          ),
+          vector_db="pinecone",
+          embedding_model="text-embedding-ada-002",
+      )
+  )
+  ```
+  </Tab>
+  <Tab>
+  ```typescript
+  import { Turbine } from "@useturbine/turbine";
+
+  const turbine = new Turbine("yout-api-key");
+
+  const projectId = turbine.createProject({
+    dataSource: {
+      type: "postgres",
+      config: {
+        url: "postgres://user:pass@hostname:5432/postgres",
+        table: "table-name",
+      },
+      fields: ["column-1", "column-2"],
+    },
+    embeddingModel: "text-embedding-ada-002",
+    vectorDb: "pinecone",
+  });
+  ```
+  </Tab>
+</Tabs>
+
+Learn more about [project configuration](/project-config).
+
+### Run search queries
+
+Once you have created a project, you can start running search queries.
+
+<Tabs items={["Python", "TypeScript"]}>
+  <Tab>
+  ```python
+  from turbine import Turbine
+
+  turbine = Turbine(api_key="your-api-key")
+  results = turbine.search("project-id", "your search query")
+  ```
+  </Tab>
+  <Tab>
+  ```typescript
+  import { Turbine } from "@useturbine/turbine";
+
+  const turbine = new Turbine(apiKey="your-api-key");
+  const results = await turbine.search("project-id", "your search query");
+  ```
+  </Tab>
+</Tabs>
+
+
+</Steps>
+

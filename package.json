@@ -1,0 +1,14 @@
+{
+  "name": "turbine",
+  "version": "0.0.1",
+  "repository": "git@github.com:useturbine/turbine.git",
+  "license": "MIT",
+  "scripts": {
+    "docs:build": "cd docs && yarn build && cd ../sdks/typescript && yarn docs && cd ../python && poetry run mkdocs build",
+    "docs:start": "cd docs/dist && python3 -m http.server 8000",
+    "docs:deploy": "yarn docs:build && yarn wrangler pages deploy docs/dist --project-name turbine-docs --commit-dirty=true"
+  },
+  "devDependencies": {
+    "wrangler": "^3.7.0"
+  }
+}
