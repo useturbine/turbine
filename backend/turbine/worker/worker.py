@@ -91,6 +91,7 @@ def on_task_success(task_id: str, *args):
             db.commit()
         except Exception as e:
             logger.error("Error while saving task details after task success", e)
+            raise e
 
 
 @app.task
@@ -106,6 +107,7 @@ def on_task_error(
             db.commit()
         except Exception as e:
             logger.error("Error while saving task details after task error", e)
+            raise e
 
 
 @signals.celeryd_init.connect
