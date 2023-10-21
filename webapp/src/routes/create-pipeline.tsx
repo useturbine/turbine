@@ -24,11 +24,11 @@ const PrivateBetaNotice = () => {
       </a>{" "}
       or email us at{" "}
       <a
-        href="mailto:hello@useturbine.com"
+        href="mailto:sumit@useturbine.com"
         target="_blank"
         className="text-blue-500 hover:text-blue-700"
       >
-        hello@useturbine.com
+        sumit@useturbine.com
       </a>
       .
     </p>
@@ -132,16 +132,10 @@ export const CreatePipeline = () => {
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold">Create Pipeline</h1>
         <p className="text-gray-500">
-          Pipelines are the core offering of this app. Create a pipeline to
-          start syncing data from any source to any vector database. Pipelines
-          are fully configurable, and lets you bring your own data source,
-          embedding model, and vector database.
-        </p>
-        <p className="text-gray-500">
-          Once a pipeline is created, you can start run it anytime manually, or
-          schedule it to run automatically, or even configure it to run whenever
-          you update your data source in real-time. After you create a pipeline
-          we will automatically trigger a run for you.
+          Create a pipeline to start syncing data from any source to any vector
+          database. Pipelines are fully configurable, and lets you bring your
+          own data source, embedding model, and vector database. After you
+          create a pipeline we will automatically trigger a run for you.
         </p>
       </div>
       <FormProvider {...methods}>
