@@ -1,9 +1,7 @@
 ---
 import Link from "@components/ui/link.astro";
 
-const title = "Automated Pipeline for Vector Embeddings";
-// const subtitle =
-// 	"Elevate your business by using your data to create AI bots. Add long-term memory and provide rich context to your LLM apps using our fully-managed vector database and continuous data pipeline.";
+const title = "Data Pipeline for LLM Apps";
 const subtitle =
 	"Elevate your business by using your data to power AI bots. Provide rich and up-to-date context to your LLM apps using our fully-managed data pipeline.";
 ---
@@ -62,19 +60,21 @@ const subtitle =
 	</div>
 
 	<!-- Hero content -->
-	<div class="flex flex-col items-center justify-center max-w-3xl text-center mt-20">
+	<div class="flex flex-col items-center justify-center max-w-3xl text-center mt-10 sm:mt-20">
 		<h1 class="text-4xl font-bold tracking-tight text-black dark:text-white sm:text-6xl">
 			{title}
 		</h1>
-		<p class="mt-6 mb-4 text-xl leading-normal text-gray-900 dark:text-gray-100">
+		<p class="mt-6 mb-4 text-lg sm:text-xl leading-normal text-gray-900 dark:text-gray-100">
 			{subtitle}
 		</p>
 
-		<div class="flex items-center mt-8 sm:space-x-4 sm:space-y-0 sm:flex-row">
-			<Link href="https://console.useturbine.com" target="_blank" size="lg" class="text-xl">
+		<div class="flex flex-col items-center mt-8 gap-2 sm:gap-4 sm:flex-row">
+			<Link href="https://console.useturbine.com" target="_blank" size="lg" class="text-lg sm:text-xl">
 				Try For Free <span class="pl-1 text-white dark:text-black">→</span>
 			</Link>
-			<Link href="https://api.useturbine.com/docs" target="_blank" style="outline" size-="lg" class="text-xl">Visit API Docs</Link>
+			<Link href="https://api.useturbine.com/docs" target="_blank" style="outline" size="lg" class="text-lg sm:text-xl flex flex-1">
+				Visit API Docs
+			</Link>
 		</div>
 	</div>
 </div>
