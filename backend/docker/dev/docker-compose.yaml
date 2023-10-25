@@ -2,20 +2,38 @@ version: "3"
 
 services:
   api:
-    image: turbine/api
     build:
       context: ../..
-      dockerfile: docker/dev/api.Dockerfile
+      dockerfile: docker/dev/common.Dockerfile
     ports:
       - "80:80"
     depends_on:
       - postgres
+      - prefect
       - worker
     env_file: .env
     command: uvicorn turbine.api.app:app --reload --host 0.0.0.0 --port 80
     volumes:
       - ../..:/app
     restart: always
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: docker/dev/common.Dockerfile
+    env_file: .env
+    command: python3 turbine/worker/flows.py
+    volumes:
+      - ../..:/app
+    restart: always
+
+  prefect:
+    image: prefecthq/prefect:2-latest
+    command: prefect server start --host 0.0.0.0
+    restart: always
+    ports:
+      - "4200:4200"
+    env_file: .env
 
   ngrok:
     image: ngrok/ngrok:latest
@@ -38,44 +56,3 @@ services:
       POSTGRES_PASSWORD: passwd
     ports:
       - "5432:5432"
-
-  worker:
-    image: turbine/worker
-    build:
-      context: ../..
-      dockerfile: docker/dev/worker.Dockerfile
-    env_file: .env
-    depends_on:
-      - rabbitmq
-      - redis
-      - postgres
-    command: celery --app turbine.worker.worker worker --loglevel=INFO
-    volumes:
-      - ../..:/app
-    restart: always
-
-  flower:
-    image: turbine/flower
-    build:
-      context: ../..
-      dockerfile: docker/dev/flower.Dockerfile
-    env_file: .env
-    ports:
-      - "5555:5555"
-    command: celery --app turbine.worker.worker flower
-    volumes:
-      - ../..:/app
-    restart: always
-    depends_on:
-      - rabbitmq
-      - redis
-
-  rabbitmq:
-    image: "rabbitmq:management"
-    ports:
-      - "15672:15672"
-
-  redis:
-    image: "bitnami/redis:latest"
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes

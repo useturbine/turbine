@@ -15,7 +15,7 @@ class OpenAIModel(EmbeddingModel, BaseModel):
         super().__init__(**data)
         openai.api_key = self.api_key
 
-    def validate(self) -> None:
+    def validate_config(self) -> None:
         try:
             openai.Model.list()
         except OpenAIError:

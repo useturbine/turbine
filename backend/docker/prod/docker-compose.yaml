@@ -2,20 +2,19 @@ version: "3"
 
 services:
   api:
-    image: turbine/api
     build:
       context: ../..
-      dockerfile: docker/prod/api.Dockerfile
+      dockerfile: docker/prod/common.Dockerfile
     ports:
       - "80:80"
     env_file: .env
     restart: always
+    command: uvicorn turbine.api.app:app --host 0.0.0.0 --port 80
 
   worker:
-    image: turbine/worker
     build:
       context: ../..
-      dockerfile: docker/prod/worker.Dockerfile
+      dockerfile: docker/prod/common.Dockerfile
     depends_on:
       - rabbitmq
       - redis
@@ -23,12 +22,12 @@ services:
     restart: always
     deploy:
       replicas: 10
+    command: celery --app turbine.worker.worker worker --loglevel=INFO
 
   flower:
-    image: turbine/flower
     build:
       context: ../..
-      dockerfile: docker/prod/flower.Dockerfile
+      dockerfile: docker/prod/common.Dockerfile
     restart: always
     ports:
       - "5555:5555"
@@ -36,6 +35,7 @@ services:
       - rabbitmq
       - redis
     env_file: .env
+    command: celery --app turbine.worker.worker flower
 
   rabbitmq:
     image: "rabbitmq:management"

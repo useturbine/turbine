@@ -18,7 +18,7 @@ class VectorSearchResult(BaseModel):
 
 class VectorDatabase:
     @abstractmethod
-    def validate(self) -> None:
+    def validate_config(self) -> None:
         ...
 
     @abstractmethod

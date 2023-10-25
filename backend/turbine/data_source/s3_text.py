@@ -28,7 +28,7 @@ class S3TextDataSource(DataSource, BaseModel):
         self._bucket = parsed.netloc
         self._prefix = parsed.path.lstrip("/")
 
-    def validate(self) -> None:
+    def validate_config(self) -> None:
         if self._bucket is None:
             raise ValueError("Missing bucket in S3 URL")
         if self._prefix is None:

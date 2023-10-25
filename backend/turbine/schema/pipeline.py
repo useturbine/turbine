@@ -18,10 +18,10 @@ class PipelineSchema(BaseModel):
     embedding_model: EmbeddingModel
     data_source: DataSource
 
-    def validate(self) -> None:
-        self.data_source.validate()
-        self.embedding_model.validate()
-        self.vector_database.validate()
+    def validate_config(self) -> None:
+        self.data_source.validate_config()
+        self.embedding_model.validate_config()
+        self.vector_database.validate_config()
 
 
 class ExistingPipelineSchema(PipelineSchema):

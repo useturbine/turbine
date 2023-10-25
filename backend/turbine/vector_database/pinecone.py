@@ -17,7 +17,7 @@ class PineconeVectorDB(VectorDatabase, BaseModel):
         super().__init__(**data)
         pinecone.init(api_key=self.api_key, environment=self.environment)
 
-    def validate(self) -> None:
+    def validate_config(self) -> None:
         try:
             pinecone.list_indexes()
         except pinecone.PineconeException:
