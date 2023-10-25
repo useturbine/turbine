@@ -1,5 +1,5 @@
 from turbine.data_source.debezium.connector.interface import DebeziumConnector
-from turbine.data_source.interface import DataSourceDocument
+from turbine.data_source.interface import Document
 from kafka.consumer.fetcher import ConsumerRecord
 from typing import List
 from turbine.database.models import Project
@@ -65,7 +65,7 @@ class MongoConnector(DebeziumConnector):
         return topics
 
     @staticmethod
-    def parse_message(message: ConsumerRecord) -> DataSourceDocument:
+    def parse_message(message: ConsumerRecord) -> Document:
         project_id = message.topic.split(".")[3]
         project = Project.get_by_id(project_id)
         fields = project.config["data_source"].get("fields", None)
@@ -83,6 +83,6 @@ class MongoConnector(DebeziumConnector):
             else:
                 document = "\n".join(f"{k}: {v}" for k, v in after_item.items())
 
-        return DataSourceDocument(
+        return Document(
             project_id=project_id, document_id=document_id, document=document
         )

@@ -11,6 +11,9 @@ class HuggingFaceModel(EmbeddingModel, BaseModel):
     model: str
     _client: InferenceClient
 
+    class Config:
+        underscore_attrs_are_private = True
+
     def __init__(self, **data) -> None:
         super().__init__(**data)
         self._client = InferenceClient(token=self.token)

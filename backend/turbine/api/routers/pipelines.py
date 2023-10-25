@@ -1,18 +1,20 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from turbine.database import Pipeline, Task, User, get_db
-from turbine.schema import PipelineSchema, ExistingPipelineSchema
+from turbine.database import Pipeline, User, get_db
+from turbine.schema import PipelineSchema, PipelineSchemaGet
 from turbine.api.auth import get_user
 from fastapi import Depends
 from uuid import UUID
-from turbine.worker import run_pipeline as run_pipeline_task
 from pydantic import BaseModel
 from turbine.vector_database import VectorSearchResult
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-
+from prefect.client.orchestration import get_client
+from turbine.worker import run_pipeline as pipeline_flow
+from prefect.deployments.deployments import Deployment, run_deployment
 
 router = APIRouter(prefix="/pipelines")
+prefect_client = get_client()
 
 
 class CreateResponseSchema(BaseModel):
@@ -46,20 +48,26 @@ async def create_pipeline(
     db.add(pipeline_instance)
     db.commit()
 
+    await Deployment.build_from_flow(
+        pipeline_flow,
+        name=str(pipeline_instance.id),
+        apply=True,
+    )
+
     return {
         "message": "Pipeline created",
         "id": str(pipeline_instance.id),
     }
 
 
-@router.get("", response_model=List[ExistingPipelineSchema])
+@router.get("", response_model=List[PipelineSchemaGet])
 async def get_pipelines(user: User = Depends(get_user), db: Session = Depends(get_db)):
     stmt = select(Pipeline).filter_by(user_id=user.id, deleted=False)
     pipelines = db.scalars(stmt).all()
     return [pipeline.dump() for pipeline in pipelines]
 
 
-@router.get("/{id}", response_model=ExistingPipelineSchema)
+@router.get("/{id}", response_model=PipelineSchemaGet)
 async def get_pipeline(
     id: UUID, user: User = Depends(get_user), db: Session = Depends(get_db)
 ):
@@ -89,25 +97,18 @@ async def run_pipeline(
     id: UUID, user: User = Depends(get_user), db: Session = Depends(get_db)
 ):
     stmt = select(Pipeline).filter_by(id=id, user_id=user.id, deleted=False)
-    pipeline = db.scalars(stmt).one_or_none()
-    if not pipeline:
+    pipeline_instance = db.scalars(stmt).one_or_none()
+    if not pipeline_instance:
         raise HTTPException(status_code=404, detail="Pipeline not found")
+    pipeline = pipeline_instance.dump()
 
-    task = Task(
-        pipeline_id=pipeline.id,
-        type="manual_pipeline_run",
+    deployment = await Deployment.build_from_flow(pipeline_flow, name=str(pipeline.id))
+    deployment_id = await deployment.apply()
+    result = await run_deployment(
+        deployment_id, parameters={"pipeline": pipeline.model_dump()}, timeout=0
     )
-    db.add(task)
-    db.commit()
 
-    try:
-        run_pipeline_task.delay(pipeline.dump().model_dump(), task.id)
-    except Exception as e:
-        db.delete(task)
-        db.commit()
-        raise HTTPException(status_code=500, detail=str(e))
-
-    return {"message": "Task has started running", "id": task.id}
+    return {"message": "Task has started running", "id": result.id}
 
 
 @router.get("/{id}/search", response_model=list[VectorSearchResult])
@@ -123,7 +124,7 @@ async def search(
     if not pipeline_instance:
         raise HTTPException(404, "Pipeline not found")
 
-    pipeline: ExistingPipelineSchema = pipeline_instance.dump()
-    query_embedding = pipeline.embedding_model.get_embedding(query)
+    pipeline: PipelineSchema = pipeline_instance.dump()
+    query_embedding = pipeline.embedding_model.get_embeddings([query])[0]
     results = pipeline.vector_database.search(query_embedding, limit=limit)
     return results

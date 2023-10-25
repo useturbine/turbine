@@ -3,7 +3,7 @@ from typing import List, Iterator, Tuple, Optional
 from datetime import datetime
 from kafka import KafkaConsumer
 import json
-from turbine.data_source.interface import DataSource, DataSourceDocument
+from turbine.data_source.interface import DataSource, Document
 import logging
 from turbine.data_source.debezium.connector.postgres import PostgresConnector
 from turbine.data_source.debezium.connector.mongo import MongoConnector
@@ -65,7 +65,7 @@ class DebeziumDataSource(DataSource):
             *self.mongo_connector.get_topics(),
         ]
 
-    def listen_for_updates(self) -> Iterator[DataSourceDocument]:
+    def listen_for_updates(self) -> Iterator[Document]:
         past_topics = []
 
         while True:

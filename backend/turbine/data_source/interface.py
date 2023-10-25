@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Any
 
 
-class DataSourceDocument(BaseModel):
+class Document(BaseModel):
     id: str
     text: str
     metadata: dict[str, Any]
@@ -19,5 +19,5 @@ class DataSource:
         ...
 
     @abstractmethod
-    def get_documents(self, key: str) -> list[DataSourceDocument]:
+    def get_documents(self, key: str) -> list[Document]:
         ...

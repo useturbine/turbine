@@ -12,6 +12,7 @@ class PineconeVectorDB(VectorDatabase, BaseModel):
     api_key: str
     environment: str
     index_name: str
+    batch_size: int = 128
 
     def __init__(self, **data) -> None:
         super().__init__(**data)

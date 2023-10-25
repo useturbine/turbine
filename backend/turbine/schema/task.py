@@ -10,5 +10,3 @@ class TaskSchema(BaseModel):
     created_at: datetime
     finished_at: Optional[datetime]
     successful: bool
-    type: str
-    metadata: Optional[dict]

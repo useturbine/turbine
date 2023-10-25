@@ -24,5 +24,5 @@ class PipelineSchema(BaseModel):
         self.vector_database.validate_config()
 
 
-class ExistingPipelineSchema(PipelineSchema):
+class PipelineSchemaGet(PipelineSchema):
     id: UUID

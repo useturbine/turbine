@@ -1,12 +1,13 @@
 from abc import abstractmethod
-from typing import List
 
 
 class EmbeddingModel:
+    batch_size: int
+
     @abstractmethod
     def validate_config(self) -> None:
         ...
 
     @abstractmethod
-    def get_embedding(self, text: str) -> List[float]:
+    def get_embeddings(self, texts: list[str]) -> list[list[float]]:
         ...

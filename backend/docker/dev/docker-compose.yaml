@@ -22,18 +22,24 @@ services:
       context: ../..
       dockerfile: docker/dev/common.Dockerfile
     env_file: .env
-    command: python3 turbine/worker/flows.py
+    depends_on:
+      - prefect
     volumes:
       - ../..:/app
     restart: always
+    command: prefect agent start -p "default-agent-pool"
+    deploy:
+      replicas: 3
 
   prefect:
     image: prefecthq/prefect:2-latest
     command: prefect server start --host 0.0.0.0
     restart: always
+    depends_on:
+      - postgres
+    env_file: .env
     ports:
       - "4200:4200"
-    env_file: .env
 
   ngrok:
     image: ngrok/ngrok:latest

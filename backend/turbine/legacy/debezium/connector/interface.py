@@ -1,6 +1,6 @@
 from typing import List
 from abc import abstractmethod
-from turbine.data_source.interface import DataSourceDocument
+from turbine.data_source.interface import Document
 from kafka.consumer.fetcher import ConsumerRecord
 
 
@@ -18,5 +18,5 @@ class DebeziumConnector:
         ...
 
     @abstractmethod
-    def parse_message(self, message: ConsumerRecord) -> DataSourceDocument:
+    def parse_message(self, message: ConsumerRecord) -> Document:
         ...

@@ -1,39 +1,72 @@
-import httpx
-from prefect import flow, task
-
-
-@task(retries=2)
-def get_repo_info(repo_owner: str, repo_name: str):
-    """Get info about a repo - will retry twice after failing"""
-    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}"
-    api_response = httpx.get(url)
-    api_response.raise_for_status()
-    repo_info = api_response.json()
-    return repo_info
+from prefect import flow, task, unmapped
+from turbine.data_source import DataSource, Document
+from turbine.schema import PipelineSchema
+from turbine.vector_database import VectorDatabase, VectorItem
+from turbine.embedding_model import EmbeddingModel
+from more_itertools import flatten, batched
 
 
 @task
-def get_contributors(repo_info: dict):
-    contributors_url = repo_info["contributors_url"]
-    response = httpx.get(contributors_url)
-    response.raise_for_status()
-    contributors = response.json()
-    return contributors
+def get_keys(data_source: DataSource) -> list[str]:
+    return data_source.get_keys()
 
 
-@flow(name="Repo Info", log_prints=True)
-def repo_info(repo_owner: str = "PrefectHQ", repo_name: str = "prefect"):
-    """
-    Given a GitHub repository, logs the number of stargazers
-    and contributors for that repo.
-    """
-    repo_info = get_repo_info(repo_owner, repo_name)
-    print(f"Stars 🌠 : {repo_info['stargazers_count']}")
-
-    contributors = get_contributors(repo_info)
-    print(f"Number of contributors 👷: {len(contributors)}")
+@task
+def get_documents(data_source: DataSource, key: str) -> list[Document]:
+    return [document for document in data_source.get_documents(key)]
 
 
-if __name__ == "__main__":
-    # create your first deployment
-    repo_info.serve(name="my-first-deployment")
+class DocumentWithEmbedding(Document):
+    embedding: list[float]
+
+
+@task
+def create_embeddings(
+    embedding_model: EmbeddingModel, documents: list[Document]
+) -> list[DocumentWithEmbedding]:
+    embeddings = embedding_model.get_embeddings(
+        [document.text for document in documents]
+    )
+    return [
+        DocumentWithEmbedding(
+            **document.model_dump(),
+            embedding=embedding,
+        )
+        for document, embedding in zip(documents, embeddings)
+    ]
+
+
+@task
+def store_embeddings(
+    vector_database: VectorDatabase,
+    documents: list[DocumentWithEmbedding],
+) -> None:
+    vector_database.insert(
+        [
+            VectorItem(
+                id=document.id,
+                vector=document.embedding,
+                metadata=document.metadata,
+            )
+            for document in documents
+        ]
+    )
+
+
+@flow(name="run-pipeline", log_prints=True)
+def run_pipeline(pipeline: PipelineSchema):
+    keys = get_keys(pipeline.data_source)
+
+    documents_futures = get_documents.map(unmapped(pipeline.data_source), keys)
+    documents = flatten([item.result() for item in documents_futures])
+
+    embeddings_futures = create_embeddings.map(
+        unmapped(pipeline.embedding_model),
+        batched(documents, pipeline.embedding_model.batch_size),
+    )
+    embeddings = flatten([item.result() for item in embeddings_futures])
+
+    store_embeddings.map(
+        unmapped(pipeline.vector_database),
+        batched(embeddings, pipeline.vector_database.batch_size),
+    )

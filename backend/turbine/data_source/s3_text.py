@@ -1,4 +1,4 @@
-from .interface import DataSource, DataSourceDocument
+from .interface import DataSource, Document
 from .splitter import RecursiveSplitter
 from pydantic import BaseModel
 from typing import Literal, Any
@@ -16,6 +16,9 @@ class S3TextDataSource(DataSource, BaseModel):
     _s3: Any
     _bucket: str
     _prefix: str
+
+    class Config:
+        underscore_attrs_are_private = True
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -64,11 +67,11 @@ class S3TextDataSource(DataSource, BaseModel):
 
         return keys
 
-    def get_documents(self, key: str) -> list[DataSourceDocument]:
+    def get_documents(self, key: str) -> list[Document]:
         response = self._s3.get_object(Bucket=self._bucket, Key=key)
         text = response["Body"].read().decode("utf-8")
         return [
-            DataSourceDocument(
+            Document(
                 id=hashlib.sha256(document.text.encode("utf-8")).hexdigest(),
                 text=document.text,
                 metadata=dict(**document.metadata, s3_key=key),

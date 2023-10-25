@@ -1,7 +1,7 @@
 from datetime import datetime
 from config import config
 import uuid
-from turbine.schema import ExistingPipelineSchema, TaskSchema
+from turbine.schema import PipelineSchemaGet
 from logging import getLogger
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, sessionmaker
 from sqlalchemy import ForeignKey, create_engine
@@ -53,7 +53,7 @@ class Pipeline(Base):
     deleted: Mapped[bool] = mapped_column(default=False)
 
     def dump(self):
-        return ExistingPipelineSchema(
+        return PipelineSchemaGet(
             **{
                 "id": str(self.id),
                 "name": self.name,
@@ -61,31 +61,6 @@ class Pipeline(Base):
                 "data_source": self.data_source,
                 "embedding_model": self.embedding_model,
                 "vector_database": self.vector_database,
-            }
-        )
-
-
-class Task(Base):
-    __tablename__ = "tasks"
-
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    pipeline_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("pipelines.id"))
-    type: Mapped[str]
-    _metadata: Mapped[Optional[dict]] = mapped_column(JSONB, name="metadata")
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    finished_at: Mapped[Optional[datetime]]
-    successful: Mapped[bool] = mapped_column(default=False)
-
-    def dump(self):
-        return TaskSchema(
-            **{
-                "id": self.id,
-                "pipeline": self.pipeline_id,
-                "type": self.type,
-                "metadata": self._metadata,
-                "created_at": self.created_at,
-                "finished_at": self.finished_at,
-                "successful": self.successful,
             }
         )
 
