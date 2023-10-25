@@ -10,11 +10,12 @@ from turbine.vector_database import VectorSearchResult
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from prefect.client.orchestration import get_client
-from turbine.worker import run_pipeline as pipeline_flow
+from turbine.flows import run_pipeline as pipeline_flow
 from prefect.deployments.deployments import Deployment, run_deployment
 
+
 router = APIRouter(prefix="/pipelines")
-prefect_client = get_client()
+prefect = get_client()
 
 
 class CreateResponseSchema(BaseModel):
@@ -46,14 +47,16 @@ async def create_pipeline(
         user_id=user.id,
     )
     db.add(pipeline_instance)
-    db.commit()
+    db.flush()
 
     await Deployment.build_from_flow(
         pipeline_flow,
         name=str(pipeline_instance.id),
+        parameters={"pipeline": pipeline.model_dump()},
         apply=True,
     )
 
+    db.commit()
     return {
         "message": "Pipeline created",
         "id": str(pipeline_instance.id),
@@ -87,6 +90,9 @@ async def delete_pipeline(
     if not pipeline:
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
+    deployment = await prefect.read_deployment_by_name(str(id))
+    await prefect.delete_deployment(deployment.id)
+
     pipeline.deleted = True
     db.commit()
     return {"message": "Pipeline deleted"}
@@ -100,14 +106,8 @@ async def run_pipeline(
     pipeline_instance = db.scalars(stmt).one_or_none()
     if not pipeline_instance:
         raise HTTPException(status_code=404, detail="Pipeline not found")
-    pipeline = pipeline_instance.dump()
 
-    deployment = await Deployment.build_from_flow(pipeline_flow, name=str(pipeline.id))
-    deployment_id = await deployment.apply()
-    result = await run_deployment(
-        deployment_id, parameters={"pipeline": pipeline.model_dump()}, timeout=0
-    )
-
+    result = await run_deployment("run-pipeline/" + str(id), timeout=0)
     return {"message": "Task has started running", "id": result.id}
 
 

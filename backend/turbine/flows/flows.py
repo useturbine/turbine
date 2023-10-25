@@ -57,16 +57,16 @@ def store_embeddings(
 def run_pipeline(pipeline: PipelineSchema):
     keys = get_keys(pipeline.data_source)
 
-    documents_futures = get_documents.map(unmapped(pipeline.data_source), keys)
+    documents_futures = get_documents.map(unmapped(pipeline.data_source), keys)  # type: ignore
     documents = flatten([item.result() for item in documents_futures])
 
     embeddings_futures = create_embeddings.map(
-        unmapped(pipeline.embedding_model),
-        batched(documents, pipeline.embedding_model.batch_size),
+        unmapped(pipeline.embedding_model),  # type: ignore
+        batched(documents, pipeline.embedding_model.batch_size),  # type: ignore
     )
     embeddings = flatten([item.result() for item in embeddings_futures])
 
     store_embeddings.map(
-        unmapped(pipeline.vector_database),
-        batched(embeddings, pipeline.vector_database.batch_size),
+        unmapped(pipeline.vector_database),  # type: ignore
+        batched(embeddings, pipeline.vector_database.batch_size),  # type: ignore
     )

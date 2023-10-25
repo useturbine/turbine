@@ -41,8 +41,3 @@ async def get_user(external_id: str, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(404, "User not found")
     return {"api_key": str(user.api_key)}
-
-
-@router.get("/sentry-debug")
-async def trigger_error():
-    division_by_zero = 1 / 0
