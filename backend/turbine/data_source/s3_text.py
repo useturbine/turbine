@@ -17,9 +17,6 @@ class S3TextDataSource(DataSource, BaseModel):
     _bucket: str
     _prefix: str
 
-    class Config:
-        underscore_attrs_are_private = True
-
     def __init__(self, **data):
         super().__init__(**data)
         self._s3 = boto3.client(

@@ -11,7 +11,7 @@ from typing import Optional
 
 
 logger = getLogger(__name__)
-engine = create_engine(config.postgres_url, echo=True, pool_pre_ping=True)
+engine = create_engine(config.database_url, pool_pre_ping=True)
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
@@ -31,7 +31,7 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    external_id: Mapped[Optional[str]] = mapped_column(unique=True)
+    clerk_id: Mapped[Optional[str]] = mapped_column(unique=True)
     api_key: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID, unique=True, default=uuid.uuid4
     )
@@ -63,6 +63,3 @@ class Pipeline(Base):
                 "vector_database": self.vector_database,
             }
         )
-
-
-Base.metadata.create_all(engine)

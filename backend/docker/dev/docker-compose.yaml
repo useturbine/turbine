@@ -12,7 +12,7 @@ services:
       - prefect
       - worker
     env_file: .env
-    command: uvicorn turbine.api.app:app --reload --host 0.0.0.0 --port 80
+    command: sh -c "alembic upgrade head && uvicorn turbine.api.app:app --reload --host 0.0.0.0 --port 80"
     volumes:
       - ../..:/app
     restart: always
@@ -57,8 +57,10 @@ services:
   postgres:
     image: postgres:latest
     environment:
-      POSTGRES_DB: turbine
+      POSTGRES_MULTIPLE_DATABASES: turbine, prefect
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: passwd
+    volumes:
+      - ./initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
     ports:
       - "5432:5432"

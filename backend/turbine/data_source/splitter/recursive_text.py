@@ -10,9 +10,6 @@ class RecursiveSplitter(Splitter, BaseModel):
     overlap: int
     _splitter: RecursiveCharacterTextSplitter
 
-    class Config:
-        underscore_attrs_are_private = True
-
     def __init__(self, **data):
         super().__init__(**data)
         self._splitter = RecursiveCharacterTextSplitter(
