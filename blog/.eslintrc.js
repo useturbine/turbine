@@ -1,42 +1,53 @@
+/** @type {import("eslint").Linter.Config} */
 module.exports = {
-  root: true,
-  parser: '@typescript-eslint/parser',
   env: {
-    browser: true,
-    amd: true,
     node: true,
-    es6: true,
+    es2022: true,
+    browser: true,
   },
-  plugins: ['@typescript-eslint'],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:jsx-a11y/recommended',
-    'plugin:prettier/recommended',
-    'next',
-    'next/core-web-vitals',
-  ],
+  extends: ['eslint:recommended', 'plugin:astro/recommended'],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: true,
     tsconfigRootDir: __dirname,
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
-  rules: {
-    'prettier/prettier': 'error',
-    'react/react-in-jsx-scope': 'off',
-    'jsx-a11y/anchor-is-valid': [
-      'error',
-      {
-        components: ['Link'],
-        specialLink: ['hrefLeft', 'hrefRight'],
-        aspects: ['invalidHref', 'preferButton'],
+  rules: {},
+  overrides: [
+    {
+      files: ['*.js'],
+      rules: {
+        'no-mixed-spaces-and-tabs': ['error', 'smart-tabs'],
       },
-    ],
-    'react/prop-types': 0,
-    '@typescript-eslint/no-unused-vars': 0,
-    'react/no-unescaped-entities': 0,
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-var-requires': 'off',
-    '@typescript-eslint/ban-ts-comment': 'off',
-  },
-}
+    },
+    {
+      files: ['*.astro'],
+      parser: 'astro-eslint-parser',
+      parserOptions: {
+        parser: '@typescript-eslint/parser',
+        extraFileExtensions: ['.astro'],
+      },
+      rules: {
+        'no-mixed-spaces-and-tabs': ['error', 'smart-tabs'],
+      },
+    },
+    {
+      files: ['*.ts'],
+      parser: '@typescript-eslint/parser',
+      extends: ['plugin:@typescript-eslint/recommended'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          { argsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_' },
+        ],
+        '@typescript-eslint/no-non-null-assertion': 'off',
+      },
+    },
+    {
+      // Define the configuration for `<script>` tag.
+      // Script in `<script>` is assigned a virtual file name with the `.js` extension.
+      files: ['**/*.astro/*.js', '*.astro/*.js'],
+      parser: '@typescript-eslint/parser',
+    },
+  ],
+};
