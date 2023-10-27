@@ -36,6 +36,7 @@ class User(Base):
         UUID, unique=True, default=uuid.uuid4
     )
     deleted: Mapped[bool] = mapped_column(default=False)
+    internal: Mapped[bool] = mapped_column(default=False)
 
 
 class Pipeline(Base):

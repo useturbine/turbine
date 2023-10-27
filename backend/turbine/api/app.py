@@ -24,7 +24,7 @@ sentry_sdk.init(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     with Session() as db:
-        user = User(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec")
+        user = User(api_key="b4f9137a-81bc-4acf-ae4e-ee33bef63dec", internal=True)
         db.add(user)
         try:
             db.commit()
