@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { fetchPipelines, fetchTasks } from "../queries";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PipelineFromAPI, useRootContext } from "../utils";
 import { ClickToCopy } from "../components/click-to-copy";
 import { Breadcrumb, Button, Dropdown, Modal, Table } from "flowbite-react";
@@ -26,6 +26,7 @@ const DeletePipelineModal = ({
   setDeleteModalOpen: (value: boolean) => void;
 }) => {
   const { userApiKey, externalUserId } = useRootContext();
+  const navigate = useNavigate();
 
   // React Query
   const queryClient = useQueryClient();
@@ -40,6 +41,7 @@ const DeletePipelineModal = ({
       // Close modal and show toast
       setDeleteModalOpen(false);
       toast.success("Pipeline deleted");
+      navigate("/pipelines");
     },
   });
 

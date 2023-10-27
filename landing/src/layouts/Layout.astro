@@ -24,7 +24,7 @@ const makeTitle = title ? title + " | " + "Turbine" : "Turbine | Automated data 
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="theme-color" content="#ffffff" />
 
@@ -75,6 +75,9 @@ const makeTitle = title ? title + " | " + "Turbine" : "Turbine | Automated data 
 				document.documentElement.classList.remove("dark");
 			}
 		</script>
+
+		<!-- Plausible -->
+		<script defer data-domain="useturbine.com" data-api="/qwerty/fancy-darkness/event" src="/qwerty/fancy-darkness/script.js"></script>
 	</head>
 
 	<body class="dark:bg-stone-950">
