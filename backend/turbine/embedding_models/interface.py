@@ -1,7 +1,9 @@
 from abc import abstractmethod
+from typing import LiteralString
 
 
 class EmbeddingModel:
+    type: LiteralString
     batch_size: int
 
     @abstractmethod

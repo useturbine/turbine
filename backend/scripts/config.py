@@ -6,9 +6,7 @@ load_dotenv()
 
 
 class Config(BaseConfig):
-    openai_api_key: str
-    huggingface_token: str
-    pinecone_api_key: str
+    clerk_secret_key: str
 
 
 try:
@@ -17,9 +15,7 @@ try:
         aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
         aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
         sentry_dsn=os.environ["SENTRY_DSN"],
-        openai_api_key=os.environ["OPENAI_API_KEY"],
-        huggingface_token=os.environ["HUGGINGFACE_TOKEN"],
-        pinecone_api_key=os.environ["PINECONE_API_KEY"],
+        clerk_secret_key=os.environ["CLERK_SECRET_KEY"],
     )
 except KeyError:
     raise ValueError("Missing required environment variable")

@@ -1,12 +1,12 @@
-from turbine.embedding_models import OpenAIModel
 from ..config import config
+from turbine.embedding_models import HuggingFaceModel
 from .common import texts
 
 
 def create_instance():
-    return OpenAIModel(
-        api_key=config.openai_api_key,
-        model="text-embedding-ada-002",
+    return HuggingFaceModel(
+        token=config.huggingface_token,
+        model="BAAI/bge-large-en-v1.5",
     )
 
 
@@ -20,5 +20,5 @@ def test_get_embeddings():
     embeddings = model.get_embeddings(texts)
     assert embeddings is not None
     assert len(embeddings) == 2
-    assert len(embeddings[0]) == 1536 and len(embeddings[1]) == 1536
+    assert len(embeddings[0]) == 1024 and len(embeddings[1]) == 1024
     assert embeddings[0] != embeddings[1]

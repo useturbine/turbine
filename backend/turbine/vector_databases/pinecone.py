@@ -8,7 +8,7 @@ from urllib3.exceptions import MaxRetryError
 
 
 class PineconeVectorDB(VectorDatabase, BaseModel):
-    type: Literal["pinecone"]
+    type: Literal["pinecone"] = "pinecone"
     api_key: str
     environment: str
     index_name: str

@@ -1,20 +1,13 @@
 import httpx
 from turbine.database import User, Session
 from sqlalchemy import select
-from dotenv import load_dotenv
-import os
-
-
-load_dotenv()
-clerk_key = os.getenv("CLERK_SECRET_KEY")
-if not clerk_key:
-    raise Exception("CLERK_SECRET_KEY is not set")
+from .config import config
 
 
 def main():
     response = httpx.get(
         "https://api.clerk.com/v1/users?offset=0&order_by=created_at&limit=100",
-        headers={"Authorization": f"Bearer {clerk_key}"},
+        headers={"Authorization": f"Bearer {config.clerk_secret_key}"},
     )
     clerk_users = response.json()
 
