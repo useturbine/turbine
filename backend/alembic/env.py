@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from config import config as turbine_config
+from turbine.config import config as turbine_config
 from turbine.database.models import Base
 
 # this is the Alembic Config object, which provides

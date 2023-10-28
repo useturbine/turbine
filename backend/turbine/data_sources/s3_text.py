@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Literal, Any
 import boto3
 from urllib.parse import urlparse
-from config import config
+from turbine.config import config
 import hashlib
 from botocore.exceptions import ParamValidationError
 

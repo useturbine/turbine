@@ -1,5 +1,5 @@
-from turbine.data_source.debezium.connector.interface import DebeziumConnector
-from turbine.data_source.interface import Document
+from turbine.data_sources.debezium.connector.interface import DebeziumConnector
+from turbine.data_sources.interface import Document
 from kafka.consumer.fetcher import ConsumerRecord
 from typing import List
 from turbine.database.models import Project
@@ -7,7 +7,7 @@ import json
 import logging
 import requests
 from pymongo import MongoClient
-from turbine.schema import MongoConfig
+from turbine.schemas import MongoConfig
 
 logger = logging.getLogger(__name__)
 

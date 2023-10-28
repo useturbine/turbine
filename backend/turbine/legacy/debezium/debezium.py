@@ -3,10 +3,10 @@ from typing import List, Iterator, Tuple, Optional
 from datetime import datetime
 from kafka import KafkaConsumer
 import json
-from turbine.data_source.interface import DataSource, Document
+from turbine.data_sources.interface import DataSource, Document
 import logging
-from turbine.data_source.debezium.connector.postgres import PostgresConnector
-from turbine.data_source.debezium.connector.mongo import MongoConnector
+from turbine.data_sources.debezium.connector.postgres import PostgresConnector
+from turbine.data_sources.debezium.connector.mongo import MongoConnector
 
 
 logger = logging.getLogger(__name__)

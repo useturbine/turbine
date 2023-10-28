@@ -4,7 +4,7 @@ from turbine.api.auth import get_user
 from fastapi import Depends, HTTPException
 from typing import Optional
 from uuid import UUID
-from turbine.schema import TaskSchema
+from turbine.schemas import TaskSchema
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from prefect import get_client

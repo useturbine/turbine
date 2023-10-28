@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
-from turbine.data_source import S3TextDataSource
-from turbine.vector_database import MilvusVectorDB, PineconeVectorDB, SimilarityMetric
-from turbine.embedding_model import HuggingFaceModel, OpenAIModel
+from turbine.data_sources import S3TextDataSource
+from turbine.vector_databases import MilvusVectorDB, PineconeVectorDB, SimilarityMetric
+from turbine.embedding_models import HuggingFaceModel, OpenAIModel
 
 
 VectorDatabase = MilvusVectorDB | PineconeVectorDB

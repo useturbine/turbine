@@ -1,4 +1,4 @@
-from turbine.vector_database import VectorDatabase, VectorItem, VectorSearchResult
+from turbine.vector_databases import VectorDatabase, VectorItem, VectorSearchResult
 import pinecone
 from pinecone import Vector
 from typing import List

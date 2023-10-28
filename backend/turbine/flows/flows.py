@@ -1,8 +1,8 @@
 from prefect import flow, task, unmapped
-from turbine.data_source import DataSource, Document
-from turbine.schema import PipelineSchema
-from turbine.vector_database import VectorDatabase, VectorItem
-from turbine.embedding_model import EmbeddingModel
+from turbine.data_sources import DataSource, Document
+from turbine.schemas import PipelineSchema
+from turbine.vector_databases import VectorDatabase, VectorItem
+from turbine.embedding_models import EmbeddingModel
 from more_itertools import flatten, batched
 
 

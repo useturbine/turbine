@@ -8,7 +8,7 @@ from turbine.database import Session, User
 from contextlib import asynccontextmanager
 from sqlalchemy.exc import IntegrityError
 import sentry_sdk
-from config import config
+from turbine.config import config
 
 
 logger = getLogger(__name__)

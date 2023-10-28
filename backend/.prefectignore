@@ -1,0 +1,12 @@
+.git
+__pycache__
+.vscode
+alembic
+docker
+scripts
+.dockerignore
+.env
+.gitignore
+alembic.ini
+Taskfile.yml
+tests

@@ -1,7 +1,7 @@
 from pymilvus import Collection
 from pymilvus import connections, Collection
 from typing import List
-from turbine.vector_database import VectorDatabase, VectorItem, VectorSearchResult
+from turbine.vector_databases import VectorDatabase, VectorItem, VectorSearchResult
 from pydantic import BaseModel
 from typing import Literal
 

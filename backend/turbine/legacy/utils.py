@@ -1,7 +1,7 @@
-from ..embedding_model.interface import EmbeddingModel
-from ..embedding_model.hugging_face import HuggingFaceModel
-from ..embedding_model.openai import OpenAIModel
-from config import Config
+from ..embedding_models.interface import EmbeddingModel
+from ..embedding_models.hugging_face import HuggingFaceModel
+from ..embedding_models.openai import OpenAIModel
+from turbine.config import Config
 from pydantic import BaseModel
 from typing import Literal
 

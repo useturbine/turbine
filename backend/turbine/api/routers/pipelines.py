@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 from turbine.database import Pipeline, User, get_db
-from turbine.schema import PipelineSchema, PipelineSchemaGet
+from turbine.schemas import PipelineSchema, PipelineSchemaGet
 from turbine.api.auth import get_user
 from fastapi import Depends
 from uuid import UUID
 from pydantic import BaseModel
-from turbine.vector_database import VectorSearchResult
+from turbine.vector_databases import VectorSearchResult
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from prefect.client.orchestration import get_client

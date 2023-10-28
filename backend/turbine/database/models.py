@@ -1,7 +1,7 @@
 from datetime import datetime
-from config import config
+from turbine.config import config
 import uuid
-from turbine.schema import PipelineSchemaGet
+from turbine.schemas import PipelineSchemaGet
 from logging import getLogger
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, sessionmaker
 from sqlalchemy import ForeignKey, create_engine

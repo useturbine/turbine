@@ -1,5 +1,5 @@
-from turbine.data_source.debezium.connector.interface import DebeziumConnector
-from turbine.data_source.interface import Document
+from turbine.data_sources.debezium.connector.interface import DebeziumConnector
+from turbine.data_sources.interface import Document
 from kafka.consumer.fetcher import ConsumerRecord
 from typing import List
 from turbine.database.models import Project
@@ -8,7 +8,7 @@ import requests
 import psycopg2
 from pydantic import BaseModel
 from urllib.parse import urlparse
-from turbine.schema import PostgresConfig
+from turbine.schemas import PostgresConfig
 
 logger = logging.getLogger(__name__)
 
