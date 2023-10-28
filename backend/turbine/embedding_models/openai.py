@@ -28,3 +28,7 @@ class OpenAIModel(EmbeddingModel, BaseModel):
     def get_embeddings(self, texts: list[str]) -> list[list[float]]:
         response = openai.Embedding.create(input=texts, model=self.model)
         return [item["embedding"] for item in response["data"]]  # type: ignore
+
+    @property
+    def embedding_dimension(self) -> int:
+        return 1536
