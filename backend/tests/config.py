@@ -9,6 +9,8 @@ class Config(BaseConfig):
     openai_api_key: str
     huggingface_token: str
     pinecone_api_key: str
+    milvus_url: str
+    milvus_token: str
 
 
 try:
@@ -20,6 +22,8 @@ try:
         openai_api_key=os.environ["OPENAI_API_KEY"],
         huggingface_token=os.environ["HUGGINGFACE_TOKEN"],
         pinecone_api_key=os.environ["PINECONE_API_KEY"],
+        milvus_url=os.environ["MILVUS_URL"],
+        milvus_token=os.environ["MILVUS_TOKEN"],
     )
 except KeyError:
     raise ValueError("Missing required environment variable")
