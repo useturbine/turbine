@@ -6,7 +6,7 @@ from typing import Literal
 
 
 class OpenAIModel(EmbeddingModel, BaseModel):
-    type: Literal["openai"]
+    type: Literal["openai"] = "openai"
     api_key: str
     model: str
     batch_size: int = 128
