@@ -1,7 +1,7 @@
 import httpx
 from turbine.database import User, Session
 from sqlalchemy import select
-from .config import config
+from scripts.config import config
 
 
 def main():

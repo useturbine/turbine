@@ -6,7 +6,7 @@ from typing import Any, LiteralString
 
 class VectorItem(BaseModel):
     id: str
-    vector: List[float]
+    embedding: List[float]
     metadata: dict[str, Any]
 
 

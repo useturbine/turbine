@@ -7,7 +7,7 @@ import pytest
     "type",
     [
         "pinecone",
-        # "milvus",
+        "milvus",
     ],
 )
 class TestVectorDatabase:
@@ -25,12 +25,12 @@ class TestVectorDatabase:
             [
                 VectorItem(
                     id="test-id-1",
-                    vector=create_embedding(),
+                    embedding=create_embedding(),
                     metadata=metadata,
                 ),
                 VectorItem(
                     id="test-id-2",
-                    vector=create_embedding(),
+                    embedding=create_embedding(),
                     metadata=metadata,
                 ),
             ]

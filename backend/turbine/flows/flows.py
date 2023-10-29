@@ -16,19 +16,15 @@ def get_documents(data_source: DataSource, key: str) -> list[Document]:
     return [document for document in data_source.get_documents(key)]
 
 
-class DocumentWithEmbedding(Document):
-    embedding: list[float]
-
-
 @task
 def create_embeddings(
     embedding_model: EmbeddingModel, documents: list[Document]
-) -> list[DocumentWithEmbedding]:
+) -> list[VectorItem]:
     embeddings = embedding_model.get_embeddings(
         [document.text for document in documents]
     )
     return [
-        DocumentWithEmbedding(
+        VectorItem(
             **document.model_dump(),
             embedding=embedding,
         )
@@ -39,13 +35,13 @@ def create_embeddings(
 @task
 def store_embeddings(
     vector_database: VectorDatabase,
-    documents: list[DocumentWithEmbedding],
+    documents: list[VectorItem],
 ) -> None:
     vector_database.insert(
         [
             VectorItem(
                 id=document.id,
-                vector=document.embedding,
+                embedding=document.embedding,
                 metadata=document.metadata,
             )
             for document in documents
