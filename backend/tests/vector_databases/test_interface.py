@@ -35,3 +35,7 @@ class TestVectorDatabase:
                 ),
             ]
         )
+
+    def test_embedding_dimension(self, type: str):
+        db = create_instance(type)
+        assert db.embedding_dimension == 1536

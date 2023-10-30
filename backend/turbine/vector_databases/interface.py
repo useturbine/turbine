@@ -35,3 +35,8 @@ class VectorDatabase:
     @abstractmethod
     def delete(self, id: str) -> None:
         ...
+
+    @property
+    @abstractmethod
+    def embedding_dimension(self) -> int:
+        ...

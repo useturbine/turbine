@@ -31,4 +31,4 @@ class OpenAIModel(EmbeddingModel, BaseModel):
 
     @property
     def embedding_dimension(self) -> int:
-        return 1536
+        return 768

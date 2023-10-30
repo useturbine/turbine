@@ -55,3 +55,8 @@ class PineconeVectorDB(VectorDatabase, BaseModel):
     def delete(self, id: str) -> None:
         index = pinecone.Index(self.index_name)
         index.delete(ids=[id])
+
+    @property
+    def embedding_dimension(self) -> int:
+        index = pinecone.describe_index(self.index_name)
+        return index.dimension
