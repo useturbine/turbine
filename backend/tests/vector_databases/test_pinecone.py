@@ -1,10 +1,10 @@
 import pytest
 from tests.config import config
-from turbine.vector_databases import PineconeVectorDB
+from turbine.vector_databases import Pinecone
 
 
 def test_validate_config_invalid_api_key():
-    db = PineconeVectorDB(
+    db = Pinecone(
         api_key="invalid",
         environment="gcp-starter",
         index_name="test-index",
@@ -14,7 +14,7 @@ def test_validate_config_invalid_api_key():
 
 
 def test_validate_config_invalid_environment():
-    db = PineconeVectorDB(
+    db = Pinecone(
         api_key=config.pinecone_api_key,
         environment="invalid",
         index_name="test-index",
@@ -24,7 +24,7 @@ def test_validate_config_invalid_environment():
 
 
 def test_validate_config_invalid_index_name():
-    db = PineconeVectorDB(
+    db = Pinecone(
         api_key=config.pinecone_api_key,
         environment="gcp-starter",
         index_name="invalid",

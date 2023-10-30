@@ -1,5 +1,5 @@
 import random
-from turbine.vector_databases import MilvusVectorDB, PineconeVectorDB
+from turbine.vector_databases import Milvus, Pinecone
 from ..config import config
 
 
@@ -17,13 +17,13 @@ metadata = {
 
 def create_instance(type: str):
     if type == "pinecone":
-        return PineconeVectorDB(
+        return Pinecone(
             api_key=config.pinecone_api_key,
             environment="gcp-starter",
             index_name="test-index",
         )
     elif type == "milvus":
-        return MilvusVectorDB(
+        return Milvus(
             url=config.milvus_url,
             token=config.milvus_token,
             collection_name="test_collection",

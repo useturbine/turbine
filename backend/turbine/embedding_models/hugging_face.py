@@ -4,7 +4,7 @@ from huggingface_hub.utils import BadRequestError, HfHubHTTPError
 from typing import Literal
 
 
-class HuggingFaceModel(EmbeddingModel):
+class HuggingFace(EmbeddingModel):
     type: Literal["huggingface"] = "huggingface"
     token: str
     model: str

@@ -1,10 +1,10 @@
 import pytest
 from tests.config import config
-from turbine.vector_databases import MilvusVectorDB
+from turbine.vector_databases import Milvus
 
 
 def test_validate_config_invalid_url():
-    db = MilvusVectorDB(
+    db = Milvus(
         url="http://localhost:1234",
         token=config.milvus_token,
         collection_name="test_collection",
@@ -14,7 +14,7 @@ def test_validate_config_invalid_url():
 
 
 def test_validate_config_invalid_token():
-    db = MilvusVectorDB(
+    db = Milvus(
         url=config.milvus_url,
         token="invalid",
         collection_name="test_collection",
@@ -24,7 +24,7 @@ def test_validate_config_invalid_token():
 
 
 def test_validate_config_invalid_collection_name():
-    db = MilvusVectorDB(
+    db = Milvus(
         url=config.milvus_url,
         token=config.milvus_token,
         collection_name="invalid",

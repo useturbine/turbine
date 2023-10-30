@@ -2,7 +2,7 @@ from turbine.vector_databases import VectorDatabase
 from weaviate import Client, AuthApiKey
 
 
-class WeaviateVectorDB(VectorDatabase):
+class Weaviate(VectorDatabase):
     url: str
     api_key: str
 

@@ -3,7 +3,7 @@ from chromadb import HttpClient
 from chromadb.config import Settings
 
 
-class ChromaVectorDB(VectorDatabase):
+class Chroma(VectorDatabase):
     host: str
     port: int
     token: str

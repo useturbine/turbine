@@ -6,7 +6,7 @@ import uuid
 from wrapt_timeout_decorator.wrapt_timeout_decorator import timeout
 
 
-class MilvusVectorDB(VectorDatabase):
+class Milvus(VectorDatabase):
     type: Literal["milvus"] = "milvus"
     url: str
     token: str

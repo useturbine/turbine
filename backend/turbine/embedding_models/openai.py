@@ -4,7 +4,7 @@ from openai.error import OpenAIError
 from typing import Literal
 
 
-class OpenAIModel(EmbeddingModel):
+class OpenAI(EmbeddingModel):
     type: Literal["openai"] = "openai"
     api_key: str
     model: str

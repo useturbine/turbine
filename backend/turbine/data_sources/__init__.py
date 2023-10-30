@@ -1,3 +1,3 @@
 from .interface import DataSource, Document
-from .s3_text import S3TextDataSource
+from .s3 import S3
 from .splitter import *

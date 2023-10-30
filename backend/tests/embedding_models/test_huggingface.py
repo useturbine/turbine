@@ -1,10 +1,10 @@
 import pytest
 from tests.config import config
-from turbine.embedding_models import HuggingFaceModel
+from turbine.embedding_models import HuggingFace
 
 
 def test_validate_config_invalid_token():
-    model = HuggingFaceModel(
+    model = HuggingFace(
         token="invalid",
         model="BAAI/bge-large-en-v1.5",
     )
@@ -13,7 +13,7 @@ def test_validate_config_invalid_token():
 
 
 def test_validate_config_invalid_model():
-    model = HuggingFaceModel(
+    model = HuggingFace(
         token=config.huggingface_token,
         model="invalid",
     )

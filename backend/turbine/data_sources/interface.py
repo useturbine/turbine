@@ -9,7 +9,7 @@ class Document(BaseModel):
     metadata: Metadata
 
 
-class DataSource:
+class DataSource(BaseModel):
     @abstractmethod
     def validate_config(self) -> None:
         ...

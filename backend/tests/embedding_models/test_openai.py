@@ -1,10 +1,10 @@
 import pytest
 from tests.config import config
-from turbine.embedding_models import OpenAIModel
+from turbine.embedding_models import OpenAI
 
 
 def test_validate_config_invalid_api_key():
-    model = OpenAIModel(
+    model = OpenAI(
         api_key="invalid",
         model="text-embedding-ada-002",
     )
@@ -13,7 +13,7 @@ def test_validate_config_invalid_api_key():
 
 
 def test_validate_config_invalid_model():
-    model = OpenAIModel(
+    model = OpenAI(
         api_key=config.openai_api_key,
         model="invalid",
     )

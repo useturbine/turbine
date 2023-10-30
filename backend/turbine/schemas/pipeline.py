@@ -1,14 +1,14 @@
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
-from turbine.data_sources import S3TextDataSource
-from turbine.vector_databases import MilvusVectorDB, PineconeVectorDB
-from turbine.embedding_models import HuggingFaceModel, OpenAIModel
+from turbine.data_sources import S3
+from turbine.vector_databases import Milvus, Pinecone
+from turbine.embedding_models import HuggingFace, OpenAI
 
 
-VectorDatabase = MilvusVectorDB | PineconeVectorDB
-EmbeddingModel = HuggingFaceModel | OpenAIModel
-DataSource = S3TextDataSource
+VectorDatabase = Milvus | Pinecone
+EmbeddingModel = HuggingFace | OpenAI
+DataSource = S3
 
 
 class PipelineSchema(BaseModel):
