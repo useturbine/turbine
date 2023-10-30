@@ -1,12 +1,12 @@
 from abc import abstractmethod
 from pydantic import BaseModel
-from typing import Any
+from turbine.types import Metadata
 
 
 class Document(BaseModel):
     id: str
     text: str
-    metadata: dict[str, Any]
+    metadata: Metadata
 
 
 class DataSource:

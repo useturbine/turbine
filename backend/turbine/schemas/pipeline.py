@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
 from turbine.data_sources import S3TextDataSource
-from turbine.vector_databases import MilvusVectorDB, PineconeVectorDB, SimilarityMetric
+from turbine.vector_databases import MilvusVectorDB, PineconeVectorDB
 from turbine.embedding_models import HuggingFaceModel, OpenAIModel
 
 

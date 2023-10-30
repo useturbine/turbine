@@ -1,12 +1,11 @@
 from abc import abstractmethod
-from typing import Optional
 from pydantic import BaseModel
-from typing import Any
+from turbine.types import Metadata
 
 
 class SplitterOutput(BaseModel):
     text: str
-    metadata: dict[str, Any]
+    metadata: Metadata
 
 
 class Splitter:
