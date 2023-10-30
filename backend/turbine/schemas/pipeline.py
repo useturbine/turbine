@@ -22,6 +22,13 @@ class PipelineSchema(BaseModel):
         self.data_source.validate_config()
         self.embedding_model.validate_config()
         self.vector_database.validate_config()
+        if (
+            self.embedding_model.embedding_dimension
+            != self.vector_database.embedding_dimension
+        ):
+            raise ValueError(
+                "Embedding model and vector database must have the same embedding dimension"
+            )
 
 
 class PipelineSchemaGet(PipelineSchema):
