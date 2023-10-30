@@ -3,9 +3,6 @@ version: "3"
 services:
   chroma:
     image: chromadb/chroma
-    environment:
-      POSTGRES_MULTIPLE_DATABASES: turbine, prefect
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: passwd
     ports:
       - "8000:8000"
+    env_file: .env

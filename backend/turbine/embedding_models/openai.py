@@ -1,11 +1,10 @@
 from .interface import EmbeddingModel
 import openai
 from openai.error import OpenAIError
-from pydantic import BaseModel
-from typing import Literal, Optional
+from typing import Literal
 
 
-class OpenAIModel(EmbeddingModel, BaseModel):
+class OpenAIModel(EmbeddingModel):
     type: Literal["openai"] = "openai"
     api_key: str
     model: str

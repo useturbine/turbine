@@ -14,6 +14,7 @@ tasks:
     deps:
       - clean:dev
       - clean:prod
+      - clean:test
     cmds:
       - cd docker/dev && docker compose up -V --remove-orphans --build
   run:prod:
@@ -21,9 +22,22 @@ tasks:
     deps:
       - clean:dev
       - clean:prod
+      - clean:test
     cmds:
       - cd docker/prod && docker compose up --remove-orphans --build -d
   logs:prod:
     desc: Show logs for production setup.
     cmds:
       - cd docker/prod && docker compose logs -f
+  run:test:
+    desc: Run tests.
+    deps:
+      - clean:dev
+      - clean:prod
+      - clean:test
+    cmds:
+      - cd docker/test && docker compose up --remove-orphans --build
+  clean:test:
+    desc: Clean test stack on Docker Compose.
+    cmds:
+      - cd docker/test && docker compose down

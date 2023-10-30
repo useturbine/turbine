@@ -1,5 +1,4 @@
 from turbine.vector_databases import VectorDatabase, VectorItem, VectorSearchResult
-from pydantic import BaseModel
 from typing import Literal
 from pymilvus import Collection, connections, DataType
 from pymilvus.exceptions import SchemaNotReadyException, MilvusException
@@ -7,7 +6,7 @@ import uuid
 from wrapt_timeout_decorator.wrapt_timeout_decorator import timeout
 
 
-class MilvusVectorDB(VectorDatabase, BaseModel):
+class MilvusVectorDB(VectorDatabase):
     type: Literal["milvus"] = "milvus"
     url: str
     token: str

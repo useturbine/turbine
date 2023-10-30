@@ -1,7 +1,7 @@
 from typing import List
 from abc import abstractmethod
 from pydantic import BaseModel
-from typing import Any, LiteralString
+from typing import Any
 
 
 class VectorItem(BaseModel):
@@ -16,8 +16,8 @@ class VectorSearchResult(BaseModel):
     metadata: dict[str, Any]
 
 
-class VectorDatabase:
-    type: LiteralString
+class VectorDatabase(BaseModel):
+    type: str
     batch_size: int
 
     @abstractmethod

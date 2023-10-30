@@ -1,9 +1,10 @@
 from abc import abstractmethod
-from typing import LiteralString, Optional
+from typing import Optional
+from pydantic import BaseModel
 
 
-class EmbeddingModel:
-    type: LiteralString
+class EmbeddingModel(BaseModel):
+    type: str
     batch_size: int
     _sample_embedding: Optional[list[float]] = None
 

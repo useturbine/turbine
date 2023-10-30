@@ -1,11 +1,10 @@
 from .interface import EmbeddingModel
 from huggingface_hub import InferenceClient
 from huggingface_hub.utils import BadRequestError, HfHubHTTPError
-from pydantic import BaseModel
 from typing import Literal
 
 
-class HuggingFaceModel(EmbeddingModel, BaseModel):
+class HuggingFaceModel(EmbeddingModel):
     type: Literal["huggingface"] = "huggingface"
     token: str
     model: str

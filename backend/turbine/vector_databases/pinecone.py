@@ -1,12 +1,11 @@
 from turbine.vector_databases import VectorDatabase, VectorItem, VectorSearchResult
 import pinecone
 from pinecone import Vector
-from pydantic import BaseModel
 from typing import Literal
 from urllib3.exceptions import MaxRetryError
 
 
-class PineconeVectorDB(VectorDatabase, BaseModel):
+class PineconeVectorDB(VectorDatabase):
     type: Literal["pinecone"] = "pinecone"
     api_key: str
     environment: str
