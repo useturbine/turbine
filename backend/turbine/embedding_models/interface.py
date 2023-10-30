@@ -1,15 +1,11 @@
 from abc import abstractmethod
-from typing import LiteralString
+from typing import LiteralString, Optional
 
 
 class EmbeddingModel:
     type: LiteralString
     batch_size: int
-
-    @property
-    @abstractmethod
-    def embedding_dimension(self) -> int:
-        ...
+    _sample_embedding: Optional[list[float]] = None
 
     @abstractmethod
     def validate_config(self) -> None:
@@ -18,3 +14,12 @@ class EmbeddingModel:
     @abstractmethod
     def get_embeddings(self, texts: list[str]) -> list[list[float]]:
         ...
+
+    def get_sample_embedding(self) -> list[float]:
+        return self.get_embeddings(["test"])[0]
+
+    @property
+    def embedding_dimension(self) -> int:
+        if self._sample_embedding is None:
+            self._sample_embedding = self.get_sample_embedding()
+        return len(self._sample_embedding)

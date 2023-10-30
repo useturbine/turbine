@@ -1,7 +1,7 @@
 from turbine.vector_databases import VectorDatabase, VectorItem, VectorSearchResult
 from pydantic import BaseModel
 from typing import Literal
-from pymilvus import Collection, connections
+from pymilvus import Collection, connections, DataType
 from pymilvus.exceptions import SchemaNotReadyException, MilvusException
 import uuid
 from wrapt_timeout_decorator.wrapt_timeout_decorator import timeout
@@ -35,9 +35,39 @@ class MilvusVectorDB(VectorDatabase, BaseModel):
             else:
                 raise e
         try:
-            Collection(self.collection_name, using=self._connection_alias)
+            collection = Collection(self.collection_name, using=self._connection_alias)
         except SchemaNotReadyException:
             raise ValueError("Invalid Milvus collection name")
+
+        description = collection.describe()
+        if not description["enable_dynamic_field"]:
+            raise ValueError("Milvus collection must have enable_dynamic_field=True")
+
+        try:
+            id_field = list(
+                filter(lambda field: field["name"] == "id", description["fields"])
+            )[0]
+        except IndexError:
+            raise ValueError("Milvus collection must have an id field")
+        if id_field["type"] != DataType.VARCHAR:
+            raise ValueError("Milvus collection id field must be of type string")
+        if not id_field["is_primary"]:
+            raise ValueError("Milvus collection id field must be primary key")
+        if id_field.get("auto_id", False):
+            raise ValueError("Milvus collection id field must not be auto id")
+
+        try:
+            embedding_field = list(
+                filter(
+                    lambda field: field["name"] == "embedding", description["fields"]
+                )
+            )[0]
+        except IndexError:
+            raise ValueError("Milvus collection must have an embedding field")
+        if embedding_field["type"] != DataType.FLOAT_VECTOR:
+            raise ValueError(
+                "Milvus collection embedding field must be of type float_vector"
+            )
 
     def insert(self, data: list[VectorItem]) -> None:
         self.connect()

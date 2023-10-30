@@ -18,7 +18,3 @@ class HuggingFaceModel(EmbeddingModel, BaseModel):
     def get_embeddings(self, texts: list[str]) -> list[list[float]]:
         response = self._client.feature_extraction(text=texts, model=self.model)  # type: ignore
         return response.tolist()
-
-    @property
-    def embedding_dimension(self) -> int:
-        return 1024

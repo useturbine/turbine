@@ -2,7 +2,7 @@ from .interface import EmbeddingModel
 import openai
 from openai.error import OpenAIError
 from pydantic import BaseModel
-from typing import Literal
+from typing import Literal, Optional
 
 
 class OpenAIModel(EmbeddingModel, BaseModel):
@@ -21,14 +21,10 @@ class OpenAIModel(EmbeddingModel, BaseModel):
         except OpenAIError:
             raise ValueError("Invalid OpenAI API key")
         try:
-            self.get_embeddings(["test"])
+            self.get_sample_embedding()
         except OpenAIError:
             raise ValueError("Invalid OpenAI model")
 
     def get_embeddings(self, texts: list[str]) -> list[list[float]]:
         response = openai.Embedding.create(input=texts, model=self.model)
         return [item["embedding"] for item in response["data"]]  # type: ignore
-
-    @property
-    def embedding_dimension(self) -> int:
-        return 768
