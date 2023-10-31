@@ -15,7 +15,6 @@ class RecursiveSplitter(Splitter, BaseModel):
         self._splitter = RecursiveCharacterTextSplitter(
             chunk_size=self.size,
             chunk_overlap=self.overlap,
-            add_start_index=True,
         )
 
     def split(self, text: str) -> list[SplitterOutput]:
