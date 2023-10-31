@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile
 from typing import List
 from turbine.database import User, get_db, Index, Pipeline
 from turbine.schemas import IndexSchema, IndexSchemaGet
@@ -10,10 +10,24 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from prefect.client.orchestration import get_client
 from .utils import CreateResponseSchema, GenericResponseSchema
+from logging import getLogger
+from minio import Minio
+from turbine.file_parsers import validate_file
+from turbine.flows import process_files
+from prefect.deployments.deployments import Deployment, run_deployment
+
+
+logger = getLogger(__name__)
 
 
 router = APIRouter(prefix="/indexes")
 prefect = get_client()
+minio = Minio(
+    "minio:9000",
+    access_key="admin",
+    secret_key="secretpassword",
+    secure=False,
+)
 
 
 @router.post("", status_code=201, response_model=CreateResponseSchema)
@@ -34,8 +48,17 @@ async def create_index(
         user_id=user.id,
     )
     db.add(index_instance)
-    db.commit()
+    db.flush()
 
+    minio.make_bucket(str(index_instance.id))
+    await Deployment.build_from_flow(
+        process_files,
+        name=str(index_instance.id),
+        parameters={"index": index.model_dump()},
+        apply=True,
+    )
+
+    db.commit()
     return {
         "message": "Index created",
         "id": str(index_instance.id),
@@ -101,3 +124,42 @@ async def search(
     query_embedding = index.embedding_model.get_embeddings([query])[0]
     results = index.vector_database.search(query_embedding, limit=limit)
     return results
+
+
+@router.post("/{id}/upload", response_model=CreateResponseSchema)
+async def upload(
+    id: UUID,
+    files: list[UploadFile],
+    user: User = Depends(get_user),
+    db: Session = Depends(get_db),
+):
+    stmt = select(Index).filter_by(id=id, user_id=user.id, deleted=False)
+    index_instance = db.scalars(stmt).one_or_none()
+    if not index_instance:
+        raise HTTPException(404, "Index not found")
+
+    for file in files:
+        if not file.filename:
+            raise HTTPException(400, "Filename not provided")
+        if not validate_file(file=file.file, filename=file.filename):
+            raise HTTPException(400, "File not supported")
+
+        minio.put_object(
+            bucket_name=str(index_instance.id),
+            object_name=file.filename,
+            data=file.file,
+            length=-1,
+            part_size=10 * 1024 * 1024,
+        )
+
+    filenames: list[str] = [file.filename for file in files if file.filename]
+    result = await run_deployment(
+        "process-files/" + str(index_instance.id),
+        parameters={"files": filenames, "index": index_instance.dump().model_dump()},
+        timeout=0,
+    )
+
+    return {
+        "message": "Task to process files have started running",
+        "id": result.id,
+    }

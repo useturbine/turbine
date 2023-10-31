@@ -26,7 +26,10 @@ pytest = "^7.4.3"
 wrapt-timeout-decorator = "^1.4.0"
 chromadb = "^0.4.15"
 weaviate-client = "^3.25.1"
-# unstructured = {extras = ["all-docs"], version = "^0.10.27"}
+python-multipart = "^0.0.6"
+python-magic = "^0.4.27"
+unstructured = {extras = ["all-docs"], version = "^0.10.27"}
+minio = "^7.1.17"
 
 [build-system]
 requires = ["poetry-core"]

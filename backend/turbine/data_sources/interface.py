@@ -1,12 +1,6 @@
 from abc import abstractmethod
 from pydantic import BaseModel
-from turbine.types import Metadata
-
-
-class Document(BaseModel):
-    id: str
-    text: str
-    metadata: Metadata
+from turbine.types import Document
 
 
 class DataSource(BaseModel):

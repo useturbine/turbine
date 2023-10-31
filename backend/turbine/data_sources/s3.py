@@ -69,7 +69,7 @@ class S3(DataSource):
         return [
             Document(
                 id=hashlib.sha256(document.text.encode("utf-8")).hexdigest(),
-                text=document.text,
+                content=document.text,
                 metadata=dict(**document.metadata, s3_key=key),
             )
             for document in self.splitter.split(text)
