@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from turbine.database import Pipeline, get_db, User
+from turbine.database import Pipeline, get_db, User, Index
 from turbine.api.auth import get_user
 from fastapi import Depends, HTTPException
 from typing import Optional
@@ -21,15 +21,17 @@ prefect = get_client()
 
 @router.get("", response_model=list[TaskSchema])
 async def get_tasks(
-    pipeline: Optional[UUID] = None,
+    pipeline_id: Optional[UUID] = None,
     user: User = Depends(get_user),
     db: Session = Depends(get_db),
 ):
-    stmt = select(Pipeline).where(
-        Pipeline.user_id == user.id, Pipeline.deleted == False
+    stmt = (
+        select(Pipeline)
+        .join(Index)
+        .where(Index.user_id == user.id, Pipeline.deleted == False)
     )
-    if pipeline:
-        stmt = stmt.where(Pipeline.id == pipeline)
+    if pipeline_id:
+        stmt = stmt.where(Pipeline.id == pipeline_id)
     pipelines = db.scalars(stmt).all()
 
     flow_runs = await prefect.read_flow_runs(
@@ -80,8 +82,17 @@ async def get_task(
 
     deployment = await prefect.read_deployment(flow_run.deployment_id)
     pipeline_id = UUID(deployment.name)
-    pipeline = db.scalars(select(Pipeline).where(Pipeline.id == pipeline_id)).first()
-    if not pipeline or pipeline.user_id != user.id:
+    stmt = (
+        select(Pipeline)
+        .join(Index)
+        .where(
+            Pipeline.id == pipeline_id,
+            Index.user_id == user.id,
+            Pipeline.deleted == False,
+        )
+    )
+    pipeline = db.scalars(stmt).one_or_none()
+    if not pipeline:
         raise HTTPException(status_code=404, detail="Task not found")
 
     return TaskSchema(

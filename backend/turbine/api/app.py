@@ -1,7 +1,7 @@
 from .auth import get_user
 from logging import getLogger
 import logging
-from .routers import tasks, pipelines, misc
+from .routers import tasks, pipelines, misc, indexes
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from turbine.database import Session, User
@@ -50,3 +50,4 @@ app.add_middleware(
 app.include_router(tasks.router)
 app.include_router(pipelines.router)
 app.include_router(misc.router)
+app.include_router(indexes.router)

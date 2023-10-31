@@ -1,4 +1,5 @@
 FROM python:3.11-slim
+RUN apt update && apt install gcc python3-dev -y
 
 WORKDIR /app
 

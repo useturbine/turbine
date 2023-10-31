@@ -1,7 +1,7 @@
 from datetime import datetime
 from turbine.config import config
 import uuid
-from turbine.schemas import PipelineSchemaGet
+from turbine.schemas import PipelineSchemaGet, IndexSchemaGet
 from logging import getLogger
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, sessionmaker
 from sqlalchemy import ForeignKey, create_engine
@@ -39,6 +39,29 @@ class User(Base):
     internal: Mapped[bool] = mapped_column(default=False)
 
 
+class Index(Base):
+    __tablename__ = "indexes"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    name: Mapped[str]
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    embedding_model: Mapped[dict] = mapped_column(JSONB)
+    vector_database: Mapped[dict] = mapped_column(JSONB)
+    deleted: Mapped[bool] = mapped_column(default=False)
+
+    def dump(self):
+        return IndexSchemaGet(
+            **{
+                "id": str(self.id),
+                "name": self.name,
+                "embedding_model": self.embedding_model,
+                "vector_database": self.vector_database,
+            }
+        )
+
+
 class Pipeline(Base):
     __tablename__ = "pipelines"
 
@@ -46,11 +69,8 @@ class Pipeline(Base):
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.now)
     name: Mapped[str]
-    description: Mapped[Optional[str]]
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    index_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("indexes.id"))
     data_source: Mapped[dict] = mapped_column(JSONB)
-    embedding_model: Mapped[dict] = mapped_column(JSONB)
-    vector_database: Mapped[dict] = mapped_column(JSONB)
     deleted: Mapped[bool] = mapped_column(default=False)
 
     def dump(self):
@@ -58,9 +78,7 @@ class Pipeline(Base):
             **{
                 "id": str(self.id),
                 "name": self.name,
-                "description": self.description,
                 "data_source": self.data_source,
-                "embedding_model": self.embedding_model,
-                "vector_database": self.vector_database,
+                "index_id": self.index_id,
             }
         )
