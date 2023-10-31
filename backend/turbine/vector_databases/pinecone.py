@@ -1,4 +1,4 @@
-from turbine.vector_databases import VectorDatabase, VectorItem, VectorSearchResult
+from turbine.vector_databases import VectorDatabase, VectorDocument, VectorSearchResult
 import pinecone
 from pinecone import Vector
 from typing import Literal
@@ -28,28 +28,36 @@ class Pinecone(VectorDatabase):
         except pinecone.PineconeException:
             raise ValueError("Invalid Pinecone index name")
 
-    def insert(self, data: list[VectorItem]) -> None:
+    def insert(self, data: list[VectorDocument]) -> None:
         index = pinecone.Index(self.index_name)
         index.upsert(
             vectors=[
                 Vector(
-                    id=vector.id,
-                    values=vector.embedding,
-                    metadata=vector.metadata,
+                    id=document.id,
+                    values=document.embedding,
+                    metadata=dict(**document.metadata, content=document.content),
                 )
-                for vector in data
+                for document in data
             ]
         )
 
     def search(self, data: list[float], limit: int) -> list[VectorSearchResult]:
         index = pinecone.Index(self.index_name)
         results = index.query(vector=data, top_k=limit, include_metadata=True)
-        return [
-            VectorSearchResult(
-                id=result.id, score=result.score, metadata=result.metadata
+
+        search_results: list[VectorSearchResult] = []
+        for result in results["matches"]:
+            metadata = result.metadata
+            content = metadata.pop("content")
+            search_results.append(
+                VectorSearchResult(
+                    id=result.id,
+                    score=result.score,
+                    metadata=metadata,
+                    content=content,
+                )
             )
-            for result in results["matches"]
-        ]
+        return search_results
 
     def delete(self, id: str) -> None:
         index = pinecone.Index(self.index_name)

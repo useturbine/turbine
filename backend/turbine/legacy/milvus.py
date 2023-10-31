@@ -8,7 +8,7 @@ from pymilvus import (
     utility,
 )
 from typing import List
-from turbine.vector_databases import VectorDatabase, VectorItem, VectorSearchResult
+from turbine.vector_databases import VectorDatabase, VectorDocument, VectorSearchResult
 from .types import SimilarityMetric
 from uuid import UUID
 from pydantic import BaseModel

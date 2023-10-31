@@ -1,19 +1,15 @@
 from typing import List
 from abc import abstractmethod
 from pydantic import BaseModel
-from turbine.types import Metadata
+from turbine.types import Metadata, Document
 
 
-class VectorItem(BaseModel):
-    id: str
+class VectorDocument(Document):
     embedding: List[float]
-    metadata: Metadata
 
 
-class VectorSearchResult(BaseModel):
-    id: str
+class VectorSearchResult(Document):
     score: float
-    metadata: Metadata
 
 
 class VectorDatabase(BaseModel):
@@ -25,7 +21,7 @@ class VectorDatabase(BaseModel):
         ...
 
     @abstractmethod
-    def insert(self, data: List[VectorItem]) -> None:
+    def insert(self, data: List[VectorDocument]) -> None:
         ...
 
     @abstractmethod

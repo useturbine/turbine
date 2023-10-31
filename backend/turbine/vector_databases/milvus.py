@@ -1,4 +1,4 @@
-from turbine.vector_databases import VectorDatabase, VectorItem, VectorSearchResult
+from turbine.vector_databases import VectorDatabase, VectorDocument, VectorSearchResult
 from typing import Literal
 from pymilvus import Collection, connections, DataType
 from pymilvus.exceptions import SchemaNotReadyException, MilvusException
@@ -68,7 +68,7 @@ class Milvus(VectorDatabase):
                 "Milvus collection embedding field must be of type float_vector"
             )
 
-    def insert(self, data: list[VectorItem]) -> None:
+    def insert(self, data: list[VectorDocument]) -> None:
         self.connect()
         collection = Collection(self.collection_name, using=self._connection_alias)
         collection.insert(data=[item.model_dump() for item in data])

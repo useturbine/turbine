@@ -1,4 +1,4 @@
-from turbine.vector_databases import VectorItem
+from turbine.vector_databases import VectorDocument
 from .utils import create_embedding, metadata, create_instance
 import pytest
 
@@ -23,15 +23,17 @@ class TestVectorDatabase:
         db = create_instance(type)
         db.insert(
             [
-                VectorItem(
+                VectorDocument(
                     id="test-id-1",
                     embedding=create_embedding(),
                     metadata=metadata,
+                    content="test-content-1",
                 ),
-                VectorItem(
+                VectorDocument(
                     id="test-id-2",
                     embedding=create_embedding(),
                     metadata=metadata,
+                    content="test-content-2",
                 ),
             ]
         )
