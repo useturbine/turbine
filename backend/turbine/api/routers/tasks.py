@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from turbine.database import Pipeline, get_db, User, Index
+from turbine.database import DataSource, get_db, User, Index
 from turbine.api.auth import get_user
 from fastapi import Depends, HTTPException
 from typing import Optional
@@ -21,37 +21,37 @@ prefect = get_client()
 
 @router.get("", response_model=list[TaskSchema])
 async def get_tasks(
-    pipeline_id: Optional[UUID] = None,
+    data_source_id: Optional[UUID] = None,
     index_id: Optional[UUID] = None,
     user: User = Depends(get_user),
     db: Session = Depends(get_db),
 ):
-    if pipeline_id and index_id:
+    if data_source_id and index_id:
         raise HTTPException(
-            status_code=400, detail="Only one of pipeline_id or index_id is allowed"
+            status_code=400, detail="Only one of data_source_id or index_id is allowed"
         )
 
     stmt = (
-        select(Pipeline)
+        select(DataSource)
         .join(Index)
-        .where(Index.user_id == user.id, Pipeline.deleted == False)
+        .where(Index.user_id == user.id, DataSource.deleted == False)
     )
-    if pipeline_id:
-        stmt = stmt.where(Pipeline.id == pipeline_id)
-    pipelines = db.scalars(stmt).all()
+    if data_source_id:
+        stmt = stmt.where(DataSource.id == data_source_id)
+    data_sources = db.scalars(stmt).all()
 
     stmt = select(Index).where(Index.user_id == user.id, Index.deleted == False)
     if index_id:
         stmt = stmt.where(Index.id == index_id)
     indexes = db.scalars(stmt).all()
 
-    if pipeline_id:
-        deployment_names = [str(pipeline.id) for pipeline in pipelines]
+    if data_source_id:
+        deployment_names = [str(data_source.id) for data_source in data_sources]
     elif index_id:
         deployment_names = [str(index.id) for index in indexes]
     else:
         deployment_names = [str(index.id) for index in indexes] + [
-            str(pipeline.id) for pipeline in pipelines
+            str(data_source.id) for data_source in data_sources
         ]
 
     flow_runs = await prefect.read_flow_runs(
@@ -102,19 +102,19 @@ async def get_task(
     deployment_id = UUID(deployment.name)
 
     stmt = (
-        select(Pipeline)
+        select(DataSource)
         .join(Index)
         .where(
-            Pipeline.id == deployment_id,
+            DataSource.id == deployment_id,
             Index.user_id == user.id,
-            Pipeline.deleted == False,
+            DataSource.deleted == False,
         )
     )
-    pipeline = db.scalars(stmt).one_or_none()
-    if pipeline:
+    data_source = db.scalars(stmt).one_or_none()
+    if data_source:
         return TaskSchema(
             id=flow_run.id,
-            pipeline_id=deployment_id,
+            data_source_id=deployment_id,
             created_at=flow_run.expected_start_time,
             finished_at=flow_run.end_time,
             successful=flow_run.state.is_completed(),

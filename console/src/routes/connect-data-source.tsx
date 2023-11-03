@@ -1,10 +1,10 @@
 import { Select, SelectItem, Input, Button, Link } from "@nextui-org/react";
 import { SubmitHandler, useForm, FormProvider } from "react-hook-form";
 import { useRootContext } from "../utils";
-import { Pipeline } from "../components/types";
+import { DataSource } from "../components/types";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
-import { createPipeline } from "../components/utils";
+import { createDataSource } from "../components/utils";
 import { useNavigate, useParams, Link as LinkRouter } from "react-router-dom";
 import { S3Form } from "../components/data-sources";
 import { fetchIndexes } from "../queries";
@@ -48,10 +48,10 @@ export const ConnectDataSource = () => {
   );
   const index = indexes?.find((x) => x.id === indexId);
 
-  // Create pipeline mutation
+  // Create data source mutation
   const { mutate, isLoading, isError } = useMutation({
-    mutationFn: (pipeline: Pipeline) =>
-      createPipeline({ pipeline, userApiKey, indexId }),
+    mutationFn: (dataSource: DataSource) =>
+      createDataSource({ dataSource, userApiKey, indexId }),
     onSuccess: () => {
       // Invalidate and refetch
       queryClient.invalidateQueries({
@@ -65,7 +65,7 @@ export const ConnectDataSource = () => {
   });
 
   // Form
-  const methods = useForm<Pipeline>({
+  const methods = useForm<DataSource>({
     defaultValues: {
       s3Config: {
         // chunkSize: 1024,
@@ -82,7 +82,8 @@ export const ConnectDataSource = () => {
   } = methods;
 
   // Handle form submit
-  const onSubmit: SubmitHandler<Pipeline> = (pipeline) => mutate(pipeline);
+  const onSubmit: SubmitHandler<DataSource> = (dataSource) =>
+    mutate(dataSource);
 
   const FormOptions = {
     s3: S3Form,

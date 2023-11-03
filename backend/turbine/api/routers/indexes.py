@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, UploadFile
 from typing import List
-from turbine.database import User, get_db, Index, Pipeline
+from turbine.database import User, get_db, Index, DataSource
 from turbine.schemas import IndexSchema, IndexSchemaGet
 from turbine.api.auth import get_user
 from fastapi import Depends
@@ -95,13 +95,15 @@ async def delete_index(
     index.deleted = True
     db.add(index)
 
-    stmt = select(Pipeline).filter_by(index_id=index.id, deleted=False)
-    pipelines = db.scalars(stmt).all()
-    for pipeline in pipelines:
-        pipeline.deleted = True
-        deployment = await prefect.read_deployment_by_name(str(id))
+    stmt = select(DataSource).filter_by(index_id=index.id, deleted=False)
+    data_sources = db.scalars(stmt).all()
+    for data_source in data_sources:
+        data_source.deleted = True
+        deployment = await prefect.read_deployment_by_name(
+            "sync-data-source/" + str(id)
+        )
         await prefect.delete_deployment(deployment.id)
-        db.add(pipeline)
+        db.add(data_source)
 
     db.commit()
     return {"message": "Index deleted"}

@@ -6,14 +6,14 @@ from turbine.data_sources import S3
 DataSource = S3
 
 
-class PipelineSchema(BaseModel):
+class DataSourceSchema(BaseModel):
     name: str
-    data_source: DataSource
     index_id: UUID
+    data_source: DataSource
 
     def validate_config(self) -> None:
         self.data_source.validate_config()
 
 
-class PipelineSchemaGet(PipelineSchema):
+class DataSourceSchemaGet(DataSourceSchema):
     id: UUID

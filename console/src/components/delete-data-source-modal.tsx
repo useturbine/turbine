@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
-import { deletePipeline } from "./utils";
+import { deleteDataSource } from "./utils";
 import { useNavigate } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { PipelineFromAPI, useRootContext } from "../utils";
+import { DataSourceFromAPI, useRootContext } from "../utils";
 import {
   Button,
   Modal,
@@ -13,13 +13,13 @@ import {
   ModalHeader,
 } from "@nextui-org/react";
 
-export const DeletePipelineModal = ({
-  pipeline,
+export const DeleteDataSourceModal = ({
+  dataSource,
   isOpen,
   onOpenChange,
   onClose,
 }: {
-  pipeline: PipelineFromAPI;
+  dataSource: DataSourceFromAPI;
   isOpen: boolean;
   onOpenChange: (value: boolean) => void;
   onClose: () => void;
@@ -30,17 +30,18 @@ export const DeletePipelineModal = ({
   // React Query
   const queryClient = useQueryClient();
   const { mutate, isLoading } = useMutation({
-    mutationFn: () => deletePipeline({ pipelineId: pipeline.id, userApiKey }),
+    mutationFn: () =>
+      deleteDataSource({ dataSourceId: dataSource.id, userApiKey }),
     onSuccess: () => {
       // Invalidate and refetch
       queryClient.invalidateQueries({
-        queryKey: ["pipelines", externalUserId, pipeline.index_id],
+        queryKey: ["data-sources", externalUserId, dataSource.index_id],
       });
 
       // Close modal and show toast
       onClose();
       toast.success("Data source removed");
-      navigate("/indexes/" + pipeline.index_id);
+      navigate("/indexes/" + dataSource.index_id);
     },
   });
 

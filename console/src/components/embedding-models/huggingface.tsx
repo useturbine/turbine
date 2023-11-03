@@ -1,8 +1,8 @@
 import { useFormContext } from "react-hook-form";
-import { Pipeline } from "../types";
+import { DataSource } from "../types";
 
 export const HuggingFaceForm = () => {
-  const { register } = useFormContext<Pipeline>();
+  const { register } = useFormContext<DataSource>();
 
   return (
     <>

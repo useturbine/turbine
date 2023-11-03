@@ -40,7 +40,7 @@ export const Indexes = () => {
       )}
 
       {indexes?.length === 0 && (
-        <Card className="max-w-sm mx-auto ">
+        <Card className="max-w-sm mx-auto mt-10">
           <CardBody className="text-center gap-3">
             <p className="text-xl">
               You haven't created any index yet. Create one to get started.

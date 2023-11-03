@@ -1,15 +1,15 @@
 import axios from "axios";
 import { turbineApiUrl } from "../config";
-import { Pipeline, Index } from "./types";
+import { DataSource, Index } from "./types";
 
-// Mutation to create pipeline
-export const createPipeline = async ({
+// Mutation to create data source
+export const createDataSource = async ({
   indexId,
-  pipeline,
+  dataSource,
   userApiKey,
 }: {
   indexId?: string;
-  pipeline: Pipeline;
+  dataSource: DataSource;
   userApiKey?: string;
 }): Promise<string> => {
   if (!userApiKey || !indexId)
@@ -17,28 +17,28 @@ export const createPipeline = async ({
 
   const dataSourceOptions = {
     s3: {
-      url: pipeline.s3Config?.url,
+      url: dataSource.s3Config?.url,
       splitter: {
         type: "recursive",
-        size: pipeline.s3Config?.chunkSize,
-        overlap: pipeline.s3Config?.chunkOverlap,
+        size: dataSource.s3Config?.chunkSize,
+        overlap: dataSource.s3Config?.chunkOverlap,
       },
     },
   };
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  const dataSource = dataSourceOptions[pipeline.dataSourceType];
+  const dataSourceConfig = dataSourceOptions[dataSource.dataSourceType];
 
   const payload = {
-    name: pipeline.name,
+    name: dataSource.name,
     index_id: indexId,
     data_source: {
-      type: pipeline.dataSourceType,
-      ...dataSource,
+      type: dataSource.dataSourceType,
+      ...dataSourceConfig,
     },
   };
 
-  const result = await axios.post(`${turbineApiUrl}/pipelines`, payload, {
+  const result = await axios.post(`${turbineApiUrl}/data-sources`, payload, {
     headers: {
       "X-Turbine-Key": userApiKey,
     },
@@ -46,18 +46,18 @@ export const createPipeline = async ({
   return result.data.id;
 };
 
-// Mutation to run pipeline
-export const runPipeline = async ({
-  pipelineId,
+// Mutation to sync data source
+export const syncDataSource = async ({
+  dataSourceId,
   userApiKey,
 }: {
-  pipelineId: string;
+  dataSourceId: string;
   userApiKey?: string;
 }): Promise<string> => {
   if (!userApiKey) throw new Error("User API key is required");
 
   const result = await axios.post(
-    `${turbineApiUrl}/pipelines/${pipelineId}/run`,
+    `${turbineApiUrl}/data-sources/${dataSourceId}/run`,
     null,
     {
       headers: {
@@ -125,16 +125,16 @@ export const createIndex = async ({
   return result.data.id;
 };
 
-export const deletePipeline = async ({
-  pipelineId,
+export const deleteDataSource = async ({
+  dataSourceId,
   userApiKey,
 }: {
-  pipelineId: string;
+  dataSourceId: string;
   userApiKey?: string;
 }) => {
   if (!userApiKey) throw new Error("User API key is required");
 
-  await axios.delete(`${turbineApiUrl}/pipelines/${pipelineId}`, {
+  await axios.delete(`${turbineApiUrl}/data-sources/${dataSourceId}`, {
     headers: {
       "X-Turbine-Key": userApiKey,
     },

@@ -26,7 +26,7 @@ type S3 = {
   chunkOverlap: number;
 };
 
-export type Pipeline = {
+export type DataSource = {
   name: string;
 
   // Data source

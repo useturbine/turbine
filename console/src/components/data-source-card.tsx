@@ -1,10 +1,10 @@
-import { PipelineFromAPI, useRootContext } from "../utils";
+import { DataSourceFromAPI, useRootContext } from "../utils";
 import { useMutation, useQueryClient } from "react-query";
-import { runPipeline } from "./utils";
+import { syncDataSource } from "./utils";
 import { toast } from "react-toastify";
 import { HiPlay, HiCog } from "react-icons/hi";
 import { HiTrash } from "react-icons/hi2";
-import { DeletePipelineModal } from "./delete-pipeline-modal";
+import { DeleteDataSourceModal } from "./delete-data-source-modal";
 import {
   Button,
   Card,
@@ -18,18 +18,23 @@ import {
 } from "@nextui-org/react";
 import { SlOptionsVertical } from "react-icons/sl";
 
-export const PipelineCard = ({ pipeline }: { pipeline: PipelineFromAPI }) => {
+export const DataSourceCard = ({
+  dataSource,
+}: {
+  dataSource: DataSourceFromAPI;
+}) => {
   const { userApiKey, externalUserId } = useRootContext();
   const { isOpen, onOpenChange, onClose, onOpen } = useDisclosure();
   const queryClient = useQueryClient();
 
-  // Run pipeline mutation
+  // Sync data source mutation
   const { mutate, isLoading } = useMutation({
-    mutationFn: () => runPipeline({ pipelineId: pipeline.id, userApiKey }),
+    mutationFn: () =>
+      syncDataSource({ dataSourceId: dataSource.id, userApiKey }),
     onSuccess: () => {
       // Invalidate and refetch
       queryClient.invalidateQueries({
-        queryKey: ["tasks", externalUserId, pipeline.index_id],
+        queryKey: ["tasks", externalUserId, dataSource.index_id],
       });
 
       // Show toast
@@ -42,19 +47,21 @@ export const PipelineCard = ({ pipeline }: { pipeline: PipelineFromAPI }) => {
 
   return (
     <>
-      <DeletePipelineModal {...{ pipeline, onClose, onOpenChange, isOpen }} />
+      <DeleteDataSourceModal
+        {...{ dataSource, onClose, onOpenChange, isOpen }}
+      />
 
       <Card>
         <CardBody>
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-1">
               <div className="flex gap-2 items-center">
-                <h1 className="text-lg font-bold">{pipeline.name}</h1>
-                <Chip className="font-mono">
-                  {chipContents[pipeline.data_source.type]}
+                <h1 className="text-lg font-bold">{dataSource.name}</h1>
+                <Chip className="font-mono" size="sm">
+                  {chipContents[dataSource.data_source.type]}
                 </Chip>
               </div>
-              <span className="text-sm font-mono">{pipeline.id}</span>
+              <span className="text-sm font-mono">{dataSource.id}</span>
             </div>
 
             <div className="flex gap-2 ml-6">

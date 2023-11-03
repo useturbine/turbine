@@ -6,8 +6,8 @@ from pydantic import BaseModel
 
 class TaskSchema(BaseModel):
     id: UUID
-    pipeline_id: Optional[UUID] = None
     index_id: Optional[UUID] = None
+    data_source_id: Optional[UUID] = None
     created_at: datetime
     finished_at: Optional[datetime]
     successful: bool

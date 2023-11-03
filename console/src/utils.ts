@@ -45,7 +45,7 @@ type S3TDataSource = {
   };
 };
 
-export type PipelineFromAPI = {
+export type DataSourceFromAPI = {
   id: string;
   name: string;
   data_source: S3TDataSource;
@@ -57,7 +57,7 @@ export type TaskFromAPI = {
   created_at: string;
   finished_at?: string;
   successful: boolean;
-  pipeline_id?: string;
+  data_source_id?: string;
   index_id?: string;
 };
 

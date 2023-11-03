@@ -84,7 +84,7 @@ export const TasksTable = ({ indexId }: { indexId: string }) => {
         <TableColumn>Started at</TableColumn>
         <TableColumn>Time Taken</TableColumn>
       </TableHeader>
-      <TableBody className="divide-y">
+      <TableBody emptyContent="No tasks run yet.">
         {tasksToShow.map((task) => {
           return (
             <TableRow key={task.id}>

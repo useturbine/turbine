@@ -1,9 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { fetchIndexes } from "../queries";
 import { Link, useParams } from "react-router-dom";
 import { useRootContext } from "../utils";
 import {
   Button,
+  Chip,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -12,69 +13,31 @@ import {
   Tabs,
   useDisclosure,
 } from "@nextui-org/react";
-import { BsFillArrowUpCircleFill } from "react-icons/bs";
-import { useRef, useState } from "react";
-import { uploadFiles } from "../components/utils";
-import { toast } from "react-toastify";
+import { useState } from "react";
 import { TasksTable } from "../components/tasks-table";
 import { DeleteIndexModal } from "../components/delete-index-modal";
 import { MdOutlineTaskAlt } from "react-icons/md";
 import { HiCog, HiDatabase, HiPlusCircle } from "react-icons/hi";
-import { PipelinesList } from "../components/pipelines-list";
+import { DataSourcesList } from "../components/data-sources-list";
 import { HiTrash } from "react-icons/hi2";
 import { SlOptionsVertical } from "react-icons/sl";
-
-const FileButton = ({ indexId }: { indexId: string }) => {
-  const { userApiKey, externalUserId } = useRootContext();
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const queryClient = useQueryClient();
-  const { mutate, isLoading } = useMutation({
-    mutationFn: (files: File[]) => uploadFiles({ indexId, userApiKey, files }),
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({
-        queryKey: ["tasks", externalUserId, indexId],
-      });
-
-      // Close modal and show toast
-      toast.success("Task to index files started");
-    },
-  });
-
-  const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    console.log(files);
-    if (!files) return;
-    mutate([...files]);
-  };
-
-  return (
-    <>
-      <Button
-        color="primary"
-        startContent={<BsFillArrowUpCircleFill className="h-4 w-4" />}
-        onClick={() => inputRef.current?.click()}
-        isLoading={isLoading}
-      >
-        Upload Files
-      </Button>
-      <input
-        type="file"
-        className="hidden"
-        onChange={onFileSelect}
-        ref={inputRef}
-        multiple={true}
-      />
-    </>
-  );
-};
+import { FileButton } from "../components/file-button";
 
 export const Index = () => {
   const { userApiKey, externalUserId } = useRootContext();
   const { indexId } = useParams();
   const { isOpen, onOpenChange, onClose, onOpen } = useDisclosure();
   const [selectedTab, setSelectedTab] = useState("data-sources");
+
+  const embeddingModelChipContents = {
+    openai: "OpenAI",
+    huggingface: "HuggingFace",
+  };
+  const vectorDatabaseChipContents = {
+    pinecone: "Pinecone",
+    milvus: "Milvus",
+    weaviate: "Weaviate",
+  };
 
   // Get index query
   const { data: indexes } = useQuery(
@@ -92,7 +55,15 @@ export const Index = () => {
       <div className="flex flex-col flex-1 mt-6 ml-6 gap-6">
         <div className="flex justify-between items-start ">
           <div className="flex flex-col gap-1">
-            <h1 className="text-xl font-bold">Index: {index.name}</h1>
+            <div className="flex gap-2 items-center">
+              <h1 className="text-xl font-bold">Index: {index.name}</h1>
+              <Chip className="font-mono" size="sm">
+                {embeddingModelChipContents[index.embedding_model.type]}
+              </Chip>
+              <Chip className="font-mono" size="sm">
+                {vectorDatabaseChipContents[index.vector_database.type]}
+              </Chip>
+            </div>
             <p>
               ID: <span className="font-mono">{index.id} </span>
             </p>
@@ -100,6 +71,7 @@ export const Index = () => {
           <div className="flex gap-2">
             <Button
               color="primary"
+              variant="ghost"
               startContent={<HiPlusCircle className="h-5 w-5" />}
               as={Link}
               to={`/indexes/${index.id}/connect-data-source`}
@@ -154,7 +126,7 @@ export const Index = () => {
               </div>
             }
           >
-            <PipelinesList indexId={index.id} />
+            <DataSourcesList indexId={index.id} />
           </Tab>
           <Tab
             key="tasks"

@@ -1,7 +1,7 @@
 from datetime import datetime
 from turbine.config import config
 import uuid
-from turbine.schemas import PipelineSchemaGet, IndexSchemaGet
+from turbine.schemas import DataSourceSchemaGet, IndexSchemaGet
 from logging import getLogger
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, sessionmaker
 from sqlalchemy import ForeignKey, create_engine
@@ -62,8 +62,8 @@ class Index(Base):
         )
 
 
-class Pipeline(Base):
-    __tablename__ = "pipelines"
+class DataSource(Base):
+    __tablename__ = "data_sources"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
@@ -74,7 +74,7 @@ class Pipeline(Base):
     deleted: Mapped[bool] = mapped_column(default=False)
 
     def dump(self):
-        return PipelineSchemaGet(
+        return DataSourceSchemaGet(
             **{
                 "id": str(self.id),
                 "name": self.name,

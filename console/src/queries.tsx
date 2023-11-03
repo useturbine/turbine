@@ -1,7 +1,7 @@
 import { QueryClient } from "react-query";
 import axios from "axios";
 import { turbineAdminApiKey, turbineApiUrl } from "./config";
-import { IndexFromAPI, PipelineFromAPI, TaskFromAPI } from "./utils";
+import { IndexFromAPI, DataSourceFromAPI, TaskFromAPI } from "./utils";
 
 export const queryClient = new QueryClient();
 
@@ -19,17 +19,17 @@ export const fetchUserApiKey = async ({
   return result.data.api_key;
 };
 
-// Fetch pipelines
-export const fetchPipelines = async ({
+// Fetch data sources
+export const fetchDataSources = async ({
   userApiKey,
   indexId,
 }: {
   userApiKey?: string;
   indexId?: string;
-}): Promise<PipelineFromAPI[]> => {
+}): Promise<DataSourceFromAPI[]> => {
   if (!userApiKey) throw new Error("User API key is required");
 
-  const result = await axios.get(`${turbineApiUrl}/pipelines`, {
+  const result = await axios.get(`${turbineApiUrl}/data-sources`, {
     headers: { "X-Turbine-Key": userApiKey },
     params: { index_id: indexId },
   });
@@ -39,23 +39,23 @@ export const fetchPipelines = async ({
 // Fetch tasks
 export const fetchTasks = async ({
   userApiKey,
-  pipelineId,
+  dataSourceId,
   indexId,
 }: {
   userApiKey?: string;
-  pipelineId?: string;
+  dataSourceId?: string;
   indexId?: string;
 }): Promise<TaskFromAPI[]> => {
   if (!userApiKey) throw new Error("User API key is required");
 
   const result = await axios.get(`${turbineApiUrl}/tasks`, {
-    params: { pipeline_id: pipelineId, index_id: indexId },
+    params: { data_source_id: dataSourceId, index_id: indexId },
     headers: { "X-Turbine-Key": userApiKey },
   });
   return result.data;
 };
 
-// Fetch pipelines
+// Fetch indexes
 export const fetchIndexes = async ({
   userApiKey,
 }: {

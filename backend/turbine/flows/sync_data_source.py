@@ -1,7 +1,7 @@
 from prefect import flow, task, unmapped
 from turbine.data_sources import DataSource
 from turbine.types import Document
-from turbine.schemas import PipelineSchema, IndexSchema
+from turbine.schemas import DataSourceSchema, IndexSchema
 from more_itertools import flatten, batched
 from .common import create_embeddings, store_embeddings
 
@@ -16,11 +16,11 @@ def get_documents(data_source: DataSource, key: str) -> list[Document]:
     return [document for document in data_source.get_documents(key)]
 
 
-@flow(name="run-pipeline", log_prints=True)
-def run_pipeline(index: IndexSchema, pipeline: PipelineSchema):
-    keys = get_keys(pipeline.data_source)
+@flow(name="sync-data-source", log_prints=True)
+def sync_data_source(index: IndexSchema, data_source: DataSourceSchema):
+    keys = get_keys(data_source.data_source)
 
-    documents_futures = get_documents.map(unmapped(pipeline.data_source), keys)  # type: ignore
+    documents_futures = get_documents.map(unmapped(data_source.data_source), keys)  # type: ignore
     documents = flatten([item.result() for item in documents_futures])
 
     embeddings_futures = create_embeddings.map(

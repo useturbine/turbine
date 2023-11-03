@@ -1,9 +1,9 @@
 import { useFormContext } from "react-hook-form";
-import { Pipeline } from "../types";
+import { DataSource } from "../types";
 import { Input } from "@nextui-org/react";
 
 export const S3Form = () => {
-  const { register } = useFormContext<Pipeline>();
+  const { register } = useFormContext<DataSource>();
 
   return (
     <>
