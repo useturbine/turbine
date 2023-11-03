@@ -114,7 +114,7 @@ async def get_task(
     if pipeline:
         return TaskSchema(
             id=flow_run.id,
-            pipeline=deployment_id,
+            pipeline_id=deployment_id,
             created_at=flow_run.expected_start_time,
             finished_at=flow_run.end_time,
             successful=flow_run.state.is_completed(),
@@ -129,7 +129,7 @@ async def get_task(
     if index:
         return TaskSchema(
             id=flow_run.id,
-            index=deployment_id,
+            index_id=deployment_id,
             created_at=flow_run.expected_start_time,
             finished_at=flow_run.end_time,
             successful=flow_run.state.is_completed(),

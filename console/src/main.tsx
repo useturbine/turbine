@@ -7,6 +7,7 @@ import { router } from "./router";
 import { QueryClientProvider } from "react-query";
 import { queryClient } from "./queries";
 import { clerkPubKey } from "./config";
+import { NextUIProvider } from "@nextui-org/react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -16,7 +17,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         signInUrl="/sign-in"
         signUpUrl="/sign-up"
       >
-        <RouterProvider router={router} />
+        <NextUIProvider>
+          <RouterProvider router={router} />
+        </NextUIProvider>
       </ClerkProvider>
     </QueryClientProvider>
   </React.StrictMode>

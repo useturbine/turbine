@@ -36,8 +36,8 @@ type PineconeVectorDatabase = {
 
 type VectorDatabase = MilvusVectorDatabase | PineconeVectorDatabase;
 
-type S3TextDataSource = {
-  type: "s3_text";
+type S3TDataSource = {
+  type: "s3";
   url: string;
   splitter: {
     size: number;
@@ -48,9 +48,8 @@ type S3TextDataSource = {
 export type PipelineFromAPI = {
   id: string;
   name: string;
-  embedding_model: EmbeddingModel;
-  vector_database: VectorDatabase;
-  data_source: S3TextDataSource;
+  data_source: S3TDataSource;
+  index_id: string;
 };
 
 export type TaskFromAPI = {
@@ -58,5 +57,13 @@ export type TaskFromAPI = {
   created_at: string;
   finished_at?: string;
   successful: boolean;
-  pipeline: string;
+  pipeline_id?: string;
+  index_id?: string;
+};
+
+export type IndexFromAPI = {
+  id: string;
+  name: string;
+  embedding_model: EmbeddingModel;
+  vector_database: VectorDatabase;
 };

@@ -25,11 +25,11 @@ def run_pipeline(index: IndexSchema, pipeline: PipelineSchema):
 
     embeddings_futures = create_embeddings.map(
         unmapped(index.embedding_model),  # type: ignore
-        batched(documents, index.embedding_model.batch_size),  # type: ignore
+        batched(documents, index.embedding_model._batch_size),  # type: ignore
     )
     embeddings = flatten([item.result() for item in embeddings_futures])
 
     store_embeddings.map(
         unmapped(index.vector_database),  # type: ignore
-        batched(embeddings, index.vector_database.batch_size),  # type: ignore
+        batched(embeddings, index.vector_database._batch_size),  # type: ignore
     )

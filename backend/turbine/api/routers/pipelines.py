@@ -11,6 +11,9 @@ from turbine.flows import run_pipeline as pipeline_flow
 from prefect.deployments.deployments import Deployment, run_deployment
 from .utils import CreateResponseSchema, GenericResponseSchema
 from typing import Optional
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 router = APIRouter(prefix="/pipelines")
@@ -100,7 +103,7 @@ async def delete_pipeline(
     if not pipeline:
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
-    deployment = await prefect.read_deployment_by_name(str(id))
+    deployment = await prefect.read_deployment_by_name("run-pipeline/" + str(id))
     await prefect.delete_deployment(deployment.id)
 
     pipeline.deleted = True

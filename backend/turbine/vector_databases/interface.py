@@ -14,7 +14,7 @@ class VectorSearchResult(Document):
 
 class VectorDatabase(BaseModel):
     type: str
-    batch_size: int
+    _batch_size: int
 
     @abstractmethod
     def validate_config(self) -> None:

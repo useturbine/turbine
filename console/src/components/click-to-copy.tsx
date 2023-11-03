@@ -1,4 +1,4 @@
-import { Tooltip } from "flowbite-react";
+import { Tooltip } from "@nextui-org/react";
 import { useCopyToClipboard } from "usehooks-ts";
 
 export const ClickToCopy = ({ text }: { text: string }) => {
@@ -8,7 +8,10 @@ export const ClickToCopy = ({ text }: { text: string }) => {
   return (
     <span className="inline-block">
       <Tooltip content="Click to copy">
-        <button className="font-mono inline-block" onClick={() => copy(text)}>
+        <button
+          className="font-mono inline-block outline-none"
+          onClick={() => copy(text)}
+        >
           {text}
         </button>
       </Tooltip>

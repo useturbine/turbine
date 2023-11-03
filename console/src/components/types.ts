@@ -20,7 +20,7 @@ type Pinecone = {
   indexName: string;
 };
 
-type S3Text = {
+type S3 = {
   url: string;
   chunkSize: number;
   chunkOverlap: number;
@@ -30,8 +30,12 @@ export type Pipeline = {
   name: string;
 
   // Data source
-  dataSourceType: "s3_text" | "s3_pdf" | "postgres" | "mongo" | "notion";
-  s3TextConfig?: S3Text;
+  dataSourceType: "s3" | "postgres" | "mongo" | "notion";
+  s3Config?: S3;
+};
+
+export type Index = {
+  name: string;
 
   // Embedding model
   embeddingModelType: "huggingface" | "openai";

@@ -1,6 +1,5 @@
 import { useFormContext } from "react-hook-form";
 import { Pipeline } from "../types";
-import { Label, TextInput } from "flowbite-react";
 
 export const MilvusForm = () => {
   const { register } = useFormContext<Pipeline>();

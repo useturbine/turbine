@@ -1,7 +1,7 @@
 import { useRootContext } from "../utils";
 import { ClickToCopy } from "../components/click-to-copy";
 
-export const Keys = () => {
+export const Settings = () => {
   const { userApiKey } = useRootContext();
 
   return (

@@ -1,12 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Root } from "./routes/root";
 import { ErrorPage } from "./error-page";
-import { Home } from "./routes/home";
 import { SignInPage } from "./routes/sign-in";
 import { SignUpPage } from "./routes/sign-up";
-import { Keys } from "./routes/keys";
-import { CreatePipeline } from "./routes/create-pipeline";
-import { Pipeline } from "./routes/pipeline";
+import { Settings } from "./routes/settings";
+import { CreateIndex } from "./routes/create-index";
+import { Indexes } from "./routes/indexes";
+import { Index } from "./routes/index";
+import { ConnectDataSource } from "./routes/connect-data-source";
 
 export const router = createBrowserRouter([
   {
@@ -16,23 +17,27 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: <Indexes />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "/create-pipeline",
-        element: <CreatePipeline />,
+        path: "/create-index",
+        element: <CreateIndex />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "/keys",
-        element: <Keys />,
+        path: "/settings",
+        element: <Settings />,
         errorElement: <ErrorPage />,
       },
-
       {
-        path: "/pipelines/:pipelineId",
-        element: <Pipeline />,
+        path: "/indexes/:indexId",
+        element: <Index />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "/indexes/:indexId/connect-data-source",
+        element: <ConnectDataSource />,
         errorElement: <ErrorPage />,
       },
     ],

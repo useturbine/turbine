@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class EmbeddingModel(BaseModel):
     type: str
-    batch_size: int
+    _batch_size: int
     _sample_embedding: Optional[list[float]] = None
 
     @abstractmethod

@@ -1,52 +1,27 @@
 import axios from "axios";
 import { turbineApiUrl } from "../config";
-import { Pipeline } from "./types";
+import { Pipeline, Index } from "./types";
 
 // Mutation to create pipeline
 export const createPipeline = async ({
+  indexId,
   pipeline,
   userApiKey,
 }: {
+  indexId?: string;
   pipeline: Pipeline;
   userApiKey?: string;
 }): Promise<string> => {
-  if (!userApiKey) throw new Error("User API key is required");
-
-  const vectorDatabaseOptions = {
-    pinecone: {
-      api_key: pipeline.pineconeConfig?.apiKey,
-      environment: pipeline.pineconeConfig?.environment,
-      index_name: pipeline.pineconeConfig?.indexName,
-    },
-    milvus: {
-      url: pipeline.milvusConfig?.url,
-      token: pipeline.milvusConfig?.token,
-      collection_name: pipeline.milvusConfig?.collectionName,
-    },
-  };
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  const vectorDatabase = vectorDatabaseOptions[pipeline.vectorDatabaseType];
-
-  const embeddingModelOptions = {
-    openai: {
-      model: pipeline.openaiConfig?.model,
-      api_key: pipeline.openaiConfig?.apiKey,
-    },
-    huggingface: {
-      model: pipeline.huggingfaceConfig?.model,
-      token: pipeline.huggingfaceConfig?.token,
-    },
-  };
-  const embeddingModel = embeddingModelOptions[pipeline.embeddingModelType];
+  if (!userApiKey || !indexId)
+    throw new Error("User API key and Index ID is required");
 
   const dataSourceOptions = {
-    s3_text: {
-      url: pipeline.s3TextConfig?.url,
+    s3: {
+      url: pipeline.s3Config?.url,
       splitter: {
         type: "recursive",
-        size: pipeline.s3TextConfig?.chunkSize,
-        overlap: pipeline.s3TextConfig?.chunkOverlap,
+        size: pipeline.s3Config?.chunkSize,
+        overlap: pipeline.s3Config?.chunkOverlap,
       },
     },
   };
@@ -56,14 +31,7 @@ export const createPipeline = async ({
 
   const payload = {
     name: pipeline.name,
-    vector_database: {
-      type: pipeline.vectorDatabaseType,
-      ...vectorDatabase,
-    },
-    embedding_model: {
-      type: pipeline.embeddingModelType,
-      ...embeddingModel,
-    },
+    index_id: indexId,
     data_source: {
       type: pipeline.dataSourceType,
       ...dataSource,
@@ -100,6 +68,63 @@ export const runPipeline = async ({
   return result.data.id;
 };
 
+export const createIndex = async ({
+  index,
+  userApiKey,
+}: {
+  index: Index;
+  userApiKey?: string;
+}): Promise<string> => {
+  if (!userApiKey) throw new Error("User API key is required");
+
+  const vectorDatabaseOptions = {
+    pinecone: {
+      api_key: index.pineconeConfig?.apiKey,
+      environment: index.pineconeConfig?.environment,
+      index_name: index.pineconeConfig?.indexName,
+    },
+    milvus: {
+      url: index.milvusConfig?.url,
+      token: index.milvusConfig?.token,
+      collection_name: index.milvusConfig?.collectionName,
+    },
+  };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const vectorDatabase = vectorDatabaseOptions[index.vectorDatabaseType];
+
+  const embeddingModelOptions = {
+    openai: {
+      model: index.openaiConfig?.model,
+      api_key: index.openaiConfig?.apiKey,
+    },
+    huggingface: {
+      model: index.huggingfaceConfig?.model,
+      token: index.huggingfaceConfig?.token,
+    },
+  };
+  const embeddingModel = embeddingModelOptions[index.embeddingModelType];
+
+  const payload = {
+    name: index.name,
+    vector_database: {
+      type: index.vectorDatabaseType,
+      ...vectorDatabase,
+    },
+    embedding_model: {
+      type: index.embeddingModelType,
+      ...embeddingModel,
+    },
+  };
+
+  const result = await axios.post(`${turbineApiUrl}/indexes`, payload, {
+    headers: {
+      "X-Turbine-Key": userApiKey,
+    },
+  });
+  return result.data.id;
+};
+
 export const deletePipeline = async ({
   pipelineId,
   userApiKey,
@@ -110,6 +135,43 @@ export const deletePipeline = async ({
   if (!userApiKey) throw new Error("User API key is required");
 
   await axios.delete(`${turbineApiUrl}/pipelines/${pipelineId}`, {
+    headers: {
+      "X-Turbine-Key": userApiKey,
+    },
+  });
+};
+
+export const deleteIndex = async ({
+  indexId,
+  userApiKey,
+}: {
+  indexId: string;
+  userApiKey?: string;
+}) => {
+  if (!userApiKey) throw new Error("User API key is required");
+
+  await axios.delete(`${turbineApiUrl}/indexes/${indexId}`, {
+    headers: {
+      "X-Turbine-Key": userApiKey,
+    },
+  });
+};
+
+export const uploadFiles = async ({
+  indexId,
+  files,
+  userApiKey,
+}: {
+  indexId: string;
+  files: File[];
+  userApiKey?: string;
+}) => {
+  if (!userApiKey) throw new Error("User API key is required");
+
+  const formData = new FormData();
+  files.forEach((file) => formData.append("files", file));
+
+  await axios.post(`${turbineApiUrl}/indexes/${indexId}/upload`, formData, {
     headers: {
       "X-Turbine-Key": userApiKey,
     },

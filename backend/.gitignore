@@ -8,3 +8,4 @@ venv
 requirements.txt
 ngrok.yml
 testing.py
+.pytest_cache

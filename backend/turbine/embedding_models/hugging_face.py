@@ -8,7 +8,7 @@ class HuggingFace(EmbeddingModel):
     type: Literal["huggingface"] = "huggingface"
     token: str
     model: str
-    batch_size: int = 128
+    _batch_size: int = 128
     _client: InferenceClient
 
     def __init__(self, **data) -> None:

@@ -8,7 +8,7 @@ class OpenAI(EmbeddingModel):
     type: Literal["openai"] = "openai"
     api_key: str
     model: str
-    batch_size: int = 128
+    _batch_size: int = 128
 
     def __init__(self, **data) -> None:
         super().__init__(**data)

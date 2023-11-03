@@ -11,7 +11,7 @@ class Milvus(VectorDatabase):
     url: str
     token: str
     collection_name: str
-    batch_size: int = 128
+    _batch_size: int = 128
     _connection_alias: str
 
     def __init__(self, **data) -> None:

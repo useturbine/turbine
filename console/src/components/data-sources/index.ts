@@ -1,1 +1,1 @@
-export * from "./s3-text";
+export * from "./s3";
