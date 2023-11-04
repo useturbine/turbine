@@ -15,7 +15,7 @@ from minio import Minio
 from turbine.file_parsers import validate_file
 from turbine.flows import process_files
 from prefect.deployments.deployments import Deployment, run_deployment
-
+from turbine.config import config
 
 logger = getLogger(__name__)
 
@@ -23,9 +23,9 @@ logger = getLogger(__name__)
 router = APIRouter(prefix="/indexes")
 prefect = get_client()
 minio = Minio(
-    "minio:9000",
-    access_key="admin",
-    secret_key="secretpassword",
+    config.minio_endpoint,
+    access_key=config.minio_access_key,
+    secret_key=config.minio_secret_key,
     secure=False,
 )
 

@@ -6,12 +6,13 @@ from turbine.types import Document
 from turbine.file_parsers import parse_file
 from minio import Minio
 from io import BytesIO
+from turbine.config import config
 
 
 minio = Minio(
-    "minio:9000",
-    access_key="admin",
-    secret_key="secretpassword",
+    config.minio_endpoint,
+    access_key=config.minio_access_key,
+    secret_key=config.minio_secret_key,
     secure=False,
 )
 

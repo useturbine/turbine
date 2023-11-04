@@ -29,6 +29,18 @@ services:
     restart: always
     env_file: .env
 
+  minio:
+    image: minio/minio
+    ports:
+      - "9001:9001"
+    env_file: .env
+    command: server --console-address ":9001" /data
+
+  unstructured:
+    image: quay.io/unstructured-io/unstructured-api:latest
+    environment:
+      - UNSTRUCTURED_MEMORY_FREE_MINIMUM_MB=500
+
   nginx:
     image: nginx:alpine
     ports:
