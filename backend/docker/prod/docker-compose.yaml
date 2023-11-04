@@ -20,7 +20,7 @@ services:
     env_file: .env
     restart: always
     deploy:
-      replicas: 10
+      replicas: 3
     command: prefect agent start -p "default-agent-pool"
 
   prefect:

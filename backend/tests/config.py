@@ -24,6 +24,9 @@ try:
         pinecone_api_key=os.environ["PINECONE_API_KEY"],
         milvus_url=os.environ["MILVUS_URL"],
         milvus_token=os.environ["MILVUS_TOKEN"],
+        minio_endpoint=os.environ["MINIO_ENDPOINT"],
+        minio_access_key=os.environ["MINIO_ACCESS_KEY"],
+        minio_secret_key=os.environ["MINIO_SECRET_KEY"],
     )
 except KeyError:
     raise ValueError("Missing required environment variable")

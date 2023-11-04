@@ -28,8 +28,6 @@ services:
       - ../..:/app
     restart: always
     command: prefect agent start -p "default-agent-pool"
-    deploy:
-      replicas: 3
 
   prefect:
     image: prefecthq/prefect:2-latest
