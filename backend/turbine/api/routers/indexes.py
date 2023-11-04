@@ -146,6 +146,8 @@ async def upload(
         if not validate_file(file=file.file, filename=file.filename):
             raise HTTPException(400, "File not supported")
 
+        if not minio.bucket_exists(str(index_instance.id)):
+            minio.make_bucket(str(index_instance.id))
         minio.put_object(
             bucket_name=str(index_instance.id),
             object_name=file.filename,
